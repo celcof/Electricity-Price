@@ -14,5 +14,6 @@ Features of this analysis:
   * **Market share** of the largest generator in the electricity market. TEN00119
   * **Oil Price** - data not taken from Eurostat but from [MacroTrends](https://www.macrotrends.net/1369/crude-oil-price-history-chart).
   * Share of **renewable energy** in gross final energy consumption. Share of renewable energy in gross final energy consumption. SDG_07_40
+  * **Emissions Intensity** - how many tonnes CO2 equivalents of energy-related GHGs are being emitted in a certain economy per unit of energy that is being consumed
   
 Excluded the oil price, all other data are taken from Eurostat and the time range is 2008-2018.
