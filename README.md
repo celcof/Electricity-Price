@@ -1,4 +1,3 @@
-# Electricity-Price
 What are the differences in electricity household prices among EU countries due to?
 
 # Data
