@@ -17,5 +17,5 @@ Features of this analysis:
   
 Excluded the oil price, all other data are taken from Eurostat and the time range is 2008-2018.
 What is up next:
-- Normalization of the variables
-- Different dummies
+* Normalization of the variables.
+* Different dummies (years (2011, 2012, 2013), subgroup of countries).
