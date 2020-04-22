@@ -117,3 +117,16 @@ for (i in 1:nrow(X)) {
 
 # of UK we miss values from 2014 on. substitute with ones from 2013
 X[X$geo == "UK" & X$time %in% c(2014:2018), "MAR"] <- X[X$geo == "UK" & X$time == 2013, "MAR"]
+
+# finally, sub na for EMI 2018 following the trend from 2016 and 2017 (value 2017 + (value 2017 - value 2016))
+for (country in levels(X$geo)){
+  X[X$time == 2018 & X$geo == country, "EMI"] <- X[X$time == 2017 & X$geo == country, "EMI"] + (X[X$time == 2017 & X$geo == country, "EMI"] - X[X$time == 2016 & X$geo == country, "EMI"])
+}
+
+# did not notice we also miss gdp poland for 2018.
+# we assume that this value is following the trend of the last two years. value 2018 + diff(2017-2018) 
+X[X$geo == "PL" & X$time == 2018, "GDP"] <- X[X$geo == "PL" & X$time == 2017, "GDP"] + (X[X$geo == "PL" & X$time == 2017, "GDP"] - X[X$geo == "PL" & X$time == 2016, "GDP"])
+
+# missing too many values for 2019
+D <- X[!X$time == 2019,]
+write.csv(D, "D.csv", row.names = FALSE)

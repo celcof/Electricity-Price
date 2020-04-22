@@ -1,0 +1,79 @@
+---
+title: "STAT"
+author: "Francesco Cabras"
+date: "21 April 2020"
+output: pdf_document
+---
+Only country variability.
+
+```{R}
+COU <- lm(log(PRI) ~ geo, D)
+summary(COU)
+```
+
+80% of the variability is due to differences between member states.
+
+Some simple linear models.
+
+```{R}
+LM1 <- lm(log(PRI) ~ DEP + log(CON) + log(GDP) + log(OIL) + REN + NUC + CPI + log(EMI) + MAR + geo, D)
+summary(LM1)
+```
+
+Subset selection. We want to maximize adjusted R squared and minimize cp and bic.
+
+```{R}
+library(leaps)
+LM2 <- regsubsets(log(PRI) ~ DEP + log(CON) + log(GDP) + log(OIL) + REN + NUC + CPI + log(EMI) + MAR + geo, D, nvmax = 36)
+which.max(summary(LM2)$adjr2)
+which.min(summary(LM2)$bic)
+which.min(summary(LM2)$cp)
+coef(LM2, 31)
+```
+
+Optimal values for adjusted R squared and cp are obtained with 31 values while 27 variables are enough for bic. MAR and NUC are dropped. Rather than using proxies for test error, let us directly compute this error through validation set approach.
+
+```{R}
+train <- (D$time < 2015)
+test <- (!train)
+```
+
+Simple linear regression on train now.
+
+```{R}
+tLM <- regsubsets(log(PRI) ~ DEP + log(CON) + log(GDP) + log(OIL) + REN + NUC + CPI + log(EMI) + MAR + geo, D, subset=train, nvmax = 36)
+test.mat <- model.matrix(log(PRI) ~ DEP + log(CON) + log(GDP) + log(OIL) + REN + NUC + CPI + log(EMI) + MAR + geo, data=D[test,])
+val.errors <- rep(NA, 36)
+for (i in 1:36){
+  coefi <- coef(tLM, id=i)
+  pred <- test.mat[,names(coefi)] %*% coefi
+  val.errors[i] <- mean((D$PRI[test] - pred)^2)
+}
+coef(tLM, which.min(val.errors))
+```
+
+Best model: 13 variables (of which, 8 geographical).
+
+Now, time for ridge regression.
+
+```{r}
+library(glmnet)
+x <- model.matrix(PRI ~ . - time, data=D)[,-1]
+y <- D$PRI
+ridge <- cv.glmnet(x[train,],y[train], alpha=0)
+plot(ridge)
+bestlam
+```
+
+What is the test MSE associated with this value of lambda?
+
+```{r}
+ridge.pred <- predict(ridge, s=bestlam, newx=x[test,])
+mean((ridge.pred - y[test])^2)
+```
+
+We cannot compare mean squared error between ridge and best lm model because variables are normalized differently. First 25 best ridge model coefficients all refer to the geographical dummies.
+
+```{r}
+predict(ridge, type="coefficients", s=bestlam)[1:25,]
+```
