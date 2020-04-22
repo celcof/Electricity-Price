@@ -16,3 +16,6 @@ Features of this analysis:
   * **Emissions Intensity** - how many tonnes CO2 equivalents of energy-related GHGs are being emitted in a certain economy per unit of energy that is being consumed
   
 Excluded the oil price, all other data are taken from Eurostat and the time range is 2008-2018.
+What is up next:
+- Normalization of the variables
+- Different dummies
