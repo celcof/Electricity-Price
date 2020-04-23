@@ -14,6 +14,8 @@ Features of this analysis:
   * **Oil Price** - data not taken from Eurostat but from [MacroTrends](https://www.macrotrends.net/1369/crude-oil-price-history-chart).
   * Share of **renewable energy** in gross final energy consumption. Share of renewable energy in gross final energy consumption.
   * **Emissions Intensity** - how many tonnes CO2 equivalents of energy-related GHGs are being emitted in a certain economy per unit of energy that is being consumed.
+  * **Consumer Price Index** - proxy for inflation: how prices are changing with respect to 2015 (value 100 in 2015 for each country).
+  * **Nuclear** enrichment capacity, measured in thousand tonnes of oil equivalent.
   
 Excluded the oil price, all other data are taken from Eurostat and the time range is 2008-2018.
 What is up next:
