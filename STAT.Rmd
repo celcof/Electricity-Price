@@ -7,6 +7,7 @@ output: pdf_document
 Only country variability.
 
 ```{R}
+D <- read.csv("D.csv")
 COU <- lm(log(PRI) ~ geo, D)
 summary(COU)
 ```
@@ -47,22 +48,25 @@ val.errors <- rep(NA, 36)
 for (i in 1:36){
   coefi <- coef(tLM, id=i)
   pred <- test.mat[,names(coefi)] %*% coefi
-  val.errors[i] <- mean((D$PRI[test] - pred)^2)
+  val.errors[i] <- mean((log(D$PRI[test]) - pred)^2)
 }
+which.min(val.errors)
+val.errors[which.min(val.errors)]
 coef(tLM, which.min(val.errors))
 ```
 
-Best model: 13 variables (of which, 8 geographical).
+We include 34 variables, including all the non-geographical ones.
 
 Now, time for ridge regression.
 
 ```{r}
+D <- read.csv("D.csv")
 library(glmnet)
-x <- model.matrix(PRI ~ . - time, data=D)[,-1]
+x <- model.matrix(PRI ~ . - time, D)[,-1]
 y <- D$PRI
-ridge <- cv.glmnet(x[train,],y[train], alpha=0)
-plot(ridge)
-bestlam
+set.seed(35)
+ridge <- cv.glmnet(x[train,],y[train], alpha=0, standardize=T)
+bestlam <- min(ridge$lambda)
 ```
 
 What is the test MSE associated with this value of lambda?
@@ -77,3 +81,29 @@ We cannot compare mean squared error between ridge and best lm model because var
 ```{r}
 predict(ridge, type="coefficients", s=bestlam)[1:25,]
 ```
+
+Time for lasso.
+
+```{r}
+lasso.mod <- glmnet(x[train,], y[train], alpha=1)
+plot(lasso.mod)
+```
+
+Let us look for the best value of the parameter lambda (shrinkage)
+
+```{r}
+set.seed(35)
+cv.out <- cv.glmnet(x[train,], y[train], alpha=1)
+bestlam <- cv.out$lambda.min
+pred <- predict(lasso.mod, s=bestlam, newx=x[test,])
+mean((pred - y[test])^2)
+```
+
+How many features is the model including?
+
+```{r}
+lasso.coef <- predict(lasso.mod, type="coefficients", s=bestlam)
+lasso.coef
+```
+
+All features are kept in the model (weird?).
