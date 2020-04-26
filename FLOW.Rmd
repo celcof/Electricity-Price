@@ -7,6 +7,7 @@ output:
     df_print: paged
 ---
 ```{r, echo=F}
+library(ggpubr)
 library(car)
 library(eurostat)
 library(HDCI)
@@ -108,6 +109,7 @@ I <- get_eurostat("ten00119", time_format = "num")
 I <- I[,c(4:6)]
 names(I)[3] <- "MAR"
 X <- merge(X, I, by=c("time", "geo"), all.x=TRUE)
+rm(I, OIL, time)
 ```
 
 substitute NA with zero for nuclear capacity
@@ -121,6 +123,7 @@ for (row in 1:length(X$NUC)){
 for (country in levels(X$geo)){
   X[X$time == 2008 & X$geo == country, "NUC"] <- X[X$time == 2009 & X$geo == country, "NUC"]
 }
+rm(row)
 ```
 
 substitute NA for Market Concentration
@@ -138,6 +141,7 @@ in2011 <- 28.4 + (32 - 28.4) / 3
 in2012 <- in2011 + (32 - 28.4) / 3
 X[X$geo == "DE" & X$time == 2011, "MAR"] <- in2011
 X[X$geo == "DE" & X$time == 2012, "MAR"] <- in2012
+rm(in2011, in2012)
 ```
 
 Of Greece. in 2011, average between previous and subsequent years.
@@ -174,6 +178,7 @@ for (i in 1:nrow(X)) {
   }
   X$MAR <- round(X$MAR,1)
 }
+rm(DEvalue, BEvalue, LUvalue, DKvalue, NLvalue, i, year)
 ```
 
 Of UK we miss values from 2014 on. substitute with ones from 2013.
@@ -188,6 +193,7 @@ Finally, sub na for EMI 2018 following the trend from 2016 and 2017 (value 2017 
 for (country in levels(X$geo)){
   X[X$time == 2018 & X$geo == country, "EMI"] <- X[X$time == 2017 & X$geo == country, "EMI"] + (X[X$time == 2017 & X$geo == country, "EMI"] - X[X$time == 2016 & X$geo == country, "EMI"])
 }
+rm(country)
 ```
 
 Did not notice we also miss gdp poland for 2018. We assume that this value is following the trend of the last two years. value 2018 + diff(2017-2018)
@@ -200,6 +206,7 @@ Missing too many values for 2019.
 
 ```{r}
 D <- X[!X$time == 2019,]
+rm(X)
 ```
 
 Only country variability.
@@ -215,6 +222,7 @@ Let us also control for inflation, thinking it may suffice.
 ```{R}
 COU <- lm(PRI ~ geo + CPI, D)
 summary(COU)$r.squared
+rm(COU)
 ```
 87.5% of variability explained.
 
@@ -225,12 +233,25 @@ LM1 <- lm(PRI ~ DEP + CON + GDP + OIL + REN + NUC + CPI + EMI + MAR + geo, D)
 summary(LM1)
 ```
 
-Possible problems with assumptions, however. For example, we expect nuclear production not to have a gaussian distribution, since most countries do not have nuclear reactors.
+Possible problems with assumptions, however. 
 
 ```{r}
 plot(LM1)
 ```
 
+For example, we expect nuclear production not to have a gaussian distribution, since most countries do not have nuclear reactors.
+
+```{r}
+ggdensity(D$NUC, main = "Density function NUC", xlab = "Nuclear Capacity")
+```
+
+Doesn't look gaussian at all. Test:
+
+```{r}
+shapiro.test(D$NUC)
+```
+
+Best thing could be to drop it, also because not that important.
 Problem with some observations, specifically 116 and 144, which are records of Cyprus in 2012 and 2013.
 In these two years the price of electricity skyrocketed for reasons that our model is not able to figure out (i.e., debt crisis).
 
@@ -251,8 +272,7 @@ mean(LM1$residuals)
 lawstat::runs.test(LM1$residuals)
 vif(LM1)
 ```
-
-Focus on correlated variables.
+The mean of the residuals is ok, however we have some problems for autocorrelation of residuals and multicollinearity. The Variance Inflator Formula results in not promising values for GDP and NUC. We should not worry too much about this, however: if we remove the country-specific dummy variables, the vif values for the model turn out to be normal. The multicollinearity risk is also refuted when looking at the correlation matrix for the continuous variables: the NUC feature is not strongly correlated with any of the other variables.
 
 ```{r}
 library(corrplot)
@@ -272,17 +292,27 @@ Alternative. Take the log of PRI, CON, GDP, OIL and EMI and remove the two CY re
 ```{r}
 D <- D[!(D$time == 2012 & D$geo == "CY"),]
 D <- D[!(D$time == 2013 & D$geo == "CY"),]
-LM2 <- lm(log(PRI) ~ DEP + log(CON) + log(GDP) + log(OIL) + REN + CPI + log(EMI) + NUC + MAR + geo, D)
+LM2 <- lm(log(PRI) ~ DEP + log(CON) + log(GDP) + log(OIL) + REN + CPI + log(EMI) + MAR + geo, D)
 gvlma::gvlma(LM2)
 ```
 
-Better behaviour.
+Better behaviour. Normality of errors is not met, however.
+
+```{r}
+lawstat::runs.test(LM2$residuals)
+```
+
+Probably we should not be too worried, however. As taken from https://discovery.ucl.ac.uk/id/eprint/10070182/1/Schmidt_UCL_depos_JCE2018.pdf, " large sample size settings linear regression models are fairly robust to
+violations of the normality assumption and hence arbitrary - bias inducing - outcome
+transformations are usually unnecessary. "
+
+This paper suggests that torturing the data for meeting the normality of error assumption usually makes things worse (when sample size is large enough, which means at least about 10 observations per parameter).
 
 Subset selection. We want to maximize adjusted R squared and minimize cp and bic.
 
 ```{R}
 library(leaps)
-LM3 <- regsubsets(log(PRI) ~ DEP + log(CON) + log(GDP) + log(OIL) + REN + NUC + CPI + log(EMI) + MAR + geo, D, nvmax = 36)
+LM3 <- regsubsets(log(PRI) ~ DEP + log(CON) + log(GDP) + log(OIL) + REN + CPI + log(EMI) + MAR + geo, D, nvmax = 35)
 which.max(summary(LM3)$adjr2)
 which.min(summary(LM3)$bic)
 which.min(summary(LM3)$cp)
@@ -299,10 +329,10 @@ test <- (!train)
 Simple linear regression on train now.
 
 ```{R}
-tLM <- regsubsets(log(PRI) ~ DEP + log(CON) + log(GDP) + log(OIL) + REN + NUC + CPI + log(EMI) + MAR + geo, D, subset=train, nvmax = 36)
-test.mat <- model.matrix(log(PRI) ~ DEP + log(CON) + log(GDP) + log(OIL) + REN + NUC + CPI + log(EMI) + MAR + geo, data=D[test,])
-val.errors <- rep(NA, 36)
-for (i in 1:36){
+tLM <- regsubsets(log(PRI) ~ DEP + log(CON) + log(GDP) + log(OIL) + REN + CPI + log(EMI) + MAR + geo, D, subset=train, nvmax = 35)
+test.mat <- model.matrix(log(PRI) ~ DEP + log(CON) + log(GDP) + log(OIL) + REN + CPI + log(EMI) + MAR + geo, data=D[test,])
+val.errors <- rep(NA, 35)
+for (i in 1:35){
   coefi <- coef(tLM, id=i)
   pred <- test.mat[,names(coefi)] %*% coefi
   val.errors[i] <- mean((log(D$PRI[test]) - pred)^2)
@@ -310,15 +340,16 @@ for (i in 1:36){
 which.min(val.errors)
 val.errors[which.min(val.errors)]
 coef(tLM, which.min(val.errors))
+rm(tLM, val.errors, coefi, pred, test.mat)
 ```
 
-We include 34 variables, including all the non-geographical ones.
+We include 35 variables, including all the non-geographical ones.
 
 Now, time for ridge regression.
 
 ```{r}
 library(glmnet)
-x <- model.matrix(PRI ~ . - time, D)[,-1]
+x <- model.matrix(log(PRI) ~ DEP + log(CON) + log(GDP) + log(OIL) + REN + CPI + log(EMI) + MAR + geo, D)[,-1]
 y <- D$PRI
 set.seed(35)
 ridge <- cv.glmnet(x[train,],y[train], alpha=0, standardize=T)
@@ -332,10 +363,11 @@ ridge.pred <- predict(ridge, s=bestlam, newx=x[test,])
 mean((ridge.pred - y[test])^2)
 ```
 
-First 25 best ridge model coefficients all refer to the geographical dummies.
+Coefficients.
 
 ```{r}
 predict(ridge, type="coefficients", s=bestlam)[1:25,]
+rm(ridge)
 ```
 
 Time for lasso.
@@ -345,7 +377,7 @@ lasso.mod <- glmnet(x[train,], y[train], alpha=1)
 plot(lasso.mod)
 ```
 
-Let us look for the best value of the parameter lambda (shrinkage)
+Let us look for the best value of the parameter lambda (shrinkage).
 
 ```{r}
 set.seed(35)
@@ -357,8 +389,22 @@ mean((pred - y[test])^2)
 
 How many features is the model including?
 
-```{r}
-coef(cv.out, bestlam)
+```{r, warning=F}
+C <- as.vector(coef(cv.out, bestlam))
+length(C[C != 0])
+rm(bestlam, pred, cv.out, ridge.pred, C)
 ```
 
-Few variables are excluded (including GDP and dependency (interestingly), and emissions).
+All features are kept in the model (weird?).
+
+```{r}
+set.seed(35)
+obj.escv <- escv.glmnet(x[train,], y[train])
+obj <- Lasso(x[train,], y[train], lambda = obj.escv$lambda.cv)
+length(obj$beta[obj$beta != 0])
+pred <- mypredict(obj, newx = x[test,])
+mean((pred - y[test])^2)
+rm(obj.escv, obj, pred)
+```
+
+Similar result with different algorithm, so maybe not that weird. By the way, very good performance.
