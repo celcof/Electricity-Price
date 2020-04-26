@@ -1,5 +1,5 @@
 ---
-title: "STAT"
+title: "FLOW"
 author: "Francesco Cabras"
 date: "21 April 2020"
 output:
@@ -287,7 +287,7 @@ Overall check.
 gvlma::gvlma(LM1)
 ```
 
-Alternative. Take the log of PRI, CON, GDP, OIL and EMI and remove the two CY records.
+Alternative. Take the log of PRI, CON, GDP, OIL and EMI and remove the two CY records and the variable NUC.
 
 ```{r}
 D <- D[!(D$time == 2012 & D$geo == "CY"),]
@@ -319,7 +319,7 @@ which.min(summary(LM3)$cp)
 coef(LM3, 31)
 ```
 
-Optimal values for adjusted R squared and cp are obtained with 31 values while 27 variables are enough for bic. MAR and NUC are dropped. Rather than using proxies for test error, let us directly compute this error through validation set approach.
+Optimal values for adjusted R squared and cp are obtained with 31 values while 27 variables are enough for bic. MAR is dropped. Rather than using proxies for test error, let us directly compute this error through validation set approach.
 
 ```{R}
 train <- (D$time < 2015)
@@ -342,8 +342,6 @@ val.errors[which.min(val.errors)]
 coef(tLM, which.min(val.errors))
 rm(tLM, val.errors, coefi, pred, test.mat)
 ```
-
-We include 35 variables, including all the non-geographical ones.
 
 Now, time for ridge regression.
 
