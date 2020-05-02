@@ -198,7 +198,6 @@ Missing too many values for 2019.
 
 ```{r}
 D <- X[!X$time == 2019,]
-rm(X)
 ```
 
 Only country variability.
