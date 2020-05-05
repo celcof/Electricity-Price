@@ -85,16 +85,6 @@ names(I)[3] <- "NUC"
 X <- merge(X, I, by=c("time", "geo"), all.x=TRUE)
 ```
 
-Price index
-
-```{r}
-I <- get_eurostat("prc_hicp_aind", time_format = "num")
-I <- I[grep("CP00", I$coicop), ]
-I <- I[grep("INX_A_AVG", I$unit), c(3:5)]
-names(I)[3] <- "CPI"
-X <- merge(X, I, by=c("time", "geo"), all.x=TRUE)
-```
-
 Emissions intensity.
 
 ```{r}
@@ -208,7 +198,6 @@ Missing too many values for 2019.
 
 ```{r}
 D <- X[!X$time == 2019,]
-rm(X)
 ```
 
 Only country variability.
@@ -219,18 +208,11 @@ summary(COU)$r.squared
 ```
 
 83.5% of the variability is due to differences between member states.
-Let us also control for inflation, thinking it may suffice.
+
+Simple linear model.
 
 ```{R}
-COU <- lm(PRI ~ geo + CPI, D)
-summary(COU)$r.squared
-```
-87.5% of variability explained.
-
-Some simple linear model.
-
-```{R}
-LM1 <- lm(PRI ~ DEP + CON + GDP + OIL + REN + NUC + CPI + EMI + MAR + geo, D)
+LM1 <- lm(PRI ~ DEP + CON + GDP + OIL + REN + NUC + EMI + MAR + geo, D)
 summary(LM1)$r.squared
 ```
 
@@ -272,7 +254,7 @@ The mean of the residuals is ok, however we have some problems for autocorrelati
 
 ```{r}
 library(corrplot)
-corrplot(cor(D[, 3:12]))
+corrplot(cor(D[, 3:11]))
 ```
 
 Correlation of GDP with Price and Quantity Consumed is understandable but why does NUC have such a high VIF value? Not clear.
@@ -290,11 +272,17 @@ D <- D[!(D$time == 2012 & D$geo == "CY"),]
 D <- D[!(D$time == 2013 & D$geo == "CY"),]
 D <- D[!(D$time == 2008 & D$geo == "HU"),]
 D$CRI <- ifelse(D$time == 2011 | D$time == 2012, 1, 0)
-LM2 <- lm(PRI ~ DEP + CON + GDP + OIL + REN + CPI + NUC + EMI + MAR + geo + CRI, D)
+LM2 <- lm(PRI ~ DEP + CON + GDP + OIL + REN + NUC + EMI + MAR + geo + CRI, D)
 gvlma::gvlma(LM2)
 ```
 
-Better behaviour but still assumptions of linearity and of continuousness of my dependent variable are not met. Also, normality of errors is not met.
+Better behaviour but still assumptions of linearity and of continuousness of my dependent variable are not met. We can check that the dependent variable does not follow a normal distribution by looking at this graph:
+
+```{r}
+ggdensity(D$PRI, main = "Density function PRI")
+```
+
+Also, normality of errors is not met.
 
 ```{r}
 lawstat::runs.test(LM2$residuals)
@@ -304,7 +292,7 @@ Especially for the former, situation does not appear that dramatic. Situation do
 
 ```{r}
 plot(LM2, 1)
-ggdensity(LM2$residuals, main = "Density function NUC", xlab = "Nuclear Capacity")
+ggdensity(LM2$residuals, main = "Density function Residuals")
 ```
 
 Probably we should not be too worried, however. As taken from https://discovery.ucl.ac.uk/id/eprint/10070182/1/Schmidt_UCL_depos_JCE2018.pdf, " large sample size settings linear regression models are fairly robust to
@@ -313,18 +301,24 @@ transformations are usually unnecessary. "
 
 This paper suggests that torturing the data for meeting the normality of error assumption usually makes things worse (when sample size is large enough, which means at least about 10 observations per parameter).
 
-Finally, we also take the logarithm of the dependent variable, we manage to pass all tests.
+Finally, we also take the square root of the dependent variable, we manage to pass all tests.
 
 ```{r}
-LM3 <- lm(log(PRI) ~ DEP + CON + GDP + OIL + REN + CPI + NUC + EMI + MAR + geo + CRI, D)
+LM3 <- lm(sqrt(PRI) ~ DEP + CON + GDP + OIL + REN + NUC + EMI + MAR + geo + CRI, D)
 gvlma::gvlma(LM3)
+```
+
+The dependent variable seems to follow the gaussian distribution a little bit more.
+
+```{r}
+ggdensity(sqrt(D$PRI), main = "Density function PRI", xlab = "Electricity Price")
 ```
 
 Subset selection. We want to maximize adjusted R squared and minimize cp and bic.
 
 ```{R}
 library(leaps)
-LM3 <- regsubsets(log(PRI) ~ DEP + CON + GDP + OIL + REN + CPI + EMI + MAR + geo + NUC + CRI, D, nvmax = 36)
+LM3 <- regsubsets(sqrt(PRI) ~ DEP + CON + GDP + OIL + REN + EMI + MAR + geo + NUC + CRI, D, nvmax = 36)
 which.max(summary(LM3)$adjr2)
 which.min(summary(LM3)$bic)
 which.min(summary(LM3)$cp)
@@ -337,16 +331,16 @@ train <- (D$time < 2015)
 test <- (!train)
 ```
 
-Simple linear regression on train now. To compare accuracies of models we are going to use Mean Absolute Error (for interpretability reasons). Since our dependent variable is measured on a logarithmic scale we have to have to take the exponential of the predictions vectors.
+Simple linear regression on train now. To compare accuracies of models we are going to use Mean Absolute Error (for interpretability reasons). Since our dependent variable is measured on a square root scale we have to have to square prediction vectors.
 
 ```{R}
-tLM <- regsubsets(log(PRI) ~ DEP + CON + GDP + OIL + REN + CPI + EMI + MAR + geo + NUC + CRI, D, subset=train, nvmax = 36)
-test.mat <- model.matrix(log(PRI) ~ DEP + CON + GDP + OIL + REN + CPI + EMI + MAR + geo + NUC + CRI, data=D[test,])
+tLM <- regsubsets(sqrt(PRI) ~ DEP + CON + GDP + OIL + REN + EMI + MAR + geo + NUC + CRI, D, subset=train, nvmax = 36)
+test.mat <- model.matrix(sqrt(PRI) ~ DEP + CON + GDP + OIL + REN + EMI + MAR + geo + NUC + CRI, data=D[test,])
 val.errors <- rep(NA, 36)
 for (i in 1:36){
   coefi <- coef(tLM, id=i)
   pred <- test.mat[,names(coefi)] %*% coefi
-  val.errors[i] <- mean(abs(D$PRI[test] - exp(pred)))
+  val.errors[i] <- mean(abs(D$PRI[test] - pred^2))
 }
 which.min(val.errors)
 val.errors[which.min(val.errors)]
@@ -356,18 +350,18 @@ coef(tLM, which.min(val.errors))
 Now, time for ridge regression.
 
 ```{r}
-x <- model.matrix(log(PRI) ~ DEP + CON + GDP + OIL + REN + CPI + EMI + MAR + geo + NUC + CRI, D)[,-1]
+x <- model.matrix(sqrt(PRI) ~ DEP + CON + GDP + OIL + REN + EMI + MAR + geo + NUC + CRI, D)[,-1]
 y <- D$PRI
 set.seed(35)
-ridge <- cv.glmnet(x[train,],log(y[train]), alpha=0, standardize=T)
+ridge <- cv.glmnet(x[train,], sqrt(y[train]), alpha=0, standardize=T)
 bestlam <- min(ridge$lambda)
 ```
 
-What is the test average difference between the prediction and the actual log of the price of electricity?
+What is the test average difference between the prediction and the actual square root of the price of electricity?
 
 ```{r}
 ridge.pred <- predict(ridge, s=bestlam, newx=x[test,])
-mean(abs(exp(ridge.pred) - y[test]))
+mean(abs((ridge.pred)^2 - y[test]))
 ```
 
 Coefficients.
@@ -379,7 +373,7 @@ predict(ridge, type="coefficients", s=bestlam)[1:25,]
 Time for lasso.
 
 ```{r}
-lasso.mod <- glmnet(x[train,], log(y[train]), alpha=1)
+lasso.mod <- glmnet(x[train,], sqrt(y[train]), alpha=1)
 plot(lasso.mod)
 ```
 
@@ -387,10 +381,10 @@ Let us look for the best value of the parameter lambda (shrinkage).
 
 ```{r}
 set.seed(35)
-cv.out <- cv.glmnet(x[train,], log(y[train]), alpha=1)
+cv.out <- cv.glmnet(x[train,], sqrt(y[train]), alpha=1)
 bestlam <- cv.out$lambda.min
 pred <- predict(lasso.mod, s=bestlam, newx=x[test,])
-mean(abs(exp(pred) - y[test]))
+mean(abs((pred)^2 - y[test]))
 ```
 
 How many features is the model including?
@@ -404,20 +398,20 @@ All features are kept in the model (weird?).
 
 ```{r}
 set.seed(35)
-obj.escv <- escv.glmnet(x[train,], log(y[train]))
-obj <- Lasso(x[train,], log(y[train]), lambda = obj.escv$lambda.cv)
+obj.escv <- escv.glmnet(x[train,], sqrt(y[train]))
+obj <- Lasso(x[train,], sqrt(y[train]), lambda = obj.escv$lambda.cv)
 pred <- mypredict(obj, newx = x[test,])
-mean(abs(exp(pred) - y[test]))
+mean(abs((pred)^2 - y[test]))
 ```
 
 Similar result with different algorithm, so maybe not that weird.
 
 Let us instead measure performance of a simple linear model with only the geographical component.
 
-As already explained, logarithmic transformation is used because lighten the weight on the model of some high leverage points. But let's see what happens with a lasso with no log transformation applied.
+As already explained, square root transformation is used because lighten the weight on the model of some high leverage points. But let's see what happens with a lasso with no log transformation applied.
 
 ```{r}
-x <- model.matrix(PRI ~ DEP + CON + GDP + OIL + REN + CPI + EMI + MAR + geo + NUC + CRI, D)[,-1]
+x <- model.matrix(PRI ~ DEP + CON + GDP + OIL + REN + EMI + MAR + geo + NUC + CRI, D)[,-1]
 lasso.mod <- glmnet(x[train,], y[train], alpha=1)
 set.seed(35)
 cv.out <- cv.glmnet(x[train,], y[train], alpha=1)
@@ -431,10 +425,10 @@ In this case, we would have a mean absolute error, which would outperform all pr
 However, even better, simple lm with variables through with subset selection:
 
 ```{r}
-tLM <- regsubsets(PRI ~ DEP + CON + GDP + OIL + REN + CPI + EMI + MAR + geo + NUC + CRI, D, subset=train, nvmax = 37)
-test.mat <- model.matrix(PRI ~ DEP + CON + GDP + OIL + REN + CPI + EMI + MAR + geo + NUC + CRI, data=D[test,])
-val.errors <- rep(NA, 37)
-for (i in 1:37){
+tLM <- regsubsets(PRI ~ DEP + CON + GDP + OIL + REN + EMI + MAR + geo + NUC + CRI, D, subset=train, nvmax = 36)
+test.mat <- model.matrix(PRI ~ DEP + CON + GDP + OIL + REN + EMI + MAR + geo + NUC + CRI, data=D[test,])
+val.errors <- rep(NA, 36)
+for (i in 1:36){
   coefi <- coef(tLM, id=i)
   pred <- test.mat[,names(coefi)] %*% coefi
   val.errors[i] <- mean(abs(D$PRI[test] - pred))
