@@ -104,16 +104,6 @@ X <- merge(X, I, by=c("time", "geo"), all.x=TRUE)
 rm(I, OIL, time)
 ```
 
-Price index
-
-```{r}
-I <- get_eurostat("prc_hicp_aind", time_format = "num")
-I <- I[grep("CP00", I$coicop), ]
-I <- I[grep("INX_A_AVG", I$unit), c(3:5)]
-names(I)[3] <- "CPI"
-X <- merge(X, I, by=c("time", "geo"), all.x=TRUE)
-```
-
 substitute NA with zero for nuclear capacity
 
 ```{r}
@@ -225,44 +215,61 @@ for (col in c("PRI", "DEP", "CON", "GDP", "OIL", "REN", "NUC", "EMI", "MAR")){
 }
 ```
 
-Simple Linear Model.
+In this case we also decide to add inflation column.
 
 ```{r}
-LM1 <- lm(sqrt(PRI) ~ DEP + CON + GDP + OIL + REN + NUC + EMI + MAR + CRI + CPI, C)
-summary(LM1)
+I <- get_eurostat("tec00118", time_format = "num")
+I <- I[, c(3:5)]
+names(I)[3] <- "INF"
+C <- merge(C, I, by=c("time", "geo"), all.x=TRUE)
 ```
 
-Possible problems with assumptions. 
+We split in training and validation sets.
 
 ```{r}
-plot(LM2)
+train <- (C$time < 2016)
+test <- (!train)
 ```
 
-Experiments.
+First thing: we notice that the dependent variable is not really gaussian-distributed.
 
 ```{r}
 ggdensity(C$PRI, main = "Density function PRI")
 qqnorm(C$PRI)
 qqline(C$PRI)
 ```
+Experiments.
+
+So we decide to a specular logarithm transformation.
 
 ```{r}
-ggdensity(sqrt(C$PRI), main = "Density function PRI")
-qqnorm(sqrt(C$PRI))
-qqline(sqrt(C$PRI))
+rownames(C) <- 1:nrow(C)
+```
+
+Finally, we build our model.
+
+```{r}
+C <- C[-c(144,20,88),]
+LM1 <- lm(PRI ~ DEP + CON + GDP + OIL + REN + NUC + EMI + MAR + CRI + INF, C, subset=train)
+summary(LM1)
+```
+
+Possible problems with assumptions. 
+
+```{r}
+plot(LM1)
 ```
 
 Also, normality of errors is not met.
 
 ```{r}
-lawstat::runs.test(LM2$residuals)
+lawstat::runs.test(LM1$residuals)
 ```
 
 Especially for the former, situation does not appear that dramatic. Situation does not look that bad, if we look at the plots for normality of errors and linearity assumption.
 
 ```{r}
-plot(LM2, 1)
-ggdensity(LM2$residuals, main = "Density function Residuals")
+ggdensity(LM1$residuals, main = "Density function Residuals")
 ```
 
 To be checked:
@@ -271,8 +278,8 @@ To be checked:
 - no perfect multicollinearity
 
 ```{r}
-mean(LM2$residuals)
-lawstat::runs.test(LM2$residuals)
+mean(LM1$residuals)
+lawstat::runs.test(LM1$residuals)
 vif(LM1)
 ```
 
@@ -288,5 +295,23 @@ Correlation of GDP with Price and Quantity Consumed is understandable but why do
 Overall check.
 
 ```{r}
-gvlma::gvlma(LM2)
+gvlma::gvlma(LM1)
+```
+
+First of all: problem in the relationship between one or more of my independent variables with my dependent variable.
+
+Although all assumptions seem to be respected, performance is extremely bad.
+
+It is possible however, that there are simply too many variables: we should clarify which are important and which instead are not.
+
+```{R}
+library(leaps)
+LM2 <- regsubsets(PRI ~ DEP + CON + GDP + OIL + REN + EMI + MAR + NUC + CRI + INF, C, nvmax = 36)
+which.max(summary(LM2)$adjr2)
+which.min(summary(LM2)$bic)
+which.min(summary(LM2)$cp)
+```
+
+```{r}
+coef(LM2, 2)
 ```
