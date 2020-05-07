@@ -205,6 +205,7 @@ Time to go dynamic.
 
 ```{r}
 C <- X[X$time != 2008,]
+C$fPRI <- C$PRI
 for (col in c("PRI", "DEP", "CON", "GDP", "OIL", "REN", "NUC", "EMI", "MAR")){
     for (row in 1:nrow(C)){
         COU <- C[row, "geo"]
@@ -213,6 +214,12 @@ for (col in c("PRI", "DEP", "CON", "GDP", "OIL", "REN", "NUC", "EMI", "MAR")){
         C[row, col] <- X[X$time == YEA & X$geo == COU, col] - X[X$time == BEF & X$geo == COU, col]
     }
 }
+```
+
+Also add column for previous year electricity price.
+
+```{r}
+C$pPRI <- X[X$time != 2018, "PRI"]
 ```
 
 In this case we also decide to add inflation column.
@@ -227,6 +234,7 @@ C <- merge(C, I, by=c("time", "geo"), all.x=TRUE)
 We split in training and validation sets.
 
 ```{r}
+C <- C[-c(144,20,88),]
 train <- (C$time < 2016)
 test <- (!train)
 ```
@@ -249,7 +257,6 @@ rownames(C) <- 1:nrow(C)
 Finally, we build our model.
 
 ```{r}
-C <- C[-c(144,20,88),]
 LM1 <- lm(PRI ~ DEP + CON + GDP + OIL + REN + NUC + EMI + MAR + CRI + INF, C, subset=train)
 summary(LM1)
 ```
@@ -312,6 +319,82 @@ which.min(summary(LM2)$bic)
 which.min(summary(LM2)$cp)
 ```
 
+Which are the 6 most significant features?
+
 ```{r}
 coef(LM2, 2)
 ```
+
+Simple linear regression on train now. To compare accuracies of models we are going to use Mean Absolute Error (for interpretability reasons). Since our dependent variable is measured on a square root scale we have to have to square prediction vectors.
+
+```{R}
+nVar <- 10
+tLM <- regsubsets(PRI ~ DEP + CON + GDP + OIL + REN + EMI + MAR + NUC + CRI + INF, C, subset=train, nvmax = nVar)
+test.mat <- model.matrix(PRI ~ DEP + CON + GDP + OIL + REN + EMI + MAR + NUC + CRI + INF, data=C[test,])
+val.errors <- rep(NA, nVar)
+for (i in 1:nVar){
+  coefi <- coef(tLM, id=i)
+  pred <- test.mat[,names(coefi)] %*% coefi
+  val.errors[i] <- mean(abs(C$fPRI[test] - (C$pPRI[test] + pred)))
+}
+which.min(val.errors)
+val.errors[which.min(val.errors)]
+coef(tLM, which.min(val.errors))
+```
+
+Now, time for ridge regression.
+
+```{r}
+x <- model.matrix(PRI ~ DEP + CON + GDP + OIL + REN + EMI + MAR + INF + NUC + CRI, C)[,-1]
+y <- C$PRI
+set.seed(35)
+ridge <- cv.glmnet(x[train,], y[train], alpha=0, standardize=T)
+bestlam <- min(ridge$lambda)
+```
+
+What is the test average difference between the prediction and the actual price of electricity?
+
+```{r}
+ridge.pred <- predict(ridge, s=bestlam, newx=x[test,])
+mean(abs((C$pPRI[test] + ridge.pred) - C$fPRI[test]))
+```
+
+Coefficients.
+
+```{r}
+predict(ridge, type="coefficients", s=bestlam)
+```
+
+Time for lasso.
+
+```{r}
+lasso.mod <- glmnet(x[train,], y[train], alpha=1)
+plot(lasso.mod)
+```
+
+Let us look for the best value of the parameter lambda (shrinkage).
+
+```{r}
+set.seed(35)
+cv.out <- cv.glmnet(x[train,], y[train], alpha=1)
+bestlam <- cv.out$lambda.min
+pred <- predict(lasso.mod, s=bestlam, newx=x[test,])
+mean(abs((C$pPRI[test] + pred)  - C$fPRI[test]))
+```
+
+How many features is the model including?
+
+```{r, warning=F}
+V <- as.vector(coef(cv.out, bestlam))
+length(V[V!= 0])
+```
+
+Now comparison with a very simple linear model with final price as dependent variable and previous price as independent variable.
+
+```{r}
+LM3 <- lm(fPRI ~ pPRI, C, subset=train)
+mean(abs(C$fPRI[test] - predict(LM3, C)[test]))
+coef(LM3)
+```
+
+Slightly worse performance.
