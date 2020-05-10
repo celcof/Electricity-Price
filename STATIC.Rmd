@@ -14,6 +14,7 @@ library(HDCI)
 library(caret)
 library(scales)
 library(glmnet)
+library(wbstats)
 ```
 
 Take data from library eurostat. Start from the dependent variable.
@@ -63,7 +64,7 @@ names(I)[3] <- "DEP"
 X <- merge(X, I, by=c("time", "geo"), all.x=TRUE)
 ```
 
-Consumption of electricity.
+Consumption of electricity per capita.
 
 ```{r}
 I <- get_eurostat("sdg_07_20", time_format = "num")
@@ -82,33 +83,37 @@ names(I)[3] <- "INF"
 X <- merge(X, I, by=c("time", "geo"), all.x=TRUE)
 ```
 
-Oil price per barrel in dollars.
+Getting data from world bank. Electricity Production From Coal Sources (% Of Total).
 
 ```{r}
-time <- c(2008:2019)
-OIL <- c(99.67,61.95,79.48,94.88,94.05,97.98,93.17,48.72,43.58,50.84,64.90,57.05)
-I <- data.frame(time, OIL)
-X <- merge(X, I, by="time", all.x=TRUE)
-```
-
-Share of renewable energy consumed.
-
-```{r}
-I <- get_eurostat("sdg_07_40", time_format = "num")
-I <- I[I$nrg_bal == "REN", ]
-I <- I[, -c(1,2)]
-names(I)[3] <- "REN"
+X$geo <- as.factor(as.character(X$geo))
+I <- wb(indicator = "EG.ELC.COAL.ZS", startdate = 1990, enddate = 2020, country=c(levels(X$geo), "GB", "GR"))
+I$iso2c <- gsub("GB", "UK", I$iso2c)
+I$iso2c <- gsub("GR", "EL", I$iso2c)
+I <- I[,c(2,3,6)]
+names(I) <- c("time", "COA", "geo")
 X <- merge(X, I, by=c("time", "geo"), all.x=TRUE)
 ```
 
-Nuclear energy production.
+Electricity Production From Coal Sources (% Of Total).
 
 ```{r}
-search_eurostat("nuclear")$code
-I <- get_eurostat("nrg_inf_nuc", time_format = "num")
-I <- I[grep("PRD_NUCH", I$plant_tec), ]
-I <- I[,c(3:5)]
-names(I)[3] <- "NUC"
+I <- wb(indicator = "EG.ELC.NUCL.ZS", startdate = 1990, enddate = 2020, country=c(levels(X$geo), "GB", "GR"))
+I$iso2c <- gsub("GB", "UK", I$iso2c)
+I$iso2c <- gsub("GR", "EL", I$iso2c)
+I <- I[,c(2,3,6)]
+names(I) <- c("time", "NUC", "geo")
+X <- merge(X, I, by=c("time", "geo"), all.x=TRUE)
+```
+
+Electricity Production From Hydroelectric Sources (% Of Total).
+
+```{r}
+I <- wb(indicator = "EG.ELC.HYRO.ZS", startdate = 1990, enddate = 2020, country=c(levels(X$geo), "GB", "GR"))
+I$iso2c <- gsub("GB", "UK", I$iso2c)
+I$iso2c <- gsub("GR", "EL", I$iso2c)
+I <- I[,c(2,3,6)]
+names(I) <- c("time", "HYD", "geo")
 X <- merge(X, I, by=c("time", "geo"), all.x=TRUE)
 ```
 
@@ -124,7 +129,7 @@ X <- merge(X, I, by=c("time", "geo"), all.x=TRUE)
 share of largest electricity generator in the market.
 
 ```{r}
-I <- get_eurostat("ten00119", time_format = "num")
+I <- get_eurostat("nrg_ind_331a", time_format = "num")
 I <- I[,c(4:6)]
 names(I)[3] <- "MAR"
 X <- merge(X, I, by=c("time", "geo"), all.x=TRUE)
