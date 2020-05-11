@@ -54,6 +54,12 @@ X <- rbind(X, I)
 X <- X[order(X$time),]
 ```
 
+We take only data from 2000 on.
+
+```{r}
+X <- X[X$time >= 2000,]
+```
+
 Dependency from imports.
 
 ```{r}
@@ -83,40 +89,6 @@ names(I)[3] <- "INF"
 X <- merge(X, I, by=c("time", "geo"), all.x=TRUE)
 ```
 
-Getting data from world bank. Electricity Production From Coal Sources (% Of Total).
-
-```{r}
-X$geo <- as.factor(as.character(X$geo))
-I <- wb(indicator = "EG.ELC.COAL.ZS", startdate = 1990, enddate = 2020, country=c(levels(X$geo), "GB", "GR"))
-I$iso2c <- gsub("GB", "UK", I$iso2c)
-I$iso2c <- gsub("GR", "EL", I$iso2c)
-I <- I[,c(2,3,6)]
-names(I) <- c("time", "COA", "geo")
-X <- merge(X, I, by=c("time", "geo"), all.x=TRUE)
-```
-
-Electricity Production From Coal Sources (% Of Total).
-
-```{r}
-I <- wb(indicator = "EG.ELC.NUCL.ZS", startdate = 1990, enddate = 2020, country=c(levels(X$geo), "GB", "GR"))
-I$iso2c <- gsub("GB", "UK", I$iso2c)
-I$iso2c <- gsub("GR", "EL", I$iso2c)
-I <- I[,c(2,3,6)]
-names(I) <- c("time", "NUC", "geo")
-X <- merge(X, I, by=c("time", "geo"), all.x=TRUE)
-```
-
-Electricity Production From Hydroelectric Sources (% Of Total).
-
-```{r}
-I <- wb(indicator = "EG.ELC.HYRO.ZS", startdate = 1990, enddate = 2020, country=c(levels(X$geo), "GB", "GR"))
-I$iso2c <- gsub("GB", "UK", I$iso2c)
-I$iso2c <- gsub("GR", "EL", I$iso2c)
-I <- I[,c(2,3,6)]
-names(I) <- c("time", "HYD", "geo")
-X <- merge(X, I, by=c("time", "geo"), all.x=TRUE)
-```
-
 Emissions intensity.
 
 ```{r}
@@ -126,14 +98,63 @@ names(I)[3] <- "EMI"
 X <- merge(X, I, by=c("time", "geo"), all.x=TRUE)
 ```
 
-share of largest electricity generator in the market.
+Share of largest electricity generator in the market.
 
 ```{r}
 I <- get_eurostat("nrg_ind_331a", time_format = "num")
 I <- I[,c(4:6)]
 names(I)[3] <- "MAR"
 X <- merge(X, I, by=c("time", "geo"), all.x=TRUE)
-rm(I, OIL, time)
+rm(I, J)
+```
+
+Share of energy from renewable sources, (in percentage) in consumption.
+
+```{r}
+I <- get_eurostat("nrg_ind_ren", time_format = "num")
+I <- I[I$nrg_bal == "REN", ]
+I <- I[, -c(1,2)]
+names(I)[3] <- "REN"
+U <- I
+```
+
+However, we are missing data from the time range 2000-2003. In this sense, we can make use of data from world bank to fill the gap. Both data sets should represent the same information, e.g. for data regarding 2004, they are almost equivalent: however, just pasting data belonging to two different data sets could be dangerous so we decide to normalize the world bank information multiplying each country value for 2000-2003 by a factor that makes eurostat and WB information match.
+
+```{r}
+J <- wb(indicator = "EG.FEC.RNEW.ZS", startdate = 2000, enddate = 2004, country=c(levels(X$geo), "GB", "GR"))
+J$iso2c <- gsub("GB", "UK", J$iso2c)
+J$iso2c <- gsub("GR", "EL", J$iso2c)
+J <- J[,c(2,3,6)]
+names(J) <- c("time", "WBren", "geo")
+I <- merge(I, J, by=c("time", "geo"))
+I$FAC <- I$REN / I$WBren
+I <- I[,c(2,5)]
+J <- merge(J, I, by="geo")
+J$REN <- round(J$WBren * J$FAC, 3)
+J <- J[J$time < 2004, c(1,2,5)]
+U <- rbind(U, J)
+X <- merge(X, U, by=c("time", "geo"), all.x=TRUE)
+rm(U, J)
+```
+
+Real GDP per capita.
+
+```{r}
+I <- get_eurostat("namq_10_pc", time_format = "num")
+I <- I[I$na_item == "B1GQ" & I$unit == "CP_EUR_HAB", ]
+I <- I[, -c(1,2,3)]
+names(I)[3] <- "GDP"
+X <- merge(X, I, by=c("time", "geo"), all.x=TRUE)
+```
+
+Oil Price. Data taken from www.investing.com/commodities/brent-oil-historical-data.
+
+```{r}
+OIL <- c(58.58, 53.79, 68.76, 64.73, 50.17, 52.81, 41.6, 33.62, 47.12, 48.24, 98.17, 97.49, 105.03, 97.49, 88.06, 98.48, 95.7, 92.19, 78.95, 72.89, 69.45, 41.68, 124.08, 91.75, 78.21, 58.14, 74.4, 67.92, 60.57, 48.2, 43.8, 33.05, 30.54, 33.51, 27.02, 19.48, 26.35, 28.66, 27.43, 27.64)
+time <- rev(levels(as.factor(X$time)))
+OIL <- data.frame(OIL, time)
+X <- merge(X, OIL, by=c("time"), all.x=TRUE)
+rm(OIL, time)
 ```
 
 substitute NA with zero for nuclear capacity
