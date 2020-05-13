@@ -161,7 +161,7 @@ substitute NA for Market Concentration
 of Bulgaria. we miss values until 2012: we just substitute with first value available (2013)
 
 ```{r}
-X[X$geo == "BG" & X$time %in% c(2008:2012), "MAR"] <- X[X$geo == "BG" & X$time == 2013, "MAR"]
+X[X$geo == "BG" & X$time %in% c(2000:2012), "MAR"] <- X[X$geo == "BG" & X$time == 2013, "MAR"]
 ```
 
 Of Germany. goes from 28.4 in 2010 to 32.0 in 2013. we expect linear behaviour
@@ -183,13 +183,13 @@ X[X$geo == "EL" & X$time == 2011, "MAR"] <- mean(c(X[X$geo == "EL" & X$time == 2
 Of Luxembourg. We miss values until 2009: we just substitute with first value available (2010)
 
 ```{r}
-X[X$geo == "LU" & X$time %in% c(2008:2009), "MAR"] <- X[X$geo == "LU" & X$time == 2010, "MAR"]
+X[X$geo == "LU" & X$time %in% c(2000:2009), "MAR"] <- X[X$geo == "LU" & X$time == 2010, "MAR"]
 ```
 
 Of Austria. We miss values until 2010: we just substitute with first value available (2011). Also miss values from 2014 on. substitute with ones from 2013
 
 ```{r}
-X[X$geo == "AT" & X$time %in% c(2008:2010), "MAR"] <- X[X$geo == "AT" & X$time == 2011, "MAR"]
+X[X$geo == "AT" & X$time %in% c(2000:2010), "MAR"] <- X[X$geo == "AT" & X$time == 2011, "MAR"]
 X[X$geo == "AT" & X$time %in% c(2014:2018), "MAR"] <- X[X$geo == "AT" & X$time == 2013, "MAR"]
 ```
 
@@ -244,8 +244,6 @@ for (i in 1:nrow(X)) {
 }
 ```
 
-
-
 Not available gas price of cyprus. We use year average between greece and turkey for political and geographical reasons.
 Not available gas price for kosovo, albania and montenegro. Substituted with year average between bosnia, greece, croatia, north macedonia, serbia.
 Not available gas price for iceland, norway and finland. Substituted with year average between sweden, uk, denmark, estonia.
@@ -288,3 +286,130 @@ X$MAR <- round(X$MAR,1)
 rm(value2, value1, value, i, year, value3, value4, value5, country)
 ```
 
+Not Availables for Dependencies, Consumption, Inflation, Emissions Intensity.
+
+```{r}
+table(is.na(X$INF), X$geo)
+
+for (i in 1:nrow(X)) {
+  year <- X$time[i]
+  country <- X$geo[i]
+  if ((is.na(X[i, "DEP"]) & year%%1==0 & year != 2019)) {
+      X[i, "DEP"] <- weighted.mean(c(mean(X[X$geo==country,"DEP"],na.rm=T),mean(X[X$time==year,"DEP"],na.rm=T)),c(0.25,0.75),na.rm=T)
+      }
+  else if (year == 2019) {
+      prevYear <- (year - 1)
+      X[i, "DEP"] <- X[X$geo == country & X$time == prevYear, "DEP"]
+  }
+  if ((is.na(X[i, "CON"]) & year%%1==0 & year != 2019)) {
+      X[i, "CON"] <- weighted.mean(c(mean(X[X$geo==country,"CON"],na.rm=T),mean(X[X$time==year,"CON"],na.rm=T)),c(0.25,0.75),na.rm=T)
+      }
+  else if (year == 2019) {
+      prevYear <- (year - 1)
+      X[i, "CON"] <- X[X$geo == country & X$time == prevYear, "CON"]
+  }
+  if (is.na(X[i, "INF"])) {
+      X[i, "INF"] <- round(weighted.mean(c(mean(X[X$geo==country,"INF"],na.rm=T),mean(X[X$time==year,"INF"],na.rm=T)),c(0.25,0.75),na.rm=T),2)
+  }
+  if ((is.na(X[i, "EMI"]) & year%%1==0)) {
+      X[i, "EMI"] <- weighted.mean(c(mean(X[X$geo==country,"EMI"],na.rm=T),mean(X[X$time==year,"EMI"],na.rm=T)),c(0.25,0.75),na.rm=T)
+  }
+  if ((is.na(X[i, "REN"]) & year%%1==0 & year != 2019)) {
+      X[i, "REN"] <- round(weighted.mean(c(mean(X[X$geo==country,"REN"],na.rm=T),mean(X[X$time==year,"REN"],na.rm=T)),c(0.25,0.75),na.rm=T))
+      }
+  else if (year == 2019) {
+      prevYear <- (year - 1)
+      X[i, "REN"] <- X[X$geo == country & X$time == prevYear, "REN"]
+  }
+  
+}
+rm(year, country, prevYear)
+```
+
+For GDP better to be more careful. The countries that lack information lack it for all the years, so doesn't make sense to use weighted average. We use information from economically close regions. However, pure average does not work because for certain time steps, data is not available for all countries, and the situation becomes unstable. so to stabilize we use previous information from that countries (slightly positive adjusted, because especially for eastern europe countries GDP per capita tended to increase over time).
+
+```{r}
+table(is.na(X$MAR), X$geo)
+
+historic1 <- c()
+historic2 <- c()
+for (i in 1:nrow(X)) {
+  year <- X$time[i]
+  country <- X$geo[i]
+  if (country == "XK" | country == "AL" | country == "ME" | country == "MK" | country == "BA") {
+    value1 <- X[X$geo == "RO" & X$time == year, "GDP"]
+    value2 <- X[X$geo == "HR" & X$time == year, "GDP"]
+    value3 <- X[X$geo == "RS" & X$time == year, "GDP"]
+    value4 <- X[X$geo == "BG" & X$time == year, "GDP"]
+    outside <- mean(c(value1, value2, value3, value4),na.rm=T)
+    value <- weighted.mean(c(outside,1.01*mean(historic1)),w=c(0.0005,0.9995),na.rm=T)
+    historic1 <- c(historic1, value)
+    X[i,"GDP"] <- value
+  }
+  else if (country == "MD" | country == "GE" | country == "TR" | country == "UA" ) {
+    value1 <- X[X$geo == "RS" & X$time == year, "GDP"]
+    value2 <- X[X$geo == "RO" & X$time == year, "GDP"]
+    value3 <- X[X$geo == "PL" & X$time == year, "GDP"]
+    value4 <- X[X$geo == "BG" & X$time == year, "GDP"]
+    outside <- mean(c(value1, value2, value3, value4),na.rm=T)
+    value <- weighted.mean(c(outside,1.01*mean(historic2)),w=c(0.0005,0.9995),na.rm=T)
+    historic2 <- c(historic2, value)
+    X[i,"GDP"] <- value
+  }
+  else if (country == "LI") {
+    X[i,"GDP"] <- X[X$geo == "AT" & X$time == year, "GDP"]
+  }
+}
+rm(value2, value1, value, i, year, value3, value4, country)
+```
+
+Finally, market concentration. We miss all values from 2019. Just substitute with ones from 2018. For countries with few observations in general and no MAR record we are just going to use year average (not many better options).
+
+```{r}
+table(is.na(X$MAR) & X$time %% 1 == 0 & X$time !=2019, X$geo)
+
+for (i in 1:nrow(X)) {
+  year <- X$time[i]
+  country <- X$geo[i]
+  if (country %in% c("AL", "GE", "IS", "LI", "LU", "TR", "UA")) {
+      X[i, "MAR"] <- mean(X[X$time==year,"MAR"],na.rm=T)
+  }
+  if (year == 2019) {
+    X[i, "MAR"] <- X[X$time == 2018 & X$geo == country, "MAR"]
+  }
+}
+
+X[X$geo == "BA" & X$time %in% c(2010:2012), "MAR"] <- X[X$geo == "BA" & X$time == 2013, "MAR"]
+
+X[X$geo == "ME" & X$time %in% c(2011:2012), "MAR"] <- X[X$geo == "ME" & X$time == 2013, "MAR"]
+
+X[X$geo == "SI" & X$time %in% c(2000:2001), "MAR"] <- X[X$geo == "SI" & X$time == 2002, "MAR"]
+```
+
+Now, time to fill mid-year values for features missing. First we work with countries that do have all year values for electricity price.
+
+```{r}
+table(X$geo)
+
+for (i in 1:nrow(X)) {
+  year <- X$time[i]
+  country <- X$geo[i]
+  if (year %% 1 != 0)
+    for (col in c("DEP", "CON", "EMI", "MAR", "REN")) {
+      prev <- X[X$time==(year-0.5) & X$geo==country, col]
+      after <- X[X$time==(year+0.5) & X$geo==country, col]
+      X[i, col] <- mean(c(prev,after),na.rm=T)
+    }
+}
+
+X$MAR <- round(X$MAR,1)
+X$GAS <- round(X$GAS,2)
+X$CON <- round(X$CON,0)
+X$EMI <- round(X$EMI,1)
+X$GDP <- round(X$GDP,0)
+X$REN <- round(X$REN,2)
+X$DEP <- round(X$DEP,1)
+X$MAR <- round(X$MAR,1)
+
+write.csv(X, "DAT.csv", row.names=F)
+```
