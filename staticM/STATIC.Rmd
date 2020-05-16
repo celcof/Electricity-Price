@@ -1,0 +1,247 @@
+---
+title: "FLOW"
+author: "Francesco Cabras"
+date: "21 April 2020"
+output:
+  html_document:
+    df_print: paged
+---
+
+Only country variability.
+
+```{R}
+COU <- lm(PRI ~ geo, D)
+summary(COU)$r.squared
+```
+
+83.5% of the variability is due to differences between member states.
+
+Simple linear model.
+
+```{R}
+LM1 <- lm(PRI ~ DEP + CON + GDP + OIL + REN + NUC + EMI + MAR + geo, D)
+summary(LM1)$r.squared
+```
+
+Possible problems with assumptions, however. 
+
+```{r}
+plot(LM1)
+```
+
+We expect nuclear production not to have a gaussian distribution, since most countries do not have nuclear reactors.
+
+```{r}
+ggdensity(D$NUC, main = "Density function NUC", xlab = "Nuclear Capacity")
+```
+
+Doesn't look gaussian at all. However, linear models do not require the independent variables to be bell-shaped, so should be ok.
+
+Problem with some observations, specifically 116 and 144, which are records of Cyprus in 2012 and 2013.
+In these two years the price of electricity skyrocketed for reasons that our model is not able to figure out (i.e., debt crisis).
+
+```{r}
+D[116,]
+mean(D$PRI)
+D[D$geo=="CY","PRI"]
+D[c(116,144),]
+```
+
+To be checked:
+- residuals sum to zero
+- no autocorrelation for residuals
+- no perfect multicollinearity
+
+```{r}
+mean(LM1$residuals)
+lawstat::runs.test(LM1$residuals)
+vif(LM1)
+```
+The mean of the residuals is ok, however we have some problems for autocorrelation of residuals and multicollinearity. The Variance Inflator Formula results in not promising values for GDP and NUC. We should not worry too much about this, however: if we remove the country-specific dummy variables, the vif values for the model turn out to be normal. The multicollinearity risk is also refuted when looking at the correlation matrix for the continuous variables: the NUC feature is not strongly correlated with any of the other variables.
+
+```{r}
+library(corrplot)
+corrplot(cor(D[, 3:11]))
+```
+
+Correlation of GDP with Price and Quantity Consumed is understandable but why does NUC have such a high VIF value? Not clear.
+
+Overall check.
+
+```{r}
+gvlma::gvlma(LM1)
+```
+
+Alternative. Take the log of PRI, CON, GDP, OIL and EMI and remove the two CY records and another anomalous Hungarian value. Creation of a variable crisis: in 2011 and 2012 the price was higher because of an effect of the debt crisis that was going on at the time.
+
+```{r}
+D <- D[!(D$time == 2012 & D$geo == "CY"),]
+D <- D[!(D$time == 2013 & D$geo == "CY"),]
+D <- D[!(D$time == 2008 & D$geo == "HU"),]
+D$CRI <- ifelse(D$time == 2011 | D$time == 2012, 1, 0)
+LM2 <- lm(PRI ~ DEP + CON + GDP + OIL + REN + NUC + EMI + MAR + geo + CRI, D)
+gvlma::gvlma(LM2)
+```
+
+Better behaviour but still assumptions of linearity and of continuousness of my dependent variable are not met. We can check that the dependent variable does not follow a normal distribution by looking at this graph:
+
+```{r}
+ggdensity(D$PRI, main = "Density function PRI")
+```
+
+Also, normality of errors is not met.
+
+```{r}
+lawstat::runs.test(LM2$residuals)
+```
+
+Especially for the former, situation does not appear that dramatic. Situation does not look that bad, if we look at the plots for normality of errors and linearity assumption.
+
+```{r}
+plot(LM2, 1)
+ggdensity(LM2$residuals, main = "Density function Residuals")
+```
+
+Probably we should not be too worried, however. As taken from https://discovery.ucl.ac.uk/id/eprint/10070182/1/Schmidt_UCL_depos_JCE2018.pdf, " large sample size settings linear regression models are fairly robust to
+violations of the normality assumption and hence arbitrary - bias inducing - outcome
+transformations are usually unnecessary. "
+
+This paper suggests that torturing the data for meeting the normality of error assumption usually makes things worse (when sample size is large enough, which means at least about 10 observations per parameter).
+
+Finally, we also take the square root of the dependent variable, we manage to pass all tests.
+
+```{r}
+LM3 <- lm(sqrt(PRI) ~ DEP + CON + GDP + OIL + REN + NUC + EMI + MAR + geo + CRI, D)
+gvlma::gvlma(LM3)
+```
+
+The dependent variable seems to follow the gaussian distribution a little bit more.
+
+```{r}
+ggdensity(sqrt(D$PRI), main = "Density function PRI", xlab = "Electricity Price")
+```
+
+Subset selection. We want to maximize adjusted R squared and minimize cp and bic.
+
+```{R}
+library(leaps)
+LM3 <- regsubsets(sqrt(PRI) ~ DEP + CON + GDP + OIL + REN + EMI + MAR + geo + NUC + CRI, D, nvmax = 36)
+which.max(summary(LM3)$adjr2)
+which.min(summary(LM3)$bic)
+which.min(summary(LM3)$cp)
+```
+
+Optimal values for adjusted R squared and cp are obtained with 32 values while 27 variables are enough for bic. MAR, NUC and OIL are dropped. Rather than using proxies for test error, let us directly compute this error through validation set approach.
+
+```{R}
+train <- (D$time < 2015)
+test <- (!train)
+```
+
+Simple linear regression on train now. To compare accuracies of models we are going to use Mean Absolute Error (for interpretability reasons). Since our dependent variable is measured on a square root scale we have to have to square prediction vectors.
+
+```{R}
+tLM <- regsubsets(sqrt(PRI) ~ DEP + CON + GDP + OIL + REN + EMI + MAR + geo + NUC + CRI, D, subset=train, nvmax = 36)
+test.mat <- model.matrix(sqrt(PRI) ~ DEP + CON + GDP + OIL + REN + EMI + MAR + geo + NUC + CRI, data=D[test,])
+val.errors <- rep(NA, 36)
+for (i in 1:36){
+  coefi <- coef(tLM, id=i)
+  pred <- test.mat[,names(coefi)] %*% coefi
+  val.errors[i] <- mean(abs(D$PRI[test] - pred^2))
+}
+which.min(val.errors)
+val.errors[which.min(val.errors)]
+coef(tLM, which.min(val.errors))
+```
+
+Now, time for ridge regression.
+
+```{r}
+x <- model.matrix(sqrt(PRI) ~ DEP + CON + GDP + OIL + REN + EMI + MAR + geo + NUC + CRI, D)[,-1]
+y <- D$PRI
+set.seed(35)
+ridge <- cv.glmnet(x[train,], sqrt(y[train]), alpha=0, standardize=T)
+bestlam <- min(ridge$lambda)
+```
+
+What is the test average difference between the prediction and the actual price of electricity?
+
+```{r}
+ridge.pred <- predict(ridge, s=bestlam, newx=x[test,])
+mean(abs((ridge.pred)^2 - y[test]))
+```
+
+Coefficients.
+
+```{r}
+predict(ridge, type="coefficients", s=bestlam)[1:25,]
+```
+
+Time for lasso.
+
+```{r}
+lasso.mod <- glmnet(x[train,], sqrt(y[train]), alpha=1)
+plot(lasso.mod)
+```
+
+Let us look for the best value of the parameter lambda (shrinkage).
+
+```{r}
+set.seed(35)
+cv.out <- cv.glmnet(x[train,], sqrt(y[train]), alpha=1)
+bestlam <- cv.out$lambda.min
+pred <- predict(lasso.mod, s=bestlam, newx=x[test,])
+mean(abs(pred^2 - y[test]))
+```
+
+How many features is the model including?
+
+```{r, warning=F}
+C <- as.vector(coef(cv.out, bestlam))
+length(C[C != 0])
+```
+
+All features are kept in the model (weird?).
+
+```{r}
+set.seed(35)
+obj.escv <- escv.glmnet(x[train,], sqrt(y[train]))
+obj <- Lasso(x[train,], sqrt(y[train]), lambda = obj.escv$lambda.cv)
+pred <- mypredict(obj, newx = x[test,])
+mean(abs((pred)^2 - y[test]))
+```
+
+Similar result with different algorithm, so maybe not that weird.
+
+Let us instead measure performance of a simple linear model with only the geographical component.
+
+As already explained, square root transformation is used because lighten the weight on the model of some high leverage points. But let's see what happens with a lasso with no log transformation applied.
+
+```{r}
+x <- model.matrix(PRI ~ DEP + CON + GDP + OIL + REN + EMI + MAR + geo + NUC + CRI, D)[,-1]
+lasso.mod <- glmnet(x[train,], y[train], alpha=1)
+set.seed(35)
+cv.out <- cv.glmnet(x[train,], y[train], alpha=1)
+bestlam <- cv.out$lambda.min
+pred <- predict(lasso.mod, s=bestlam, newx=x[test,])
+mean(abs(pred - y[test]))
+```
+
+In this case, we would have a mean absolute error, which would outperform all previous algorithms.
+
+However, even better, simple lm with variables through with subset selection:
+
+```{r}
+tLM <- regsubsets(PRI ~ DEP + CON + GDP + OIL + REN + EMI + MAR + geo + NUC + CRI, D, subset=train, nvmax = 36)
+test.mat <- model.matrix(PRI ~ DEP + CON + GDP + OIL + REN + EMI + MAR + geo + NUC + CRI, data=D[test,])
+val.errors <- rep(NA, 36)
+for (i in 1:36){
+  coefi <- coef(tLM, id=i)
+  pred <- test.mat[,names(coefi)] %*% coefi
+  val.errors[i] <- mean(abs(D$PRI[test] - pred))
+}
+which.min(val.errors)
+val.errors[which.min(val.errors)]
+```
+
+A sign that maybe that maybe those log transformation could be not best decision.
