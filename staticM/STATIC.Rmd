@@ -7,118 +7,165 @@ output:
     df_print: paged
 ---
 
-Only country variability.
-
-```{R}
-COU <- lm(PRI ~ geo, D)
-summary(COU)$r.squared
+```{r, echo=F}
+library(ggpubr)
+library(car)
+library(eurostat)
+library(HDCI)
+library(caret)
+library(scales)
+library(glmnet)
+library(corrplot)
+library(wbstats)
+library(lmtest)
+library(sandwich)
+library(robustbase)
 ```
 
-83.5% of the variability is due to differences between member states.
+```{r}
+D <- read.csv("DAT.csv")
+```
 
 Simple linear model.
 
 ```{R}
-LM1 <- lm(PRI ~ DEP + CON + GDP + OIL + REN + NUC + EMI + MAR + geo, D)
-summary(LM1)$r.squared
+LM <- lm(log(PRI) ~ log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR, D)
+summary(LM)
 ```
 
-Possible problems with assumptions, however. 
+In the case of a random effects model, we find that, interestingly REN is strongly significant and has a negative effect on the price. Instead, when we deal with a fixed effects model, the effect is not significant but with a positive coefficient. This may result from the fact that countries with high share of renewable energy have a lower dummy.
+
+We may want to use part of the geographical information by including a dummy variable that indicates the belonging to the European Union (i.e. being one of the 28 member countries).
 
 ```{r}
-plot(LM1)
+for (row in 1:nrow(D)) {
+  if (as.character(D[row, "geo"]) %in% c("BE", "EL", "LT", "PT", "BG", "ES", "LU", "RO", "CZ", "FR", "HU", "SI", "DK", "HR", "MT", "SK", "DE", "IT", "NL", "FI", "EE", "CY", "AT", "SE", "IE", "LV", "PL", "UK")) {
+    D$EU[row] <- 1
+  }
+  else { D$EU[row] <- 0 }
+}
+
+
+LMe <- lm(log(PRI) ~ log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR + EU, D)
+summary(LMe)
 ```
 
-We expect nuclear production not to have a gaussian distribution, since most countries do not have nuclear reactors.
+Also dependency becomes significant when we control for EU belonging.
 
 ```{r}
-ggdensity(D$NUC, main = "Density function NUC", xlab = "Nuclear Capacity")
-```
+DP <- D
 
-Doesn't look gaussian at all. However, linear models do not require the independent variables to be bell-shaped, so should be ok.
+for (row in 1:nrow(DP)) {
+  if (as.character(DP[row, "geo"]) %in% c("BG", "RO", "CZ", "HU", "HR", "SE", "DK", "PL", "UK")) {
+    DP$EU[row] <- "EU"
+}
+  else if (as.character(DP[row, "geo"]) %in% c("NO", "IS", "LI")) {
+    DP$EU[row] <- "EFTA"
+  }
+  else if (as.character(DP[row, "geo"]) %in% c("BE", "EL", "LT", "PT", "ES", "LU", "FR", "SI", "MT", "SK", "DE", "IT", "NL", "FI", "EE", "CY", "AT", "IE", "LV")){
+    DP$EU[row] <- "EA"
+    }
+}
+rm(row)
 
-Problem with some observations, specifically 116 and 144, which are records of Cyprus in 2012 and 2013.
-In these two years the price of electricity skyrocketed for reasons that our model is not able to figure out (i.e., debt crisis).
-
-```{r}
-D[116,]
-mean(D$PRI)
-D[D$geo=="CY","PRI"]
-D[c(116,144),]
+DP$EU <- as.factor(DP$EU)
+LMeP <- lm(log(PRI) ~ log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR + EU, DP)
+summary(LMeP)
 ```
 
 To be checked:
 - residuals sum to zero
 - no autocorrelation for residuals
 - no perfect multicollinearity
+- homoskedasticity
 
 ```{r}
-mean(LM1$residuals)
-lawstat::runs.test(LM1$residuals)
-vif(LM1)
-```
-The mean of the residuals is ok, however we have some problems for autocorrelation of residuals and multicollinearity. The Variance Inflator Formula results in not promising values for GDP and NUC. We should not worry too much about this, however: if we remove the country-specific dummy variables, the vif values for the model turn out to be normal. The multicollinearity risk is also refuted when looking at the correlation matrix for the continuous variables: the NUC feature is not strongly correlated with any of the other variables.
-
-```{r}
-library(corrplot)
-corrplot(cor(D[, 3:11]))
+par(mfrow = c(2, 2))
+plot(LMeP)
 ```
 
-Correlation of GDP with Price and Quantity Consumed is understandable but why does NUC have such a high VIF value? Not clear.
-
-Overall check.
+What happens with observation 956 and 996?
 
 ```{r}
-gvlma::gvlma(LM1)
+D[c(956,996),]
 ```
 
-Alternative. Take the log of PRI, CON, GDP, OIL and EMI and remove the two CY records and another anomalous Hungarian value. Creation of a variable crisis: in 2011 and 2012 the price was higher because of an effect of the debt crisis that was going on at the time.
+Price is very low because Ukraine may be considered as a not yet very developed country where, also, energy is very easily obtainable. Nothing too weird here, we do not consider them as outliers.
 
 ```{r}
-D <- D[!(D$time == 2012 & D$geo == "CY"),]
-D <- D[!(D$time == 2013 & D$geo == "CY"),]
-D <- D[!(D$time == 2008 & D$geo == "HU"),]
-D$CRI <- ifelse(D$time == 2011 | D$time == 2012, 1, 0)
-LM2 <- lm(PRI ~ DEP + CON + GDP + OIL + REN + NUC + EMI + MAR + geo + CRI, D)
-gvlma::gvlma(LM2)
+mean(LMeP$residuals)
 ```
 
-Better behaviour but still assumptions of linearity and of continuousness of my dependent variable are not met. We can check that the dependent variable does not follow a normal distribution by looking at this graph:
+The mean of the residuals is approximately zero.
 
 ```{r}
-ggdensity(D$PRI, main = "Density function PRI")
+lawstat::runs.test(LMeP$residuals)
 ```
 
-Also, normality of errors is not met.
+There seems to be no problem with autocorrelation of residuals.
 
 ```{r}
-lawstat::runs.test(LM2$residuals)
+vif(LMeP)
 ```
 
-Especially for the former, situation does not appear that dramatic. Situation does not look that bad, if we look at the plots for normality of errors and linearity assumption.
+Variance Inflator Formula also ok.
 
 ```{r}
-plot(LM2, 1)
-ggdensity(LM2$residuals, main = "Density function Residuals")
+plot(LMeP,1)
 ```
 
-Probably we should not be too worried, however. As taken from https://discovery.ucl.ac.uk/id/eprint/10070182/1/Schmidt_UCL_depos_JCE2018.pdf, " large sample size settings linear regression models are fairly robust to
-violations of the normality assumption and hence arbitrary - bias inducing - outcome
-transformations are usually unnecessary. "
+The lower the fitted value, the higher the variance in the residual: we detect a certain amount of heteroskedasticity, confirmed by the value of the bptest.
 
-This paper suggests that torturing the data for meeting the normality of error assumption usually makes things worse (when sample size is large enough, which means at least about 10 observations per parameter).
-
-Finally, we also take the square root of the dependent variable, we manage to pass all tests.
+To try to solve it, box-cox transformation of the dependent variable does not solve the problem.
 
 ```{r}
-LM3 <- lm(sqrt(PRI) ~ DEP + CON + GDP + OIL + REN + NUC + EMI + MAR + geo + CRI, D)
-gvlma::gvlma(LM3)
+S <- DP
+U <- caret::BoxCoxTrans(S$PRI)
+S <- cbind(S, nP=predict(U, S$PRI))
+LMeB <- lm(nP ~ log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR + EU, S)
+bptest(LMeB)
+rm(S, U)
 ```
 
-The dependent variable seems to follow the gaussian distribution a little bit more.
+Let us deviate from ordinary least squares to use a weighted least squares model.
 
 ```{r}
-ggdensity(sqrt(D$PRI), main = "Density function PRI", xlab = "Electricity Price")
+DP$resi <- LMeP$residuals
+LMeR <- lm(log(resi^2) ~ log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR + EU, DP)
+
+DP$varFunc <- exp(LMeR$fitted.values)
+LMgls <- lm(log(PRI) ~ DEP + log(GAS) + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR + EU, weights = 1/sqrt(varFunc), DP)
+summary(LMgls)
+```
+
+Performance slightly improved as measured by r squared, however let us check plot and bp test.
+
+```{r}
+plot(LMgls)
+bptest(LMgls)
+```
+
+Bad news. Same result if we use an already-prepared robust linear model package.
+
+```{r}
+lmrobfit <- lmrob(log(PRI) ~ DEP + log(GAS) + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR + EU, DP)
+bptest(lmrobfit)
+rm(lmrobfit)
+```
+
+Bell-shape form of the dependent variable.
+
+```{r}
+ggdensity(log(DP$PRI), main = "Density function PRI")
+```
+
+Let us
+
+```{r}
+qqnorm(residuals(LMgls), ylab="Residuals")
+qqline(residuals(LMgls))
+hist(residuals(LMgls))
+shapiro.test(residuals(LMgls))
 ```
 
 Subset selection. We want to maximize adjusted R squared and minimize cp and bic.

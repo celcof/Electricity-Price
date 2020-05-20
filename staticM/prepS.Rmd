@@ -411,5 +411,19 @@ X$REN <- round(X$REN,2)
 X$DEP <- round(X$DEP,1)
 X$MAR <- round(X$MAR,1)
 
+rm(historic1, historic2, country, after, col, i, outside, prev, year)
+```
+
+This system fails to work out only for albania in 2018.5. Just copy and paste from 2017 for missing values.
+
+```{r}
+X[X$geo=="AL" & X$time == 2018.5, "DEP"] <- X[X$geo=="AL" & X$time == 2017, "DEP"]
+X[X$geo=="AL" & X$time == 2018.5, "CON"] <- X[X$geo=="AL" & X$time == 2017, "CON"]
+X[X$geo=="AL" & X$time == 2018.5, "EMI"] <- X[X$geo=="AL" & X$time == 2017, "EMI"]
+X[X$geo=="AL" & X$time == 2018.5, "MAR"] <- X[X$geo=="AL" & X$time == 2017, "MAR"]
+X[X$geo=="AL" & X$time == 2018.5, "REN"] <- X[X$geo=="AL" & X$time == 2017, "REN"]
+
+sum(is.na(X))
+
 write.csv(X, "DAT.csv", row.names=F)
 ```
