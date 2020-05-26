@@ -160,10 +160,34 @@ train <- (DP$time < 2015)
 test <- (!train)
 ```
 
-Simple linear regression on train now. To compare accuracies of models we are going to use Mean Absolute Error (for interpretability reasons). Since our dependent variable is measured on a square root scale we have to have to square prediction vectors.
+Simple linear regression on train now. To compare accuracies of models we are going to use Mean Absolute Error (for interpretability reasons). Since our dependent variable is measured on a log scale we have to have to exponentiate prediction vectors. 
+
+```{r}
+LMeP <- lm(log(PRI) ~ log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR + EU, DP, subset=train)
+pred <- predict(LMeP, DP[test,])
+mean(abs(DP$PRI[test] - exp(pred)))
+```
+
+Performance, instead, with weighted regression.
+
+```{r}
+DP$resi[train] <- LMeP$residuals
+LMeR <- lm(log(resi^2) ~ log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR + EU, DP, subset=train)
+
+DP$varFunc[train] <- exp(LMeR$fitted.values)
+LMgls <- lm(log(PRI) ~ log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR + EU, weights = 1/sqrt(varFunc), DP, subset=train)
+pred <- predict(LMgls, DP[test,])
+mean(abs(DP$PRI[test] - exp(pred)))
+rm(LMeR)
+```
+
+Performance better with weighted regression, confirming our hypothesis that ordinary least squares in this context may not be optimal. 
+
+We can now now check that the best model is the one including all variables.
 
 ```{R}
-tLM <- regsubsets(log(PRI) ~ log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR + EU, DP, subset=train, nvmax = 11)
+W <- 1/sqrt(DP$varFunc[train])
+tLM <- regsubsets(log(PRI) ~ log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR + EU, DP[train,], weights=W, nvmax = 11)
 test.mat <- model.matrix(log(PRI) ~ log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR + EU, data=DP[test,])
 val.errors <- rep(NA, 11)
 for (i in 1:11){
@@ -182,7 +206,7 @@ Now, time for ridge regression.
 x <- model.matrix(log(PRI) ~ log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR + EU, DP)[,-1]
 y <- DP$PRI
 set.seed(35)
-ridge <- cv.glmnet(x[train,], log(y[train]), alpha=0, standardize=T)
+ridge <- cv.glmnet(x[train,], log(y[train]), alpha=0, weights=W, standardize=T)
 bestlam <- min(ridge$lambda)
 ```
 
@@ -202,7 +226,7 @@ predict(ridge, type="coefficients", s=bestlam)
 Time for lasso.
 
 ```{r}
-lasso.mod <- glmnet(x[train,], log(y[train]), alpha=1)
+lasso.mod <- glmnet(x[train,], log(y[train]), alpha=1, weights=W)
 plot(lasso.mod)
 ```
 
@@ -210,7 +234,7 @@ Let us look for the best value of the parameter lambda (shrinkage).
 
 ```{r}
 set.seed(35)
-cv.out <- cv.glmnet(x[train,], sqrt(y[train]), alpha=1)
+cv.out <- cv.glmnet(x[train,], sqrt(y[train]), alpha=1, weights=W)
 bestlam <- cv.out$lambda.min
 pred <- predict(lasso.mod, s=bestlam, newx=x[test,])
 mean(abs(exp(pred) - y[test]))
@@ -223,25 +247,26 @@ C <- as.vector(coef(cv.out, bestlam))
 length(C[C != 0])
 ```
 
-All features are kept in the model (weird?).
-
-```{r}
-set.seed(35)
-obj.escv <- escv.glmnet(x[train,], sqrt(y[train]))
-obj <- Lasso(x[train,], log(y[train]), lambda = obj.escv$lambda.cv)
-pred <- mypredict(obj, newx = x[test,])
-mean(abs(exp(pred) - y[test]))
-```
-
-Similar result with different algorithm, so maybe not that weird.
+All features are kept in the model.
 
 This looks like a good result, however, interactions and polynomials of the variables were not taken into consideration.
 
-Model selection with polynomials and interactions.
+Model selection with interactions. This time we start from no weights.
 
 ```{R}
-tLM <- regsubsets(log(PRI) ~ (log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR)^2 + EU, DP, subset=train, nvmax = 30, really.big = T)
+LMeQ <- lm(log(PRI) ~ (log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR)^2 + EU, DP, subset=train)
+DP$resi[train] <- LMeQ$residuals
+LMeR <- lm(log(resi^2) ~ (log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR)^2 + EU, DP, subset=train)
+
+DP$varFunc[train] <- exp(LMeR$fitted.values)
+rm(LMeR)
+
+W <- 1/sqrt(DP$varFunc[train])
+
+tLM <- regsubsets(log(PRI) ~ (log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR)^2 + EU, DP[train,], nvmax = 30, really.big = T, weights=W)
+
 test.mat <- model.matrix(log(PRI) ~ (log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR)^2 + EU, data=DP[test,])
+
 val.errors <- rep(NA, 30)
 for (i in 1:30){
   coefi <- coef(tLM, id=i)
@@ -253,6 +278,37 @@ val.errors[which.min(val.errors)]
 coef(tLM, which.min(val.errors))
 ```
 
+Model selection with interactions kept from previous model and also adding polynomials.
+
+```{R}
+LMeQ <- lm(log(PRI) ~ poly(log(GAS),2) + poly(DEP,2) + poly(log(CON),2) + poly(INF,2) + poly(REN,2) + poly(log(GDP),2) + poly(log(OIL),2) + poly(MAR,2) + EU, DP, subset=train)
+DP$resi[train] <- LMeQ$residuals
+LMeR <- lm(log(PRI) ~ poly(log(GAS),2) + poly(DEP,2) + poly(log(CON),2) + poly(INF,2) + poly(REN,2) + poly(log(GDP),2) + poly(log(OIL),2) + poly(MAR,2) + EU, DP, subset=train)
+
+DP$varFunc[train] <- exp(LMeR$fitted.values)
+rm(LMeR)
+
+W <- 1/sqrt(DP$varFunc[train])
+
+tLM <- regsubsets(log(PRI) ~ poly(log(GAS),2) + poly(DEP,2) + poly(log(CON),2) + poly(INF,2) + poly(REN,2) + poly(log(GDP),2) + poly(log(OIL),2) + poly(MAR,2) + EU, DP[train,], nvmax = 18, weights=W)
+
+test.mat <- model.matrix(log(PRI) ~ poly(log(GAS),2) + poly(DEP,2) + poly(log(CON),2) + poly(INF,2) + poly(REN,2) + poly(log(GDP),2) + poly(log(OIL),2) + poly(MAR,2) + EU, data=DP[test,])
+
+val.errors <- rep(NA, 18)
+for (i in 1:18){
+  coefi <- coef(tLM, id=i)
+  pred <- test.mat[,names(coefi)] %*% coefi
+  val.errors[i] <- mean(abs(DP$PRI[test] - exp(pred)))
+}
+which.min(val.errors)
+val.errors[which.min(val.errors)]
+coef(tLM, which.min(val.errors))
+```
+
+In this case, we fail in improving our model, probably because there are too many parameters.
+Before moving to lasso with more parameters, we should also remember that these model selections are being computed with ordinary least squares, while originally we would prefer to use weighted least squares.
+
+We try back our best performing model, this time with weights.
 
 ```{r}
 x <- model.matrix(log(PRI) ~ poly(log(GAS),2) + poly(DEP,2) + poly(log(CON),2) + poly(INF,2) + poly(REN,2) + poly(log(GDP)) + poly(log(OIL),2) + poly(MAR,2)^2 + EU, DP)[,-1]
