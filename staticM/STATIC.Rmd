@@ -1,0 +1,323 @@
+---
+title: "FLOW"
+author: "Francesco Cabras"
+date: "21 April 2020"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r, echo=F}
+library(ggpubr)
+library(car)
+library(eurostat)
+library(HDCI)
+library(caret)
+library(scales)
+library(glmnet)
+library(corrplot)
+library(wbstats)
+library(lmtest)
+library(sandwich)
+library(robustbase)
+```
+
+```{r}
+D <- read.csv("DAT.csv")
+```
+
+Simple linear model.
+
+```{R}
+LM <- lm(log(PRI) ~ log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR, D)
+summary(LM)
+```
+
+In the case of a random effects model, we find that, interestingly REN is strongly significant and has a negative effect on the price. Instead, when we deal with a fixed effects model, the effect is not significant but with a positive coefficient. This may result from the fact that countries with high share of renewable energy have a lower dummy.
+
+We may want to use part of the geographical information by including a dummy variable that indicates the belonging to the European Union (i.e. being one of the 28 member countries).
+
+```{r}
+for (row in 1:nrow(D)) {
+  if (as.character(D[row, "geo"]) %in% c("BE", "EL", "LT", "PT", "BG", "ES", "LU", "RO", "CZ", "FR", "HU", "SI", "DK", "HR", "MT", "SK", "DE", "IT", "NL", "FI", "EE", "CY", "AT", "SE", "IE", "LV", "PL", "UK")) {
+    D$EU[row] <- 1
+  }
+  else { D$EU[row] <- 0 }
+}
+
+
+LMe <- lm(log(PRI) ~ log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR + EU, D)
+summary(LMe)
+```
+
+Also dependency becomes significant when we control for EU belonging.
+
+```{r}
+DP <- D
+
+for (row in 1:nrow(DP)) {
+  if (as.character(DP[row, "geo"]) %in% c("BG", "RO", "CZ", "HU", "HR", "SE", "DK", "PL", "UK")) {
+    DP$EU[row] <- "EU"
+}
+  else if (as.character(DP[row, "geo"]) %in% c("NO", "IS", "LI")) {
+    DP$EU[row] <- "EFTA"
+  }
+  else if (as.character(DP[row, "geo"]) %in% c("BE", "EL", "LT", "PT", "ES", "LU", "FR", "SI", "MT", "SK", "DE", "IT", "NL", "FI", "EE", "CY", "AT", "IE", "LV")){
+    DP$EU[row] <- "EA"
+    }
+}
+rm(row)
+
+DP$EU <- as.factor(DP$EU)
+LMeP <- lm(log(PRI) ~ log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR + EU, DP)
+summary(LMeP)
+```
+
+To be checked:
+- residuals sum to zero
+- no autocorrelation for residuals
+- no perfect multicollinearity
+- homoskedasticity
+
+```{r}
+par(mfrow = c(2, 2))
+plot(LMeP)
+```
+
+What happens with observation 956 and 996?
+
+```{r}
+D[c(956,996),]
+```
+
+Price is very low because Ukraine may be considered as a not yet very developed country where, also, energy is very easily obtainable. Nothing too weird here, we do not consider them as outliers.
+
+```{r}
+lawstat::runs.test(LMeP$residuals)
+```
+
+There seems to be no problem with autocorrelation of residuals.
+
+```{r}
+vif(LMeP)
+```
+
+Variance Inflator Formula also ok.
+
+```{r}
+plot(LMeP,1)
+```
+
+The lower the fitted value, the higher the variance in the residual: we detect a certain amount of heteroskedasticity, confirmed by the value of the bptest.
+
+To try to solve it, box-cox transformation of the dependent variable does not solve the problem.
+
+```{r}
+S <- DP
+U <- caret::BoxCoxTrans(S$PRI)
+S <- cbind(S, nP=predict(U, S$PRI))
+LMeB <- lm(nP ~ log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR + EU, S)
+bptest(LMeB)
+rm(S, U)
+```
+
+Still heteroskedasticity detected.
+Let us deviate from ordinary least squares to use a weighted least squares model.
+
+```{r}
+DP$resi <- LMeP$residuals
+LMeR <- lm(log(resi^2) ~ log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR + EU, DP)
+
+DP$varFunc <- exp(LMeR$fitted.values)
+LMgls <- lm(log(PRI) ~ log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR + EU, weights = 1/sqrt(varFunc), DP)
+summary(LMgls)
+rm(LMeR)
+```
+
+Let us now proceed with a coefficients' comparison between LMeP and LMgls.
+
+```{r}
+print("Coefficients LM")
+coef(LMeP)
+print("Coefficients weighted regressions")
+coef(LMgls)
+```
+
+Subset selection. We want to maximize adjusted R squared and minimize cp and bic.
+
+```{R}
+library(leaps)
+LM3 <- regsubsets(log(PRI) ~ log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR + EU, DP, nvmax = 12)
+which.max(summary(LM3)$adjr2)
+which.min(summary(LM3)$bic)
+which.min(summary(LM3)$cp)
+```
+
+Optimal values for adjusted R squared and cp are obtained with 32 values while 27 variables are enough for bic. MAR, NUC and OIL are dropped. Rather than using proxies for test error, let us directly compute this error through validation set approach.
+
+```{R}
+train <- (DP$time < 2015)
+test <- (!train)
+```
+
+Simple linear regression on train now. To compare accuracies of models we are going to use Mean Absolute Error (for interpretability reasons). Since our dependent variable is measured on a log scale we have to have to exponentiate prediction vectors. 
+
+```{r}
+LMeP <- lm(log(PRI) ~ log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR + EU, DP, subset=train)
+pred <- predict(LMeP, DP[test,])
+mean(abs(DP$PRI[test] - exp(pred)))
+```
+
+Performance, instead, with weighted regression.
+
+```{r}
+DP$resi[train] <- LMeP$residuals
+LMeR <- lm(log(resi^2) ~ log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR + EU, DP, subset=train)
+
+DP$varFunc[train] <- exp(LMeR$fitted.values)
+LMgls <- lm(log(PRI) ~ log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR + EU, weights = 1/sqrt(varFunc), DP, subset=train)
+pred <- predict(LMgls, DP[test,])
+mean(abs(DP$PRI[test] - exp(pred)))
+rm(LMeR)
+```
+
+Performance better with weighted regression, confirming our hypothesis that ordinary least squares in this context may not be optimal. 
+
+We can now now check that the best model is the one including all variables.
+
+```{R}
+W <- 1/sqrt(DP$varFunc[train])
+tLM <- regsubsets(log(PRI) ~ log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR + EU, DP[train,], weights=W, nvmax = 11)
+test.mat <- model.matrix(log(PRI) ~ log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR + EU, data=DP[test,])
+val.errors <- rep(NA, 11)
+for (i in 1:11){
+  coefi <- coef(tLM, id=i)
+  pred <- test.mat[,names(coefi)] %*% coefi
+  val.errors[i] <- mean(abs(DP$PRI[test] - exp(pred)))
+}
+which.min(val.errors)
+val.errors[which.min(val.errors)]
+coef(tLM, which.min(val.errors))
+```
+
+Now, time for ridge regression.
+
+```{r}
+x <- model.matrix(log(PRI) ~ log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR + EU, DP)[,-1]
+y <- DP$PRI
+set.seed(35)
+ridge <- cv.glmnet(x[train,], log(y[train]), alpha=0, weights=W, standardize=T)
+bestlam <- min(ridge$lambda)
+```
+
+What is the test average difference between the prediction and the actual price of electricity?
+
+```{r}
+ridge.pred <- predict(ridge, s=bestlam, newx=x[test,])
+mean(abs(exp(ridge.pred) - y[test]))
+```
+
+Coefficients.
+
+```{r}
+predict(ridge, type="coefficients", s=bestlam)
+```
+
+Time for lasso.
+
+```{r}
+lasso.mod <- glmnet(x[train,], log(y[train]), alpha=1, weights=W)
+plot(lasso.mod)
+```
+
+Let us look for the best value of the parameter lambda (shrinkage).
+
+```{r}
+set.seed(35)
+cv.out <- cv.glmnet(x[train,], sqrt(y[train]), alpha=1, weights=W)
+bestlam <- cv.out$lambda.min
+pred <- predict(lasso.mod, s=bestlam, newx=x[test,])
+mean(abs(exp(pred) - y[test]))
+```
+
+How many features is the model including?
+
+```{r, warning=F}
+C <- as.vector(coef(cv.out, bestlam))
+length(C[C != 0])
+```
+
+All features are kept in the model.
+
+This looks like a good result, however, interactions and polynomials of the variables were not taken into consideration.
+
+Model selection with interactions. This time we start from no weights.
+
+```{R}
+LMeQ <- lm(log(PRI) ~ (log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR)^2 + EU, DP, subset=train)
+DP$resi[train] <- LMeQ$residuals
+LMeR <- lm(log(resi^2) ~ (log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR)^2 + EU, DP, subset=train)
+
+DP$varFunc[train] <- exp(LMeR$fitted.values)
+rm(LMeR)
+
+W <- 1/sqrt(DP$varFunc[train])
+
+tLM <- regsubsets(log(PRI) ~ (log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR)^2 + EU, DP[train,], nvmax = 30, really.big = T, weights=W)
+
+test.mat <- model.matrix(log(PRI) ~ (log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR)^2 + EU, data=DP[test,])
+
+val.errors <- rep(NA, 30)
+for (i in 1:30){
+  coefi <- coef(tLM, id=i)
+  pred <- test.mat[,names(coefi)] %*% coefi
+  val.errors[i] <- mean(abs(DP$PRI[test] - exp(pred)))
+}
+which.min(val.errors)
+val.errors[which.min(val.errors)]
+coef(tLM, which.min(val.errors))
+```
+
+Model selection with interactions kept from previous model and also adding polynomials.
+
+```{R}
+LMeQ <- lm(log(PRI) ~ poly(log(GAS),2) + poly(DEP,2) + poly(log(CON),2) + poly(INF,2) + poly(REN,2) + poly(log(GDP),2) + poly(log(OIL),2) + poly(MAR,2) + EU, DP, subset=train)
+DP$resi[train] <- LMeQ$residuals
+LMeR <- lm(log(PRI) ~ poly(log(GAS),2) + poly(DEP,2) + poly(log(CON),2) + poly(INF,2) + poly(REN,2) + poly(log(GDP),2) + poly(log(OIL),2) + poly(MAR,2) + EU, DP, subset=train)
+
+DP$varFunc[train] <- exp(LMeR$fitted.values)
+rm(LMeR)
+
+W <- 1/sqrt(DP$varFunc[train])
+
+tLM <- regsubsets(log(PRI) ~ poly(log(GAS),2) + poly(DEP,2) + poly(log(CON),2) + poly(INF,2) + poly(REN,2) + poly(log(GDP),2) + poly(log(OIL),2) + poly(MAR,2) + EU, DP[train,], nvmax = 18, weights=W)
+
+test.mat <- model.matrix(log(PRI) ~ poly(log(GAS),2) + poly(DEP,2) + poly(log(CON),2) + poly(INF,2) + poly(REN,2) + poly(log(GDP),2) + poly(log(OIL),2) + poly(MAR,2) + EU, data=DP[test,])
+
+val.errors <- rep(NA, 18)
+for (i in 1:18){
+  coefi <- coef(tLM, id=i)
+  pred <- test.mat[,names(coefi)] %*% coefi
+  val.errors[i] <- mean(abs(DP$PRI[test] - exp(pred)))
+}
+which.min(val.errors)
+val.errors[which.min(val.errors)]
+coef(tLM, which.min(val.errors))
+```
+
+In this case, we fail in improving our model, probably because there are too many parameters.
+Before moving to lasso with more parameters, we should also remember that these model selections are being computed with ordinary least squares, while originally we would prefer to use weighted least squares.
+
+We try back our best performing model, this time with weights.
+
+```{r}
+x <- model.matrix(log(PRI) ~ poly(log(GAS),2) + poly(DEP,2) + poly(log(CON),2) + poly(INF,2) + poly(REN,2) + poly(log(GDP)) + poly(log(OIL),2) + poly(MAR,2)^2 + EU, DP)[,-1]
+lasso.mod <- glmnet(x[train,], log(y[train]), alpha=1)
+
+set.seed(35)
+cv.out <- cv.glmnet(x[train,], sqrt(y[train]), alpha=1)
+bestlam <- cv.out$lambda.min
+pred <- predict(lasso.mod, s=bestlam, newx=x[test,])
+mean(abs(exp(pred) - y[test]))
+```
+
