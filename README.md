@@ -1,5 +1,5 @@
-What are the differences in electricity household prices among european countries due to?
-There are some interesting differences in the price individuals pay depending on the country they reside in.
+What are the differences in electricity household prices among european countries due to?\
+There are some interesting differences in the price individuals pay depending on the country they reside in.\
 Is the membership to EU a factor? Do countries with a less liberalized electricity market pay less? Does the investment in renewables correspond to a rise in final price?
 
 # Data
