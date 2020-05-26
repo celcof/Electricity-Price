@@ -288,9 +288,9 @@ LMeR <- lm(log(PRI) ~ poly(log(GAS),2) + poly(DEP,2) + poly(log(CON),2) + poly(I
 DP$varFunc[train] <- exp(LMeR$fitted.values)
 rm(LMeR)
 
-W <- 1/sqrt(DP$varFunc[train])
+WW <- 1/sqrt(DP$varFunc[train])
 
-tLM <- regsubsets(log(PRI) ~ poly(log(GAS),2) + poly(DEP,2) + poly(log(CON),2) + poly(INF,2) + poly(REN,2) + poly(log(GDP),2) + poly(log(OIL),2) + poly(MAR,2) + EU, DP[train,], nvmax = 18, weights=W)
+tLM <- regsubsets(log(PRI) ~ poly(log(GAS),2) + poly(DEP,2) + poly(log(CON),2) + poly(INF,2) + poly(REN,2) + poly(log(GDP),2) + poly(log(OIL),2) + poly(MAR,2) + EU, DP[train,], nvmax = 18, weights=WW)
 
 test.mat <- model.matrix(log(PRI) ~ poly(log(GAS),2) + poly(DEP,2) + poly(log(CON),2) + poly(INF,2) + poly(REN,2) + poly(log(GDP),2) + poly(log(OIL),2) + poly(MAR,2) + EU, data=DP[test,])
 
@@ -303,19 +303,17 @@ for (i in 1:18){
 which.min(val.errors)
 val.errors[which.min(val.errors)]
 coef(tLM, which.min(val.errors))
+rm(WW)
 ```
 
-In this case, we fail in improving our model, probably because there are too many parameters.
-Before moving to lasso with more parameters, we should also remember that these model selections are being computed with ordinary least squares, while originally we would prefer to use weighted least squares.
-
-We try back our best performing model, this time with weights.
+We try our extended model with lasso.
 
 ```{r}
-x <- model.matrix(log(PRI) ~ poly(log(GAS),2) + poly(DEP,2) + poly(log(CON),2) + poly(INF,2) + poly(REN,2) + poly(log(GDP)) + poly(log(OIL),2) + poly(MAR,2)^2 + EU, DP)[,-1]
-lasso.mod <- glmnet(x[train,], log(y[train]), alpha=1)
+x <- model.matrix(log(PRI) ~ (log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR)^2 + EU, DP)[,-1]
+lasso.mod <- glmnet(x[train,], log(y[train]), alpha=1, weights=W)
 
 set.seed(35)
-cv.out <- cv.glmnet(x[train,], sqrt(y[train]), alpha=1)
+cv.out <- cv.glmnet(x[train,], sqrt(y[train]), alpha=1, weights=W)
 bestlam <- cv.out$lambda.min
 pred <- predict(lasso.mod, s=bestlam, newx=x[test,])
 mean(abs(exp(pred) - y[test]))
