@@ -26,7 +26,12 @@ library(robustbase)
 D <- read.csv("DAT.csv")
 ```
 
-Simple linear model.
+Simple linear model with country label.
+
+```{r}
+LMc <- lm(log(PRI) ~ geo + log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR, D)
+coef(LMc)[42:length(coef(LMc))]
+```
 
 ```{R}
 LM <- lm(log(PRI) ~ log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR, D)

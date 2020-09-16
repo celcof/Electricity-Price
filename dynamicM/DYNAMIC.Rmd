@@ -35,6 +35,9 @@ Experiments.
 We build our model.
 
 ```{r}
+train <- (C$time < 2015)
+test <- (!train)
+
 LM <- lm(PRI ~ GAS + DEP + CON + INF + EMI + MAR + REN + GDP + OIL, C, subset=train)
 summary(LM)
 ```
@@ -56,14 +59,15 @@ Observations 147 and 125, respectively the greatest and smallest, are likely to 
 
 ```{r}
 C <- C[-c(125,147),]
+
+train <- (C$time < 2015)
+test <- (!train)
+
 LM <- lm(log(PRI+1) ~ GAS + DEP + CON + INF + EMI + MAR + REN + GDP + OIL, C, subset=train)
 plot(LM)
 ```
 
-```{r}
-```
-
-Especially for the former, situation does not appear that dramatic. Situation does not look that bad, if we look at the plots for normality of errors and linearity assumption.
+Situation does not look that bad, if we look at the plots for normality of errors and linearity assumption.
 
 ```{r}
 bptest(LM)
@@ -75,9 +79,9 @@ To be checked:
 - no perfect multicollinearity
 
 ```{r}
-mean(LM1$residuals)
-lawstat::runs.test(LM1$residuals)
-vif(LM1)
+mean(LM$residuals)
+lawstat::runs.test(LM$residuals)
+vif(LM)
 ```
 
 The mean of the residuals is ok, however we have some problems for autocorrelation of residuals and multicollinearity. The Variance Inflator Formula results in not promising values for GDP and NUC. We should not worry too much about this, however: if we remove the country-specific dummy variables, the vif values for the model turn out to be normal. The multicollinearity risk is also refuted when looking at the correlation matrix for the continuous variables: the NUC feature is not strongly correlated with any of the other variables.
@@ -92,18 +96,17 @@ Correlation of GDP with Price and Quantity Consumed is understandable but why do
 Overall check.
 
 ```{r}
-gvlma::gvlma(LM1)
+gvlma::gvlma(LM)
 ```
 
 First of all: problem in the relationship between one or more of my independent variables with my dependent variable.
-
-Although all assumptions seem to be respected, performance is extremely bad.
 
 It is possible however, that there are simply too many variables: we should clarify which are important and which instead are not.
 
 ```{R}
 library(leaps)
-LM2 <- regsubsets(PRI ~ DEP + CON + GDP + OIL + REN + EMI + MAR + NUC + CRI + INF, C, nvmax = 36)
+nVar <- 8
+LM2 <- regsubsets(PRI ~ DEP + CON + GDP + OIL + REN + EMI + MAR + INF, C, nvmax = nVar)
 which.max(summary(LM2)$adjr2)
 which.min(summary(LM2)$bic)
 which.min(summary(LM2)$cp)
@@ -118,14 +121,13 @@ coef(LM2, 2)
 Simple linear regression on train now. To compare accuracies of models we are going to use Mean Absolute Error (for interpretability reasons). Since our dependent variable is measured on a square root scale we have to have to square prediction vectors.
 
 ```{R}
-nVar <- 10
-tLM <- regsubsets(PRI ~ DEP + CON + GDP + OIL + REN + EMI + MAR + NUC + CRI + INF, C, subset=train, nvmax = nVar)
-test.mat <- model.matrix(PRI ~ DEP + CON + GDP + OIL + REN + EMI + MAR + NUC + CRI + INF, data=C[test,])
+tLM <- regsubsets(PRI ~ DEP + CON + GDP + OIL + REN + EMI + MAR + INF, C, subset=train, nvmax = nVar)
+test.mat <- model.matrix(PRI ~ DEP + CON + GDP + OIL + REN + EMI + MAR + INF, data=C[test,])
 val.errors <- rep(NA, nVar)
 for (i in 1:nVar){
   coefi <- coef(tLM, id=i)
   pred <- test.mat[,names(coefi)] %*% coefi
-  val.errors[i] <- mean(abs(C$fPRI[test] - (C$pPRI[test] + pred)))
+  val.errors[i] <- mean(abs(C$PRI[test] - (C$PRI[test] + pred)))
 }
 which.min(val.errors)
 val.errors[which.min(val.errors)]
@@ -135,7 +137,7 @@ coef(tLM, which.min(val.errors))
 Now, time for ridge regression.
 
 ```{r}
-x <- model.matrix(PRI ~ DEP + CON + GDP + OIL + REN + EMI + MAR + INF + NUC + CRI, C)[,-1]
+x <- model.matrix(PRI ~ DEP + CON + GDP + OIL + REN + EMI + MAR + INF, C)[,-1]
 y <- C$PRI
 set.seed(35)
 ridge <- cv.glmnet(x[train,], y[train], alpha=0, standardize=T)
@@ -146,7 +148,7 @@ What is the test average difference between the prediction and the actual price 
 
 ```{r}
 ridge.pred <- predict(ridge, s=bestlam, newx=x[test,])
-mean(abs((C$pPRI[test] + ridge.pred) - C$fPRI[test]))
+mean(abs(ridge.pred - C$PRI[test]))
 ```
 
 Coefficients.
@@ -169,7 +171,7 @@ set.seed(35)
 cv.out <- cv.glmnet(x[train,], y[train], alpha=1)
 bestlam <- cv.out$lambda.min
 pred <- predict(lasso.mod, s=bestlam, newx=x[test,])
-mean(abs((C$pPRI[test] + pred)  - C$fPRI[test]))
+mean(abs(pred  - C$PRI[test]))
 ```
 
 How many features is the model including?
@@ -178,13 +180,3 @@ How many features is the model including?
 V <- as.vector(coef(cv.out, bestlam))
 length(V[V!= 0])
 ```
-
-Now comparison with a very simple linear model with final price as dependent variable and previous price as independent variable.
-
-```{r}
-LM3 <- lm(fPRI ~ pPRI, C, subset=train)
-mean(abs(C$fPRI[test] - predict(LM3, C)[test]))
-coef(LM3)
-```
-
-Slightly worse performance.

@@ -2,7 +2,9 @@
 title: "prepS"
 author: "Francesco Cabras"
 date: "12 May 2020"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r, echo=F}
@@ -14,6 +16,7 @@ library(caret)
 library(scales)
 library(glmnet)
 library(wbstats)
+library(hash)
 ```
 
 Take data from library eurostat. Start from the dependent variable.
