@@ -37,49 +37,39 @@ We build our model.
 ```{r}
 train <- (C$time < 2015)
 test <- (!train)
-
-LM <- lm(PRI ~ GAS + DEP + CON + INF + EMI + MAR + REN + GDP + OIL, C, subset=train)
-summary(LM)
 ```
 
-Possible problems with assumptions. 
-
-```{r}
-plot(LM)
-```
-
-In this case, there are certain observations that are having a very strong effect on the model.
+There are certain observations that are show quite a weird behaviour.
 Let us go through them. 
 
 ```{r}
 C[c(125,147),]
 ```
 
-Observations 147 and 125, respectively the greatest and smallest, are likely to be mistaken, since they both come from Norway in 2003 and 2003.5: we simply decide to ignore them and remove from dataset.
+Observations 147 and 125, respectively the greatest and smallest, are likely to be mistaken, since they both come from Norway in 2003 and 2003.5: we simply decide to exclude them both.
 
 ```{r}
 C <- C[-c(125,147),]
 
 train <- (C$time < 2015)
 test <- (!train)
+```
 
-LM <- lm(log(PRI+1) ~ GAS + DEP + CON + INF + EMI + MAR + REN + GDP + OIL, C, subset=train)
+```{r}
+LM <- lm(PRI ~ GAS + DEP + CON + INF + EMI + MAR + REN + GDP + OIL, C, subset=train)
+
+summary(LM)
 plot(LM)
 ```
 
 Situation does not look that bad, if we look at the plots for normality of errors and linearity assumption.
 
-```{r}
-bptest(LM)
-```
 
 To be checked:
-- residuals sum to zero
 - no autocorrelation for residuals
 - no perfect multicollinearity
 
 ```{r}
-mean(LM$residuals)
 lawstat::runs.test(LM$residuals)
 vif(LM)
 ```
@@ -127,7 +117,7 @@ val.errors <- rep(NA, nVar)
 for (i in 1:nVar){
   coefi <- coef(tLM, id=i)
   pred <- test.mat[,names(coefi)] %*% coefi
-  val.errors[i] <- mean(abs(C$PRI[test] - (C$PRI[test] + pred)))
+  val.errors[i] <- mean(abs(ridge.pred - C$PRI[test]))
 }
 which.min(val.errors)
 val.errors[which.min(val.errors)]
