@@ -152,7 +152,7 @@ X <- merge(X, I, by=c("time", "geo"), all.x=TRUE)
 Oil Price. Data taken from www.investing.com/commodities/brent-oil-historical-data.
 
 ```{r}
-OIL <- c(58.58, 53.79, 68.76, 64.73, 50.17, 52.81, 41.6, 33.62, 47.12, 48.24, 98.17, 97.49, 105.03, 97.49, 88.06, 98.48, 95.7, 92.19, 78.95, 72.89, 69.45, 41.68, 124.08, 91.75, 78.21, 58.14, 74.4, 67.92, 60.57, 48.2, 43.8, 33.05, 30.54, 33.51, 27.02, 19.48, 26.35, 28.66, 27.43, 27.64)
+OIL <- c(41.15, 58.58, 53.79, 68.76, 64.73, 50.17, 52.81, 41.6, 33.62, 47.12, 48.24, 98.17, 97.49, 105.03, 97.49, 88.06, 98.48, 95.7, 92.19, 78.95, 72.89, 69.45, 41.68, 124.08, 91.75, 78.21, 58.14, 74.4, 67.92, 60.57, 48.2, 43.8, 33.05, 30.54, 33.51, 27.02, 19.48, 26.35, 28.66, 27.43, 27.64)
 time <- rev(levels(as.factor(X$time)))
 OIL <- data.frame(OIL, time)
 X <- merge(X, OIL, by=c("time"), all.x=TRUE)
@@ -297,17 +297,17 @@ table(is.na(X$INF), X$geo)
 for (i in 1:nrow(X)) {
   year <- X$time[i]
   country <- X$geo[i]
-  if ((is.na(X[i, "DEP"]) & year%%1==0 & year != 2019)) {
+  if ((is.na(X[i, "DEP"]) & year%%1==0 & year != 2020)) {
       X[i, "DEP"] <- weighted.mean(c(mean(X[X$geo==country,"DEP"],na.rm=T),mean(X[X$time==year,"DEP"],na.rm=T)),c(0.25,0.75),na.rm=T)
       }
-  else if (year == 2019) {
+  else if (year == 2020) {
       prevYear <- (year - 1)
       X[i, "DEP"] <- X[X$geo == country & X$time == prevYear, "DEP"]
   }
-  if ((is.na(X[i, "CON"]) & year%%1==0 & year != 2019)) {
+  if ((is.na(X[i, "CON"]) & year%%1==0 & year != 2020)) {
       X[i, "CON"] <- weighted.mean(c(mean(X[X$geo==country,"CON"],na.rm=T),mean(X[X$time==year,"CON"],na.rm=T)),c(0.25,0.75),na.rm=T)
       }
-  else if (year == 2019) {
+  else if (year == 2020) {
       prevYear <- (year - 1)
       X[i, "CON"] <- X[X$geo == country & X$time == prevYear, "CON"]
   }
@@ -317,10 +317,10 @@ for (i in 1:nrow(X)) {
   if ((is.na(X[i, "EMI"]) & year%%1==0)) {
       X[i, "EMI"] <- weighted.mean(c(mean(X[X$geo==country,"EMI"],na.rm=T),mean(X[X$time==year,"EMI"],na.rm=T)),c(0.25,0.75),na.rm=T)
   }
-  if ((is.na(X[i, "REN"]) & year%%1==0 & year != 2019)) {
+  if ((is.na(X[i, "REN"]) & year%%1==0 & year != 2020)) {
       X[i, "REN"] <- round(weighted.mean(c(mean(X[X$geo==country,"REN"],na.rm=T),mean(X[X$time==year,"REN"],na.rm=T)),c(0.25,0.75),na.rm=T))
       }
-  else if (year == 2019) {
+  else if (year == 2020) {
       prevYear <- (year - 1)
       X[i, "REN"] <- X[X$geo == country & X$time == prevYear, "REN"]
   }
@@ -369,16 +369,17 @@ rm(value2, value1, value, i, year, value3, value4, country)
 Finally, market concentration. We miss all values from 2019. Just substitute with ones from 2018. For countries with few observations in general and no MAR record we are just going to use year average (not many better options).
 
 ```{r}
-table(is.na(X$MAR) & X$time %% 1 == 0 & X$time !=2019, X$geo)
-
 for (i in 1:nrow(X)) {
   year <- X$time[i]
   country <- X$geo[i]
-  if (country %in% c("AL", "GE", "IS", "LI", "LU", "TR", "UA")) {
-      X[i, "MAR"] <- mean(X[X$time==year,"MAR"],na.rm=T)
+  if (year == 2019 | year == 2020) {
+    if (country == "AL") {
+      X[i, "MAR"] <- X[X$time == 2017 & X$geo == country, "MAR"]
+    }
+    else {X[i, "MAR"] <- X[X$time == 2018 & X$geo == country, "MAR"]}
   }
-  if (year == 2019) {
-    X[i, "MAR"] <- X[X$time == 2018 & X$geo == country, "MAR"]
+  else if (country %in% c("AL", "GE", "IS", "LI", "TR", "UA") & year %% 1 == 0) {
+      X[i, "MAR"] <- mean(X[X$time==year,"MAR"],na.rm=T)
   }
 }
 
@@ -425,6 +426,8 @@ X[X$geo=="AL" & X$time == 2018.5, "CON"] <- X[X$geo=="AL" & X$time == 2017, "CON
 X[X$geo=="AL" & X$time == 2018.5, "EMI"] <- X[X$geo=="AL" & X$time == 2017, "EMI"]
 X[X$geo=="AL" & X$time == 2018.5, "MAR"] <- X[X$geo=="AL" & X$time == 2017, "MAR"]
 X[X$geo=="AL" & X$time == 2018.5, "REN"] <- X[X$geo=="AL" & X$time == 2017, "REN"]
+X[X$geo=="BA" & X$time == 2020, "GAS"] <- X[X$geo=="BA" & X$time == 2019.5, "GAS"]
+
 
 sum(is.na(X))
 ```
