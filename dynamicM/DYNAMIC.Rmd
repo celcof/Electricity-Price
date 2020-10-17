@@ -6,6 +6,11 @@ output:
   html_document:
     df_print: paged
 ---
+
+Unbalanced data, not all countries and years present.
+
+Novelty in the approach is in the consideration of also countries external to EU.
+
 ```{r, echo=F}
 library(ggpubr)
 library(car)
@@ -56,7 +61,7 @@ test <- (!train)
 ```
 
 ```{r}
-LM <- lm(PRI ~ GAS + DEP + CON + INF + EMI + MAR + REN + GDP + OIL, C, subset=train)
+LM <- lm(PRI ~ GAS + DEP + CON + EMI + MAR + REN + GDP + OIL, C, subset=train)
 
 summary(LM)
 plot(LM)
@@ -81,22 +86,12 @@ library(corrplot)
 corrplot(cor(C[, 3:11]))
 ```
 
-Correlation of GDP with Price and Quantity Consumed is understandable but why does NUC have such a high VIF value? Not clear.
-
-Overall check.
-
-```{r}
-gvlma::gvlma(LM)
-```
-
-First of all: problem in the relationship between one or more of my independent variables with my dependent variable.
-
-It is possible however, that there are simply too many variables: we should clarify which are important and which instead are not.
+We should clarify which variables are important and which instead are not.
 
 ```{R}
 library(leaps)
-nVar <- 8
-LM2 <- regsubsets(PRI ~ DEP + CON + GDP + OIL + REN + EMI + MAR + INF, C, nvmax = nVar)
+nVar <- 7
+LM2 <- regsubsets(PRI ~ DEP + CON + GDP + OIL + REN + EMI + MAR, C, nvmax = nVar)
 which.max(summary(LM2)$adjr2)
 which.min(summary(LM2)$bic)
 which.min(summary(LM2)$cp)
@@ -111,13 +106,13 @@ coef(LM2, 2)
 Simple linear regression on train now. To compare accuracies of models we are going to use Mean Absolute Error (for interpretability reasons). Since our dependent variable is measured on a square root scale we have to have to square prediction vectors.
 
 ```{R}
-tLM <- regsubsets(PRI ~ DEP + CON + GDP + OIL + REN + EMI + MAR + INF, C, subset=train, nvmax = nVar)
-test.mat <- model.matrix(PRI ~ DEP + CON + GDP + OIL + REN + EMI + MAR + INF, data=C[test,])
+tLM <- regsubsets(PRI ~ DEP + CON + GDP + OIL + REN + EMI + MAR, C, subset=train, nvmax = nVar)
+test.mat <- model.matrix(PRI ~ DEP + CON + GDP + OIL + REN + EMI + MAR, data=C[test,])
 val.errors <- rep(NA, nVar)
 for (i in 1:nVar){
   coefi <- coef(tLM, id=i)
   pred <- test.mat[,names(coefi)] %*% coefi
-  val.errors[i] <- mean(abs(ridge.pred - C$PRI[test]))
+  val.errors[i] <- mean(abs(pred - C$PRI[test]))
 }
 which.min(val.errors)
 val.errors[which.min(val.errors)]
@@ -127,7 +122,7 @@ coef(tLM, which.min(val.errors))
 Now, time for ridge regression.
 
 ```{r}
-x <- model.matrix(PRI ~ DEP + CON + GDP + OIL + REN + EMI + MAR + INF, C)[,-1]
+x <- model.matrix(PRI ~ DEP + CON + GDP + OIL + REN + EMI + MAR, C)[,-1]
 y <- C$PRI
 set.seed(35)
 ridge <- cv.glmnet(x[train,], y[train], alpha=0, standardize=T)

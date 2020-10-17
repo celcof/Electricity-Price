@@ -29,12 +29,12 @@ D <- read.csv("DAT.csv")
 Simple linear model with country label.
 
 ```{r}
-LMc <- lm(log(PRI) ~ geo + log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR, D)
+LMc <- lm(log(PRI) ~ geo + log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL) + MAR, D)
 coef(LMc)[42:length(coef(LMc))]
 ```
 
 ```{R}
-LM <- lm(log(PRI) ~ log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR, D)
+LM <- lm(log(PRI) ~ log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL) + MAR, D)
 summary(LM)
 ```
 
@@ -51,7 +51,7 @@ for (row in 1:nrow(D)) {
 }
 
 
-LMe <- lm(log(PRI) ~ log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR + EU, D)
+LMe <- lm(log(PRI) ~ log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL) + MAR + EU, D)
 summary(LMe)
 ```
 
@@ -74,7 +74,7 @@ for (row in 1:nrow(DP)) {
 rm(row)
 
 DP$EU <- as.factor(DP$EU)
-LMeP <- lm(log(PRI) ~ log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR + EU, DP)
+LMeP <- lm(log(PRI) ~ log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL) + MAR + EU, DP)
 summary(LMeP)
 ```
 
@@ -121,7 +121,7 @@ To try to solve it, box-cox transformation of the dependent variable does not so
 S <- DP
 U <- caret::BoxCoxTrans(S$PRI)
 S <- cbind(S, nP=predict(U, S$PRI))
-LMeB <- lm(nP ~ log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR + EU, S)
+LMeB <- lm(nP ~ log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL) + MAR + EU, S)
 bptest(LMeB)
 rm(S, U)
 ```
@@ -131,10 +131,10 @@ Let us deviate from ordinary least squares to use a weighted least squares model
 
 ```{r}
 DP$resi <- LMeP$residuals
-LMeR <- lm(log(resi^2) ~ log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR + EU, DP)
+LMeR <- lm(log(resi^2) ~ log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL) + MAR + EU, DP)
 
 DP$varFunc <- exp(LMeR$fitted.values)
-LMgls <- lm(log(PRI) ~ log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR + EU, weights = 1/sqrt(varFunc), DP)
+LMgls <- lm(log(PRI) ~ log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL) + MAR + EU, weights = 1/sqrt(varFunc), DP)
 summary(LMgls)
 rm(LMeR)
 ```
@@ -152,7 +152,7 @@ Subset selection. We want to maximize adjusted R squared and minimize cp and bic
 
 ```{R}
 library(leaps)
-LM3 <- regsubsets(log(PRI) ~ log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR + EU, DP, nvmax = 12)
+LM3 <- regsubsets(log(PRI) ~ log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL) + MAR + EU, DP, nvmax = 12)
 which.max(summary(LM3)$adjr2)
 which.min(summary(LM3)$bic)
 which.min(summary(LM3)$cp)
@@ -168,7 +168,7 @@ test <- (!train)
 Simple linear regression on train now. To compare accuracies of models we are going to use Mean Absolute Error (for interpretability reasons). Since our dependent variable is measured on a log scale we have to have to exponentiate prediction vectors. 
 
 ```{r}
-LMeP <- lm(log(PRI) ~ log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR + EU, DP, subset=train)
+LMeP <- lm(log(PRI) ~ log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL) + MAR + EU, DP, subset=train)
 pred <- predict(LMeP, DP[test,])
 mean(abs(DP$PRI[test] - exp(pred)))
 ```
@@ -177,10 +177,10 @@ Performance, instead, with weighted regression.
 
 ```{r}
 DP$resi[train] <- LMeP$residuals
-LMeR <- lm(log(resi^2) ~ log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR + EU, DP, subset=train)
+LMeR <- lm(log(resi^2) ~ log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL) + MAR + EU, DP, subset=train)
 
 DP$varFunc[train] <- exp(LMeR$fitted.values)
-LMgls <- lm(log(PRI) ~ log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR + EU, weights = 1/sqrt(varFunc), DP, subset=train)
+LMgls <- lm(log(PRI) ~ log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL) + MAR + EU, weights = 1/sqrt(varFunc), DP, subset=train)
 pred <- predict(LMgls, DP[test,])
 mean(abs(DP$PRI[test] - exp(pred)))
 rm(LMeR)
@@ -192,10 +192,10 @@ We can now now check that the best model is the one including all variables.
 
 ```{R}
 W <- 1/sqrt(DP$varFunc[train])
-tLM <- regsubsets(log(PRI) ~ log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR + EU, DP[train,], weights=W, nvmax = 11)
-test.mat <- model.matrix(log(PRI) ~ log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR + EU, data=DP[test,])
-val.errors <- rep(NA, 11)
-for (i in 1:11){
+tLM <- regsubsets(log(PRI) ~ log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL) + MAR + EU, DP[train,], weights=W, nvmax = 11)
+test.mat <- model.matrix(log(PRI) ~ log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL) + MAR + EU, data=DP[test,])
+val.errors <- rep(NA, 10)
+for (i in 1:10){
   coefi <- coef(tLM, id=i)
   pred <- test.mat[,names(coefi)] %*% coefi
   val.errors[i] <- mean(abs(DP$PRI[test] - exp(pred)))
@@ -208,7 +208,7 @@ coef(tLM, which.min(val.errors))
 Now, time for ridge regression.
 
 ```{r}
-x <- model.matrix(log(PRI) ~ log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR + EU, DP)[,-1]
+x <- model.matrix(log(PRI) ~ log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL) + MAR + EU, DP)[,-1]
 y <- DP$PRI
 set.seed(35)
 ridge <- cv.glmnet(x[train,], log(y[train]), alpha=0, weights=W, standardize=T)
@@ -259,18 +259,18 @@ This looks like a good result, however, interactions and polynomials of the vari
 Model selection with interactions. This time we start from no weights.
 
 ```{R}
-LMeQ <- lm(log(PRI) ~ (log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR)^2 + EU, DP, subset=train)
+LMeQ <- lm(log(PRI) ~ (log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL) + MAR)^2 + EU, DP, subset=train)
 DP$resi[train] <- LMeQ$residuals
-LMeR <- lm(log(resi^2) ~ (log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR)^2 + EU, DP, subset=train)
+LMeR <- lm(log(resi^2) ~ (log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL) + MAR)^2 + EU, DP, subset=train)
 
 DP$varFunc[train] <- exp(LMeR$fitted.values)
 rm(LMeR)
 
 W <- 1/sqrt(DP$varFunc[train])
 
-tLM <- regsubsets(log(PRI) ~ (log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR)^2 + EU, DP[train,], nvmax = 30, really.big = T, weights=W)
+tLM <- regsubsets(log(PRI) ~ (log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL) + MAR)^2 + EU, DP[train,], nvmax = 30, really.big = T, weights=W)
 
-test.mat <- model.matrix(log(PRI) ~ (log(GAS) + DEP + log(CON) + INF + REN + log(GDP) + log(OIL) + MAR)^2 + EU, data=DP[test,])
+test.mat <- model.matrix(log(PRI) ~ (log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL) + MAR)^2 + EU, data=DP[test,])
 
 val.errors <- rep(NA, 30)
 for (i in 1:30){
@@ -286,21 +286,21 @@ coef(tLM, which.min(val.errors))
 Model selection with interactions kept from previous model and also adding polynomials.
 
 ```{R}
-LMeQ <- lm(log(PRI) ~ poly(log(GAS),2) + poly(DEP,2) + poly(log(CON),2) + poly(INF,2) + poly(REN,2) + poly(log(GDP),2) + poly(log(OIL),2) + poly(MAR,2) + EU, DP, subset=train)
+LMeQ <- lm(log(PRI) ~ poly(log(GAS),2) + poly(DEP,2) + poly(log(CON),2) + poly(REN,2) + poly(log(GDP),2) + poly(log(OIL),2) + poly(MAR,2) + EU, DP, subset=train)
 DP$resi[train] <- LMeQ$residuals
-LMeR <- lm(log(PRI) ~ poly(log(GAS),2) + poly(DEP,2) + poly(log(CON),2) + poly(INF,2) + poly(REN,2) + poly(log(GDP),2) + poly(log(OIL),2) + poly(MAR,2) + EU, DP, subset=train)
+LMeR <- lm(log(PRI) ~ poly(log(GAS),2) + poly(DEP,2) + poly(log(CON),2) + poly(REN,2) + poly(log(GDP),2) + poly(log(OIL),2) + poly(MAR,2) + EU, DP, subset=train)
 
 DP$varFunc[train] <- exp(LMeR$fitted.values)
 rm(LMeR)
 
 W <- 1/sqrt(DP$varFunc[train])
 
-tLM <- regsubsets(log(PRI) ~ poly(log(GAS),2) + poly(DEP,2) + poly(log(CON),2) + poly(INF,2) + poly(REN,2) + poly(log(GDP),2) + poly(log(OIL),2) + poly(MAR,2) + EU, DP[train,], nvmax = 18, weights=W)
+tLM <- regsubsets(log(PRI) ~ poly(log(GAS),2) + poly(DEP,2) + poly(log(CON),2) + poly(REN,2) + poly(log(GDP),2) + poly(log(OIL),2) + poly(MAR,2) + EU, DP[train,], nvmax = 18, weights=W)
 
-test.mat <- model.matrix(log(PRI) ~ poly(log(GAS),2) + poly(DEP,2) + poly(log(CON),2) + poly(INF,2) + poly(REN,2) + poly(log(GDP),2) + poly(log(OIL),2) + poly(MAR,2) + EU, data=DP[test,])
+test.mat <- model.matrix(log(PRI) ~ poly(log(GAS),2) + poly(DEP,2) + poly(log(CON),2) + poly(REN,2) + poly(log(GDP),2) + poly(log(OIL),2) + poly(MAR,2) + EU, data=DP[test,])
 
-val.errors <- rep(NA, 18)
-for (i in 1:18){
+val.errors <- rep(NA, 17)
+for (i in 1:17){
   coefi <- coef(tLM, id=i)
   pred <- test.mat[,names(coefi)] %*% coefi
   val.errors[i] <- mean(abs(DP$PRI[test] - exp(pred)))
@@ -316,7 +316,7 @@ Before moving to lasso with more parameters, we should also remember that these 
 We try back our best performing model, this time with weights.
 
 ```{r}
-x <- model.matrix(log(PRI) ~ poly(log(GAS),2) + poly(DEP,2) + poly(log(CON),2) + poly(INF,2) + poly(REN,2) + poly(log(GDP)) + poly(log(OIL),2) + poly(MAR,2)^2 + EU, DP)[,-1]
+x <- model.matrix(log(PRI) ~ poly(log(GAS),2) + poly(DEP,2) + poly(log(CON),2) + poly(REN,2) + poly(log(GDP)) + poly(log(OIL),2) + poly(MAR,2)^2 + EU, DP)[,-1]
 lasso.mod <- glmnet(x[train,], log(y[train]), alpha=1)
 
 set.seed(35)

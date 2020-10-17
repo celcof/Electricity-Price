@@ -302,20 +302,20 @@ for (i in 1:nrow(X)) {
       X[i, "DEP"] <- weighted.mean(c(mean(X[X$geo==country,"DEP"],na.rm=T),mean(X[X$time==year,"DEP"],na.rm=T)),c(0.0005,0.9995),na.rm=T)
   }
   if ((is.na(X[i, "CON"]) & year%%1==0 & year != 2020)) {
-      X[i, "CON"] <- weighted.mean(c(mean(X[X$geo==country,"CON"],na.rm=T),mean(X[X$time==year,"CON"],na.rm=T)),c(0.25,0.75),na.rm=T)
+      X[i, "CON"] <- weighted.mean(c(mean(X[X$geo==country,"CON"],na.rm=T),mean(X[X$time==year,"CON"],na.rm=T)),c(0.0005,0.9995),na.rm=T)
       }
   else if (year == 2020) {
       prevYear <- (year - 1)
       X[i, "CON"] <- X[X$geo == country & X$time == prevYear, "CON"]
   }
   if (is.na(X[i, "INF"])) {
-      X[i, "INF"] <- round(weighted.mean(c(mean(X[X$geo==country,"INF"],na.rm=T),mean(X[X$time==year,"INF"],na.rm=T)),c(0.25,0.75),na.rm=T),2)
+      X[i, "INF"] <- round(weighted.mean(c(mean(X[X$geo==country,"INF"],na.rm=T),mean(X[X$time==year,"INF"],na.rm=T)),c(0.0005,0.9995),na.rm=T),2)
   }
   if ((is.na(X[i, "EMI"]) & year%%1==0)) {
-      X[i, "EMI"] <- weighted.mean(c(mean(X[X$geo==country,"EMI"],na.rm=T),mean(X[X$time==year,"EMI"],na.rm=T)),c(0.25,0.75),na.rm=T)
+      X[i, "EMI"] <- weighted.mean(c(mean(X[X$geo==country,"EMI"],na.rm=T),mean(X[X$time==year,"EMI"],na.rm=T)),c(0.0005,0.9995),na.rm=T)
   }
   if ((is.na(X[i, "REN"]) & year%%1==0 & year != 2020)) {
-      X[i, "REN"] <- round(weighted.mean(c(mean(X[X$geo==country,"REN"],na.rm=T),mean(X[X$time==year,"REN"],na.rm=T)),c(0.25,0.75),na.rm=T))
+      X[i, "REN"] <- round(weighted.mean(c(mean(X[X$geo==country,"REN"],na.rm=T),mean(X[X$time==year,"REN"],na.rm=T)),c(0.0005,0.9995),na.rm=T))
       }
   else if (year == 2020) {
       prevYear <- (year - 1)
