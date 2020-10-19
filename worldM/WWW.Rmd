@@ -1,0 +1,24 @@
+---
+title: "FLOW"
+author: "Francesco Cabras"
+date: "10/19/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(WDI)
+```
+
+```{r}
+wdi_dat <- WDI(indicator = c("IC.ELC.PRI.KH.DB1619", "EG.IMP.CONS.ZS", "EN.ATM.CO2E.KD.GD", "EG.USE.ELEC.KH.PC", "NY.GDP.PCAP.PP.CD", "EP.PMP.SGAS.CD", "EG.ELC.PETR.ZS", "EG.ELC.RNWX.KH", "EG.ELC.COAL.ZS"), start = 2000, extra = TRUE) 
+
+names(wdi_dat) = c("iso2c", "country", "year", "PRI", "DEP", "EMI","CON", "GDP", "OILp", "OILs", "REN", "COA", "iso3c", "region", "capital", "longitude", "latitude", "income", "lending")
+names(wdi_dat)
+```
+
+Let us remove cities and aggregate regions from the data set.
+
+```{r}
+wdi_dat <- wdi_dat[!is.na(wdi_dat$IC.ELC.PRI.KH.DB1619),]
+wdi_dat <- wdi_dat[!is.na(wdi_dat$income),]
+```

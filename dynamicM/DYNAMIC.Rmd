@@ -64,6 +64,7 @@ test <- (!train)
 LM <- lm(PRI ~ GAS + DEP + CON + EMI + MAR + REN + GDP + OIL, C, subset=train)
 
 summary(LM)
+par(mfrow = c(2, 2))
 plot(LM)
 ```
 
@@ -88,16 +89,48 @@ corrplot(cor(C[, 3:11]))
 
 We should clarify which variables are important and which instead are not.
 
+```{r}
+
+for (row in 1:nrow(C)) {
+  if (as.character(C[row, "geo"]) %in% c("BG", "RO", "CZ", "HU", "HR", "SE", "DK", "PL", "UK")) {
+    C$EU[row] <- "EU"
+}
+  else if (as.character(C[row, "geo"]) %in% c("NO", "IS", "LI")) {
+    C$EU[row] <- "EFTA"
+  }
+  else if (as.character(C[row, "geo"]) %in% c("BE", "EL", "LT", "PT", "ES", "LU", "FR", "SI", "MT", "SK", "DE", "IT", "NL", "FI", "EE", "CY", "AT", "IE", "LV")){
+    C$EU[row] <- "EA"
+    }
+}
+rm(row)
+
+C$EU <- as.factor(C$EU)
+```
+
+To be checked:
+- residuals sum to zero
+- no autocorrelation for residuals
+- no perfect multicollinearity
+- homoskedasticity
+
+```{r}
+LM <- lm(PRI ~ GAS + DEP + CON + EMI + MAR + REN + GDP + OIL + EU, C, subset=train)
+par(mfrow = c(2, 2))
+plot(LM)
+```
+
+Try to use different subsets of the data.
+
 ```{R}
 library(leaps)
 nVar <- 7
-LM2 <- regsubsets(PRI ~ DEP + CON + GDP + OIL + REN + EMI + MAR, C, nvmax = nVar)
+LM2 <- regsubsets(PRI ~ DEP + CON + GDP + OIL + REN + EMI + MAR + EU, C, nvmax = nVar)
 which.max(summary(LM2)$adjr2)
 which.min(summary(LM2)$bic)
 which.min(summary(LM2)$cp)
 ```
 
-Which are the 6 most significant features?
+Which are the 2 most significant features?
 
 ```{r}
 coef(LM2, 2)
@@ -106,8 +139,8 @@ coef(LM2, 2)
 Simple linear regression on train now. To compare accuracies of models we are going to use Mean Absolute Error (for interpretability reasons). Since our dependent variable is measured on a square root scale we have to have to square prediction vectors.
 
 ```{R}
-tLM <- regsubsets(PRI ~ DEP + CON + GDP + OIL + REN + EMI + MAR, C, subset=train, nvmax = nVar)
-test.mat <- model.matrix(PRI ~ DEP + CON + GDP + OIL + REN + EMI + MAR, data=C[test,])
+tLM <- regsubsets(PRI ~ DEP + CON + GDP + OIL + REN + EMI + MAR + EU, C, subset=train, nvmax = nVar)
+test.mat <- model.matrix(PRI ~ DEP + CON + GDP + OIL + REN + EMI + MAR + EU, data=C[test,])
 val.errors <- rep(NA, nVar)
 for (i in 1:nVar){
   coefi <- coef(tLM, id=i)
@@ -122,7 +155,7 @@ coef(tLM, which.min(val.errors))
 Now, time for ridge regression.
 
 ```{r}
-x <- model.matrix(PRI ~ DEP + CON + GDP + OIL + REN + EMI + MAR, C)[,-1]
+x <- model.matrix(PRI ~ DEP + CON + GDP + OIL + REN + EMI + MAR + EU, C)[,-1]
 y <- C$PRI
 set.seed(35)
 ridge <- cv.glmnet(x[train,], y[train], alpha=0, standardize=T)
