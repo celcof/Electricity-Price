@@ -13,6 +13,7 @@ library(HDCI)
 library(caret)
 library(scales)
 library(glmnet)
+library(dplyr)
 library(wbstats)
 ```
 
@@ -146,14 +147,31 @@ names(I)[3] <- "GDP"
 X <- merge(X, I, by=c("time", "geo"), all.x=TRUE)
 ```
 
-Oil Price. Data taken from www.investing.com/commodities/brent-oil-historical-data.
+To get values for oil Price we use a proxy: the pump price for gasoline in US dollars. Data taken from World Bank.
 
 ```{r}
-OIL <- c(41.15, 58.58, 53.79, 68.76, 64.73, 50.17, 52.81, 41.6, 33.62, 47.12, 48.24, 98.17, 97.49, 105.03, 97.49, 88.06, 98.48, 95.7, 92.19, 78.95, 72.89, 69.45, 41.68, 124.08, 91.75, 78.21, 58.14, 74.4, 67.92, 60.57, 48.2, 43.8, 33.05, 30.54, 33.51, 27.02, 19.48, 26.35, 28.66, 27.43, 27.64)
-time <- rev(levels(as.factor(X$time)))
-OIL <- data.frame(OIL, time)
-X <- merge(X, OIL, by=c("time"), all.x=TRUE)
-rm(OIL, time, countries, I)
+J <- wb(indicator = "EP.PMP.SGAS.CD", startdate = 2000, enddate = 2020, country=c(levels(X$geo), "GB", "GR"))
+J$iso2c <- gsub("GB", "UK", J$iso2c)
+J$iso2c <- gsub("GR", "EL", J$iso2c)
+J <- J[,c(2,3,6)]
+names(J) <- c("time", "OIL", "geo")
+X <- merge(X, J, by=c("time", "geo"), all=TRUE)
+```
+
+We are missing data for odd years.
+
+```{r}
+X$time <- as.numeric(X$time)
+
+for (row in 1:nrow(X)) {
+  year = X$time[row]
+  country = X$geo[row]
+  if (is.na(X$OIL[row]) & X$time[row] %% 1 == 0) {
+    X$OIL[row] <- mean(c(X[X$geo == country & X$time == year-1, "OIL"], X[X$geo == country & X$time == year+1, "OIL"]), na.rm=T)
+  }
+}
+
+X <- X[!is.na(X$PRI),]
 ```
 
 substitute NA for Market Concentration
@@ -396,7 +414,7 @@ for (i in 1:nrow(X)) {
   year <- X$time[i]
   country <- X$geo[i]
   if (year %% 1 != 0)
-    for (col in c("DEP", "CON", "EMI", "MAR", "REN")) {
+    for (col in c("DEP", "CON", "EMI", "MAR", "REN", "OIL")) {
       prev <- X[X$time==(year-0.5) & X$geo==country, col]
       after <- X[X$time==(year+0.5) & X$geo==country, col]
       X[i, col] <- mean(c(prev,after),na.rm=T)
@@ -424,6 +442,9 @@ X[X$geo=="AL" & X$time == 2018.5, "EMI"] <- X[X$geo=="AL" & X$time == 2017, "EMI
 X[X$geo=="AL" & X$time == 2018.5, "MAR"] <- X[X$geo=="AL" & X$time == 2017, "MAR"]
 X[X$geo=="AL" & X$time == 2018.5, "REN"] <- X[X$geo=="AL" & X$time == 2017, "REN"]
 X[X$geo=="BA" & X$time == 2020, "GAS"] <- X[X$geo=="BA" & X$time == 2019.5, "GAS"]
+
+X[X$geo=="AL" & between(X$time, 2018, 2020), "OIL"] <- X[X$geo=="AL" & X$time == 2017.5, "OIL"]
+X[X$geo=="GE" & between(X$time, 2018, 2020), "OIL"] <- X[X$geo=="TR" & X$time == 2018, "OIL"]
 
 sum(is.na(X))
 

@@ -37,7 +37,7 @@ for (row in 1:nrow(W)) {
   country = W$country[row]
   if (is.na(W$DEP[row])) {
     if (is.na(W[W$country == country & W$year == 2015,"DEP"])) {
-    W$DEP[row] <- W[W$country == country & W$year == 2014,"DEP"]
+      W$DEP[row] <- W[W$country == country & W$year == 2014,"DEP"]
     }
     else {
       W$DEP[row] <- W[W$country == country & W$year == 2015,"DEP"]
