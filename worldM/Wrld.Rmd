@@ -1,0 +1,70 @@
+---
+title: "Wrld"
+author: "Francesco Cabras"
+date: "10/21/2020"
+output: html_document
+---
+
+```{r}
+D <- read.csv("DAT.csv")
+```
+
+Simple linear model with country label.
+
+```{r}
+LM <- lm(PRI ~ EMI + DEP + CON + COA + REN + GDP + OILp + OILs, D)
+plot(LM)
+```
+
+Points 714,716 and 718 correspond to records belonging to Solomon Islands. While in 2018 and 2019 the values are appropriate, the other years the recorded prices are way too high, almost 1 dollar per kWh. We decide to discard all Solomon Islands records.
+
+```{r}
+D <- D[-c(714,715,716,717,718),]
+LM <- lm(PRI ~ EMI + DEP + CON + COA + REN + GDP + OILp + OILs, D)
+```
+
+Which are the most significant features inside the data set?
+
+```{r}
+summary(LM)
+```
+
+What if instead we also wanted to take into account the geographical position of the country itself: region is considered in the regression.
+
+```{r}
+LMc <- lm(PRI ~ EMI + DEP + CON + COA + REN + GDP + OILp + OILs + region, D)
+summary(LMc)
+```
+
+Electricity is, on average, the most expensive in East Asia and Pacific and it is the cheapest in Europe and Central Asia.
+
+Check the assumptions.
+
+```{r}
+par(mfrow = c(2, 2))
+plot(LMc)
+```
+
+In the first plot on the top-left we see that the line is approximately horizontal so the linear relationship assumption holds.
+
+Residuals are instead not as linear as we'd like. Another plot:
+
+```{r}
+library(olsrr)
+ols_plot_resid_hist(LMc)
+```
+
+There is a sort of right-tail in our case. However, this behaviour was somehow predictable, since residuals are expected to be positive rather than negative (the average price is quite low, there are countries which spend a lot more than what they'd be supposed to but none that pay a lot less than they'd be supposed to).
+
+```{r}
+LMc <- lm(log(PRI) ~ EMI + DEP + log(CON) + COA + REN + log(GDP) + OILp + OILs + region, D)
+ols_plot_resid_hist(LMc)
+```
+
+After using logarithmic transformation on the dependent and few independent variables situation improves.
+
+```{r}
+plot(LMc, 3)
+```
+
+Heteroskedasticity is not a problem.
