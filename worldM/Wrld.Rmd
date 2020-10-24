@@ -68,3 +68,63 @@ plot(LMc, 3)
 ```
 
 Heteroskedasticity is not a problem.
+
+```{r}
+train <- (D$year < 2019)
+test <- (!train)
+```
+
+Let us check performance on the validation set, which includes observations before 2015.
+
+```{r}
+D$region <- as.factor(D$region)
+LMc <- lm(log(PRI) ~ EMI + DEP + log(CON) + COA + REN + log(GDP) + OILp + OILs + region, D, subset=train)
+pred <- predict(LMc, D[test,])
+mean(abs(D$PRI[test] - exp(pred)))
+```
+
+Our model, on average, gets it wrong for about 5 cents.
+Ridge regression.
+
+```{r}
+x <- model.matrix(log(PRI) ~ EMI + DEP + log(CON) + COA + REN + log(GDP) + OILp + OILs + region, D)[,-1]
+y <- D$PRI
+set.seed(35)
+ridge <- cv.glmnet(x[train,], log(y[train]), alpha=0, standardize=T)
+bestlam <- min(ridge$lambda)
+```
+
+What is the test average difference between the prediction and the actual price of electricity?
+
+```{r}
+ridge.pred <- predict(ridge, s=bestlam, newx=x[test,])
+mean(abs(exp(ridge.pred) - y[test]))
+```
+
+Performance does not improve using ridge regression.
+
+Coefficients.
+
+```{r}
+predict(ridge, type="coefficients", s=bestlam)
+```
+
+Time for lasso.
+
+```{r}
+lasso.mod <- glmnet(x[train,], log(y[train]), alpha=1)
+plot(lasso.mod)
+```
+
+Let us look for the best value of the parameter lambda (shrinkage).
+
+```{r}
+set.seed(35)
+cv.out <- cv.glmnet(x[train,], sqrt(y[train]), alpha=1)
+bestlam <- cv.out$lambda.min
+pred <- predict(lasso.mod, s=bestlam, newx=x[test,])
+mean(abs(exp(pred) - y[test]))
+```
+
+About the same result as with standard linear model.
+
