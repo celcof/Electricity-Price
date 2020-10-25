@@ -6,6 +6,10 @@ output: html_document
 ---
 
 ```{r}
+library(glmnet)
+library(caret)
+library(tidyverse)
+
 D <- read.csv("DAT.csv")
 ```
 
@@ -89,7 +93,7 @@ Ridge regression.
 ```{r}
 x <- model.matrix(log(PRI) ~ EMI + DEP + log(CON) + COA + REN + log(GDP) + OILp + OILs + region, D)[,-1]
 y <- D$PRI
-set.seed(35)
+set.seed(10)
 ridge <- cv.glmnet(x[train,], log(y[train]), alpha=0, standardize=T)
 bestlam <- min(ridge$lambda)
 ```
@@ -119,7 +123,7 @@ plot(lasso.mod)
 Let us look for the best value of the parameter lambda (shrinkage).
 
 ```{r}
-set.seed(35)
+set.seed(10)
 cv.out <- cv.glmnet(x[train,], sqrt(y[train]), alpha=1)
 bestlam <- cv.out$lambda.min
 pred <- predict(lasso.mod, s=bestlam, newx=x[test,])
@@ -127,4 +131,23 @@ mean(abs(exp(pred) - y[test]))
 ```
 
 About the same result as with standard linear model.
+
+The elastic net is a regularized regression method that linearly combines the L1 and L2 penalties of the lasso and ridge methods. The idea is to select the best alpha value through cross validation.
+
+```{r}
+set.seed(10)
+Elastic <- train(
+  log(PRI) ~ EMI + DEP + log(CON) + COA + REN + log(GDP) + OILp + OILs + region, data = D[train,], method = "glmnet",
+  trControl = trainControl("cv", number = 10),
+  tuneLength = 10
+)
+
+print(Elastic$bestTune)
+pred <- predict(Elastic$finalModel, s=Elastic$bestTune$lambda, newx=x[test,])
+mean(abs(exp(pred) - y[test]))
+```
+
+When tested on the validation set, the elastic net with alpha equal to 0.1 and a very small lambda value does not improve on the result of lasso.
+
+
 
