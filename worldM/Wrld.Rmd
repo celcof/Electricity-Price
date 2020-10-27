@@ -9,6 +9,7 @@ output: html_document
 library(glmnet)
 library(caret)
 library(tidyverse)
+library(leaps)
 
 D <- read.csv("DAT.csv")
 ```
@@ -149,5 +150,45 @@ mean(abs(exp(pred) - y[test]))
 
 When tested on the validation set, the elastic net with alpha equal to 0.1 and a very small lambda value does not improve on the result of lasso.
 
+Until now we have given for granted that the relationship between the independent and the dependent variables is linear. What happens if we included polynomials? Subset selection is used to analyze which are the most important features when also squared features are included.
 
+```{r}
+
+tLM <- regsubsets(log(PRI) ~ poly(EMI, 2) + poly(DEP,2) + poly(log(CON),2) + poly(COA,2) + poly(REN,2) + poly(log(GDP),2) + poly(OILp,2) + poly(OILs,2) + region, D[train,], nvmax = 15, really.big = T)
+
+test.mat <- model.matrix(log(PRI) ~ poly(EMI, 2) + poly(DEP,2) + poly(CON,2) + poly(COA,2) + poly(REN,2) + poly(GDP,2) + poly(OILp,2) + poly(OILs,2) + region, data=D[test,])
+
+val.errors <- rep(NA, 14)
+for (i in 1:14){
+  coefi <- coef(tLM, id=i)
+  pred <- test.mat[,names(coefi)] %*% coefi
+  val.errors[i] <- mean(abs(D$PRI[test] - exp(pred)))
+}
+which.min(val.errors)
+val.errors[which.min(val.errors)]
+coef(tLM, which.min(val.errors))
+
+```
+
+The best model including the polynomials contains 8 features with both the squared and the straight share of energy produced with coal and the share of energy produced with oil. However, accuracy on the validation set is inferior with respect to previous models.
+
+```{r}
+
+tLM <- regsubsets(log(PRI) ~ (EMI + DEP + log(CON) + COA + REN + log(GDP) + OILp + OILs)^2 + region, D[train,], nvmax = 30, really.big = T)
+
+test.mat <- model.matrix(log(PRI) ~ (EMI + DEP + log(CON) + COA + REN + log(GDP) + OILp + OILs)^2 + region, data=D[test,])
+
+val.errors <- rep(NA, 30)
+for (i in 1:30){
+  coefi <- coef(tLM, id=i)
+  pred <- test.mat[,names(coefi)] %*% coefi
+  val.errors[i] <- mean(abs(D$PRI[test] - exp(pred)))
+}
+which.min(val.errors)
+val.errors[which.min(val.errors)]
+coef(tLM, which.min(val.errors))
+
+```
+
+When we also include interactions we end up with a much complicated linear model which however performs very well.
 
