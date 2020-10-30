@@ -9,7 +9,7 @@ output:
 
 Unbalanced data, not all countries and years present.
 
-Novelty in the approach is in the consideration of also countries external to EU.
+Novelty in the approach is the consideration of also countries external to EU.
 
 ```{r, echo=F}
 library(ggpubr)
@@ -28,7 +28,7 @@ Read csv.
 C <- read.csv("DAT.csv")
 ```
 
-First thing: we notice that the dependent variable is not really gaussian-distributed.
+First thing: we notice that the dependent variable shows long tails, although this should not result as a big issue.
 
 ```{r}
 ggdensity(C$PRI, main = "Density function PRI")
@@ -60,37 +60,9 @@ train <- (C$time < 2015)
 test <- (!train)
 ```
 
-```{r}
-LM <- lm(PRI ~ GAS + DEP + CON + EMI + MAR + REN + GDP + OIL, C, subset=train)
-
-summary(LM)
-par(mfrow = c(2, 2))
-plot(LM)
-```
-
-Situation does not look that bad, if we look at the plots for normality of errors and linearity assumption.
-
-
-To be checked:
-- no autocorrelation for residuals
-- no perfect multicollinearity
+Create dummy for geographical area. 
 
 ```{r}
-lawstat::runs.test(LM$residuals)
-vif(LM)
-```
-
-The mean of the residuals is ok, however we have some problems for autocorrelation of residuals and multicollinearity. The Variance Inflator Formula results in not promising values for GDP and NUC. We should not worry too much about this, however: if we remove the country-specific dummy variables, the vif values for the model turn out to be normal. The multicollinearity risk is also refuted when looking at the correlation matrix for the continuous variables: the NUC feature is not strongly correlated with any of the other variables.
-
-```{r}
-library(corrplot)
-corrplot(cor(C[, 3:11]))
-```
-
-We should clarify which variables are important and which instead are not.
-
-```{r}
-
 for (row in 1:nrow(C)) {
   if (as.character(C[row, "geo"]) %in% c("BG", "RO", "CZ", "HU", "HR", "SE", "DK", "PL", "UK")) {
     C$EU[row] <- "EU"
@@ -107,19 +79,25 @@ rm(row)
 C$EU <- as.factor(C$EU)
 ```
 
-To be checked:
-- residuals sum to zero
-- no autocorrelation for residuals
-- no perfect multicollinearity
-- homoskedasticity
+Linear Model.
 
 ```{r}
 LM <- lm(PRI ~ GAS + DEP + CON + EMI + MAR + REN + GDP + OIL + EU, C, subset=train)
-par(mfrow = c(2, 2))
-plot(LM)
+
+summary(LM)
 ```
 
-Try to use different subsets of the data.
+Situation does not look that bad, if we look at the plots for normality of errors and linearity assumption.
+
+To be checked:
+- no perfect multicollinearity
+
+```{r}
+library(corrplot)
+corrplot(cor(C[, 3:11]))
+```
+
+Not all the features shall be significant: try to use only smaller subsets of the data.
 
 ```{R}
 library(leaps)
@@ -136,7 +114,7 @@ Which are the 2 most significant features?
 coef(LM2, 2)
 ```
 
-Simple linear regression on train now. To compare accuracies of models we are going to use Mean Absolute Error (for interpretability reasons). Since our dependent variable is measured on a square root scale we have to have to square prediction vectors.
+To better compare accuracies of models we are going to use Mean Absolute Error (for interpretability reasons). Since our dependent variable is measured on a square root scale we have to have to square prediction vectors.
 
 ```{R}
 tLM <- regsubsets(PRI ~ DEP + CON + GDP + OIL + REN + EMI + MAR + EU, C, subset=train, nvmax = nVar)
@@ -169,7 +147,6 @@ ridge.pred <- predict(ridge, s=bestlam, newx=x[test,])
 mean(abs(ridge.pred - C$PRI[test]))
 ```
 
-Coefficients.
 
 ```{r}
 predict(ridge, type="coefficients", s=bestlam)
@@ -198,3 +175,26 @@ How many features is the model including?
 V <- as.vector(coef(cv.out, bestlam))
 length(V[V!= 0])
 ```
+
+What we understood is that the error on the dependent variable is of about half a cent. This could seem as a good result but it also depends on what the mean change in electricity price is.
+
+```{r}
+mean(abs(C$PRI))
+```
+
+On average, the electricity price changes by half a cent as well so, to use one of our models or no model at all doesn't result in any difference in performance.
+What if instead we wanted to guess, rather than the amount of change, at least the direction of the change.
+
+```{r}
+C$increase <- ifelse(C$PRI > 0, "Up", "Down")
+C$increase <- as.factor(C$increase)
+
+lR <- glm(increase ~ DEP + CON + GDP + OIL + REN + EMI + MAR + EU, C, family=binomial, subset=train)
+pred <- predict(lR, C[test,], type="response")
+glm.pred=rep("Down",434)
+glm.pred[pred >.5]="Up"
+table(prediction=glm.pred , groundtruth=C$increase[test])
+mean(glm.pred == C$increase[test])
+```
+
+The algorithm is not really able to discriminate among observations with increasing and decreasing prices, since only 55% of the direction predictions are correct. In particular, the model overselects the upward increases and underselects the decreases in prices. This is a further indication that it is quite difficult to infer the trend in the price from the variables at hand.
