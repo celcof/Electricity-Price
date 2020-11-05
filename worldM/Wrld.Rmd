@@ -156,7 +156,7 @@ Until now we have given for granted that the relationship between the independen
 
 tLM <- regsubsets(log(PRI) ~ poly(EMI, 2) + poly(DEP,2) + poly(log(CON),2) + poly(COA,2) + poly(REN,2) + poly(log(GDP),2) + poly(OILp,2) + poly(OILs,2) + region, D[train,], nvmax = 15, really.big = T)
 
-test.mat <- model.matrix(log(PRI) ~ poly(EMI, 2) + poly(DEP,2) + poly(CON,2) + poly(COA,2) + poly(REN,2) + poly(GDP,2) + poly(OILp,2) + poly(OILs,2) + region, data=D[test,])
+test.mat <- model.matrix(log(PRI) ~ poly(EMI, 2) + poly(DEP,2) + poly(log(CON),2) + poly(COA,2) + poly(REN,2) + poly(log(GDP),2) + poly(OILp,2) + poly(OILs,2) + region, data=D[test,])
 
 val.errors <- rep(NA, 14)
 for (i in 1:14){

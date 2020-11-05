@@ -22,7 +22,7 @@
 # *.pdf
 
 ## Generated if empty string is given at "Please type another file name for output:"
-.pdf
+*REP.pdf
 
 ## Bibliography auxiliary files (bibtex/biblatex/biber):
 *.bbl
@@ -184,6 +184,7 @@ _minted*
 
 # scrwfile
 *.wrt
+*.Rhistory
 
 # sympy
 *.sout

@@ -44,8 +44,8 @@ Electricity bills are among the most important expenses for families around the 
 \begin{figure}[H]
 \begin{center}
 \captionsetup{justification=centering}
-\includegraphics[width=0.8\textwidth]{Images/world2020.png}
-\caption{The more expensive electricity is, the more intense the red color. }
+\includegraphics[width=0.7\textwidth]{Images/world2020.png}
+\caption{The more expensive electricity is, the darker the color. }
 \end{center}
 \end{figure}
 \bigskip
@@ -74,7 +74,7 @@ Although the countries providing little electricity access to its population als
 \begin{figure}[H]
 \begin{center}
 \captionsetup{justification=centering}
-\includegraphics[width=0.8\textwidth]{Images/access.png}
+\includegraphics[width=0.7\textwidth]{Images/access.png}
 \caption{Share of population having grid access. }
 \end{center}
 \end{figure}
@@ -111,7 +111,7 @@ If the focus shifts to European countries, Germany and France turn out being the
 \begin{figure}[H]
 \begin{center}
 \captionsetup{justification=centering}
-\includegraphics[width=0.8\textwidth]{Images/prod.png}
+\includegraphics[width=0.7\textwidth]{Images/prod.png}
 \caption{European countries and corresponding electricity generation capacity. }
 \end{center}
 \end{figure}
@@ -194,7 +194,7 @@ There are certain countries that are particularly ill-suited for the existence o
 \begin{figure}[H]
 \begin{center}
 \captionsetup{justification=centering}
-\includegraphics[width=0.8\textwidth]{Images/cons.png}
+\includegraphics[width=0.7\textwidth]{Images/cons.png}
 \caption{European countries and corresponding consumption per capita values, World Bank data. }
 \end{center}
 \end{figure}
@@ -228,7 +228,7 @@ Taxes account for a sizable share of the final prices consumers pay for energy a
 \begin{figure}[H]
 \begin{center}
 \captionsetup{justification=centering}
-\includegraphics[width=0.8\textwidth]{Images/Taxes.png}
+\includegraphics[width=0.7\textwidth]{Images/Taxes.png}
 \caption{2019 (second semester) data, electricity prices. }
 \end{center}
 \end{figure}
@@ -240,7 +240,7 @@ The average final price paid by European households is 21.7 cents per KwH includ
 \begin{figure}[H]
 \begin{center}
 \captionsetup{justification=centering}
-\includegraphics[width=0.6\textwidth]{Images/TaxesTime.png}
+\includegraphics[width=0.7\textwidth]{Images/TaxesTime.png}
 \caption{2019 (second semester) data, electricity prices. }
 \end{center}
 \end{figure}
@@ -274,7 +274,7 @@ The European Union is fighting monopolies in the electricity sector for the simp
 \begin{figure}[H]
 \begin{center}
 \captionsetup{justification=centering}
-\includegraphics[width=0.8\textwidth]{Images/conc.png}
+\includegraphics[width=0.6\textwidth]{Images/conc.png}
 \caption{Market Share of Largest Producers for European countries, 2018 data. }
 \end{center}
 \end{figure}
@@ -286,7 +286,7 @@ In any case, \textit{Figure 9} also demonstrates how, although the liberalizatio
 \begin{figure}[H]
 \begin{center}
 \captionsetup{justification=centering}
-\includegraphics[width=0.7\textwidth]{Images/conc-mc.png}
+\includegraphics[width=0.6\textwidth]{Images/conc-mc.png}
 \caption{Largest supplier market share for Germany, Spain, France and Italy over time. }
 \end{center}
 \end{figure}
@@ -302,7 +302,7 @@ The wealth and the productive capacity of a country are closely related to the c
 \begin{figure}[H]
 \begin{center}
 \captionsetup{justification=centering}
-\includegraphics[width=0.8\textwidth]{Images/gdp.png}
+\includegraphics[width=0.6\textwidth]{Images/gdp.png}
 \caption{Gross Domestic Product per capita for European countries (in Dollars). }
 \end{center}
 \end{figure}
@@ -372,7 +372,7 @@ Eurostat does not provide absolute values for the Emission Intensity indicator, 
 \begin{figure}[H]
 \begin{center}
 \captionsetup{justification=centering}
-\includegraphics[width=0.8\textwidth]{Images/intensiti.png}
+\includegraphics[width=0.7\textwidth]{Images/intensiti.png}
 \caption{CO2 emissions (metric tons per capita). }
 \end{center}
 \end{figure}
@@ -448,7 +448,7 @@ Since oil can be used for producing electricity, one could easily infer that the
 \begin{figure}[H]
 \begin{center}
 \captionsetup{justification=centering}
-\includegraphics[width=0.8\textwidth]{Images/oilbeh.png}
+\includegraphics[width=0.6\textwidth]{Images/oilbeh.png}
 \caption{Electricity Production from Oil (\% of total). }
 \end{center}
 \end{figure}
@@ -487,7 +487,7 @@ The use of renewable energy for producing electricity has several potential bene
 \begin{figure}[H]
 \begin{center}
 \captionsetup{justification=centering}
-\includegraphics[width=0.8\textwidth]{Images/ren.png}
+\includegraphics[width=0.7\textwidth]{Images/ren.png}
 \caption{Renewable Energy Consumed (\% of total). }
 \end{center}
 \end{figure}
@@ -549,9 +549,43 @@ Slovakia & 64.4 & 63.7 \\
 \end{center}
 \end{table}
 
-\chapter*{Methodology \& Results}
+\chapter*{Methodology}
+
+Many authors have tried to measure the effect of market liberalization and green energy investment, starting from \cite{moreno2012electricity}, which performs the analysis in European Union member countries markets'. \cite{nagayama2009electric} takes a broader perspective, looking at more countries but with older data. The cause-effect analysis is carried out in these studies with an econometric approach, without splitting the data in different subsets for training and validating the results, which represented one of the main novelties of the method implemented here.\\
+
+\noindent The main focus is on predicting how prices for electricity are going to evolve in the future, not merely on understanding the causal relationship. In this sense, while the European Union is the principal market on which the analysis is based, also \textit{World Bank} data is used as a source of information for countries all over the world. This section is structured as follows: first, models are built on top of \textit{Eurostat} data sets, and then to benchmark those findings, the most global patterns are investigated.
+
 \section*{Static Model}
+
+The variables in consideration for the European market models seek to resemble the factors listed in the introduction. The response variable, electricity price itself, is expressed in \textit{Euros} and involves households who consume between 2 500 and 5 000 kWh. This means that the focus is on a certain category of consumers, families and not industries. For a panel data analysis on non-household consumers please instead refer to \cite{del2019industrial}.  The price used in the models as response variable does not include taxes. Most remarkably, electricity prices information is recorded twice a year, so in the models year variability is accounted. The time range chosen for the analysis is the last 20 years, from 2000 to the first semester of 2020. This makes the data at hand and the consequent results extremely up-to-date. Minor adjustments had to be carried out because of inconsistencies in the way of recording information between years before 2007 and years after.\\
+
+\noindent The two main bills households receive regard electric power and \textbf{natural gas}, for cooking, heating, lighting and using domestic appliances inside the building. The two goods are strictly related, because electric power can be produced from gas, and because electricity can represent a substitute of gas (e.g.\ for households that use induction cooktops). Data is taken from \textit{Eurostat} and is also in this case bi-annual and expressed in \textit{Euros}. Taxes and levies are not considered, the price is the sum of the raw material value and the cost of transportation and distribution. \textit{Figure 18} shows the distribution of the gas price, with the median being around 10 - 11 euros per mega joule.
+
+\bigskip
+\begin{figure}[H]
+\begin{center}
+\captionsetup{justification=centering}
+\includegraphics[width=0.7\textwidth]{Images/nGas.png}
+\caption{Natural Gas Price Distribution.}
+\end{center}
+\end{figure}
+\bigskip
+
+The idea is to use the price of the resources from which electricity is produced to have an idea of what the price of the good could be. The choice of having the natural gas price as a variable in the data set goes in this sense. It would make sense to actually do the same for \textbf{oil}, but \textit{Eurostat} does not contain any data set with related price per country. Options could be either to use the US dollar price per barrel, which is the same for all countries or the pump price for gasoline. The choice falls on the latter, being considered as a good proxy for what is being tried to be measured. The data is available from the World Bank, and observations are recorded once every two years.\\
+
+Electricity, as discussed in the introduction, is not only produced by burning coal, oil or natural gas, but also by using \textbf{renewable resources}. The share of electricity produced using sustainable practices on the total of electricity produced by each single country is also included in the data set. This information is recorded once a year and available from \textit{Eurostat}. However, some years are incomplete, specifically those before 2004, so those missing records are topped up with data from \textit{World Bank}. The sets from the two different sources describe the same information, e.g. for data regarding 2004, they are almost equivalent: however, just pasting data could be dangerous so normalization of the world bank information is carried out by multiplying each country value for 2000-2003 by a factor that makes records for 2004 match for both sources. \\
+
+\noindent Another variable that takes in consideration the level of sustainability of the electricity produced is the energy \textbf{intensity}. This indicator is used to monitor progress towards United Nations' goal on climate action and on affordable and clean energy and, as anticipated in the introduction, it is calculated as the ratio between energy-related GHG emissions and gross inland consumption of energy. The data on energy emissions are being sourced from the GHG emissions reported to the UNFCCC. Information is normalized with respect to year 2000, which is used as a benchmark. This variable hence expresses how fast that particular economy is in its path towards decarbonization. Data is recorded annually and sourced from \textit{Eurostat}.\\
+
+\noindent It is also important to consider the supply side in this context: how much each country is consuming in terms of energy. \textit{Eurostat} provides information regarding the quantity of oil equivalent (in kilograms), and this data is recorded annually. This indicator measures how much energy every citizen consumes at home excluding energy used for transportation. Since the indicator refers to final energy \textbf{consumption}, only energy used by end consumers is considered. The related consumption of the energy sector itself is excluded.\\
+
+\noindent Many European countries do not really have the capacity to produce enough electricity in order to be self-sufficient. The \textbf{dependency} indicator shows the share of total energy needs of a country met by imports from other countries. It is calculated from energy balances as net imports divided by the gross available energy. The formula is: $$ dependence = \frac{(imports – exports)}{GAE},$$ where GAE is the Gross Available Energy. A negative value indicates net exporter: a country that exports more fuels than it consumes. In the context of of the data set at hand this happens only for \textit{Norway}. Values higher than 100 generally refer to the build of stocks (increase of fule in stocks), yet might be also a result of statistical discrepancies in raw data. This information is available from \textit{Eurostat} and recorded once a year.\\
+
+\noindent The electricity price is also, and maybe most importantly, dependent on how wealthy that single country is. \textit{Eurostat} provides the value of the \textbf{Real Gross Domestic Product} per capita, with data being published every quarter of year. Real in this context means deflated, so leaving prices unchanged. This is key: while the Gross Domestic Product tends to increase every year (given that the country is an inflation regime), the real GDP might be decreasing if, at those prices level, on average the citizens have a lower purchasing power. The reader could wonder why to exclude the average increase in prices from the consideration, although there is a clear correlation between increase and electricity price: the higher the increase in prices the higher the expected increase in the electricity bill. The answer lies in the fact that the \textbf{inflation} variable \textit{hides} the electricity price change variable itself: the average increase in prices is computed on a basket of goods electricity is part of, so it would be too easy to actually use this our variable in our models. The dependent variable exogeneity assumption would not met.
+
 \section*{Dynamic Model}
+
+\chapter*{Conclusions}
 
 \bibliography{references}{}
 \bibliographystyle{plain}
