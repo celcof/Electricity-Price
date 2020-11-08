@@ -2,6 +2,7 @@
 \usepackage[english]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage{float}
+\usepackage{xfrac}
 \usepackage{graphicx}
 \usepackage{subfig}
 \usepackage{hyperref}
@@ -10,6 +11,7 @@
 \usepackage{fullpage}
 \usepackage{caption}
 \usepackage{cite}
+\usepackage[toc,page]{appendix}
 
 \begin{document}
 
@@ -36,7 +38,9 @@
    \end{center}
 \end{titlepage}
 
-\chapter*{Introduction}
+\tableofcontents
+
+\chapter{Introduction}
 
 Electricity bills are among the most important expenses for families around the world, at least for the lucky households that have access to it. In distinct countries the price of electricity of course is different, and it is not only always easy to acknowledge which are the reasons behind these gaps. One could think that the key factor is in the supply: how much it costs to actually source energy, getting electricity and especially distribute it among households. In recent years many countries around the world have gone through liberalization of their electricity markets: the result is that consumers can choose among different suppliers, and may decide to modify the profile of their demand to reduce their costs \cite{867149}. This means that the demand of electricity has become more elastic. Another trend that has gone through in recent years has been the increase in the renewable sources of energy. To measure the effect of such changes on the price of the good is the main aim of this document. The first idea is to have a look at the amount spent by households aroung the world for their electricity bills.  In \textit{Figure 1} the countries are colored on the basis of the price of electricity, measured in US dollars per kWh \footnote{World Bank data, 2020}.
 
@@ -54,7 +58,7 @@ The more intense the red color, the more expensive electricity is. Interestingly
 
 Apart from South America, also in Africa some results are quite interesting: looking at the pale color of countries like South Sudan or Somalia, which are among the poorest in the world, the reader may think that to wealthier country consistently should correspond higher electricity price, given that there is no sky-high inflation. If however, for instance, bordering countries as Algeria and Niger countries are considered, this simple hypothesis does not work: the former has an electricity price of 2.1 dollars per kWh and a gdp per capita of 4,114.72 dollars. In the latter, instead, electricity price corresponds to 21.3 dollars per kWh (10 times with respect to Algeria) but the gdp is merely 413.98 dollars (almost one tenth with respect to Algeria). Since inflation is not really a problem in Niger, this is a hint that the link between economic development and electricity price is not that elementary. The particular problem with Niger is its extremely low electrification rate: only one in seven Nigeriens have access to modern electricity services, and just four percent of rural residents have access through the national utility. The country's total energy consumption per capita is 44 kWh of electricity. It is the second lowest energy consumption per capita in West Africa, behind Guinea Bissau, and the ninth lowest in the world. 
 
-\subsection*{Access to Electricity}
+\section{Access to Electricity}
 
 While the whole share of Algeria inhabitants has access to the grid, this is not the case for Niger, where only part of the relatively wealthier urban population does. This explains why the price is not related with the gross domestic product per capita: since only the wealthy population can afford to have access to the grid, the prices can be kept higher. In this case a loop is entered, since prices are also high because network costs are shared among few people, and network costs are the most important component in the final electricity price paid by households. In \textit{Figure 2} it is showed how electricity price (in dollars per kWh) is related to population share having grid access, for countries with no universal electricity service.
 
@@ -62,7 +66,7 @@ While the whole share of Algeria inhabitants has access to the grid, this is not
 \begin{figure}[H]
 \begin{center}
 \captionsetup{justification=centering}
-\includegraphics[width=0.9\textwidth]{Images/accessNAMES.png}
+\includegraphics[width=0.8\textwidth]{Images/accessNAMES.png}
 \caption{The more southern the country, the redder the color. }
 \end{center}
 \end{figure}
@@ -80,7 +84,7 @@ Although the countries providing little electricity access to its population als
 \end{figure}
 \bigskip
 
-\subsection*{Production}
+\section{Production}
 
 Access to electricity is linked to production and consumption patterns inside a country. Electricity is not freely available in nature, so it must be "produced" (that is, transforming other forms of energy to electricity). Apart from a slight decrease during the 2008 crisis years, electricity production has been increasing constantly in recent years, with China having overcome United States as the main producer.\\
 
@@ -111,13 +115,13 @@ If the focus shifts to European countries, Germany and France turn out being the
 \begin{figure}[H]
 \begin{center}
 \captionsetup{justification=centering}
-\includegraphics[width=0.7\textwidth]{Images/prod.png}
+\includegraphics[width=0.8\textwidth]{Images/prod.png}
 \caption{European countries and corresponding electricity generation capacity. }
 \end{center}
 \end{figure}
 \bigskip
 
-\subsection*{Distribution}
+\section{Distribution}
 
 Of course producing electricity shall be a problem for certain countries, which lack the necessary resources. But an even more significant issue is often the absence of the necessary infrastructure to distribute this good. For poor regions in particular, electricity distribution losses represent  a big concern that hinder their economic development. \textit{Table 2} shows which are the countries that have the least efficient electricity distribution infrastructure.
 
@@ -142,7 +146,7 @@ Niger & 41.8\\
 
 Sadly, most of the distribution losses are associated with very poor countries, in which the access to electricity is limited. 
 
-\subsection*{Consumption}
+\section{Consumption}
 
 Since the major costs associated with electricity is actually the way of transporting it from one place to another, most of the electricity produced in one country actually remains inside that country until it is consumed. This explains why the major electricity producers are also the major electricity consumers. However, there are still marginal differences among these rankings. \textit{Table 2} shows which are the principal electricity consumers in the world.
 
@@ -200,7 +204,7 @@ There are certain countries that are particularly ill-suited for the existence o
 \end{figure}
 \bigskip
 
-\section*{European Union Electricity Market}
+\section{European Union Electricity Market}
 
 Electricity is not an easily tradable product, as it needs hundreds of  legal rules and technical standards to be agreed upon before it can become freely marketable. Electric power is, after all, not more than a flow of electrons inside metallic wires of a massive, interconnected network. That is the reason why, for decades, electricity was considered to be an "anti-market" product, best suited to non-competitive markets like natural monopolies. \cite{glachant2014eu} Furthermore, the particular characteristics of electricity, such as non-storability and the continuous balance between demand and supply, supported the State intervention. The fact that this market is inclined to be a monopoly resulted in efficiencies, where State subsidies have been the rule to maintain a stable industry. \cite{domanico2007concentration} Nevertheless, there is one region in the world that has tried to overcome these "anti-market" barriers to create an extremely vast electricity market. That region is identifiable as the European Union. \\
 
@@ -549,13 +553,14 @@ Slovakia & 64.4 & 63.7 \\
 \end{center}
 \end{table}
 
-\chapter*{Methodology}
+\chapter{Methodology}
 
 Many authors have tried to measure the effect of market liberalization and green energy investment, starting from \cite{moreno2012electricity}, which performs the analysis in European Union member countries markets'. \cite{nagayama2009electric} takes a broader perspective, looking at more countries but with older data. The cause-effect analysis is carried out in these studies with an econometric approach, without splitting the data in different subsets for training and validating the results, which represented one of the main novelties of the method implemented here.\\
 
 \noindent The main focus is on predicting how prices for electricity are going to evolve in the future, not merely on understanding the causal relationship. In this sense, while the European Union is the principal market on which the analysis is based, also \textit{World Bank} data is used as a source of information for countries all over the world. This section is structured as follows: first, models are built on top of \textit{Eurostat} data sets, and then to benchmark those findings, the most global patterns are investigated.
 
-\section*{Static Model}
+\section{Static European Models}
+\subsection*{Variables}
 
 The variables in consideration for the European market models seek to resemble the factors listed in the introduction. The response variable, electricity price itself, is expressed in \textit{Euros} and involves households who consume between 2 500 and 5 000 kWh. This means that the focus is on a certain category of consumers, families and not industries. For a panel data analysis on non-household consumers please instead refer to \cite{del2019industrial}.  The price used in the models as response variable does not include taxes. Most remarkably, electricity prices information is recorded twice a year, so in the models year variability is accounted. The time range chosen for the analysis is the last 20 years, from 2000 to the first semester of 2020. This makes the data at hand and the consequent results extremely up-to-date. Minor adjustments had to be carried out because of inconsistencies in the way of recording information between years before 2007 and years after.\\
 
@@ -579,13 +584,78 @@ Electricity, as discussed in the introduction, is not only produced by burning c
 
 \noindent It is also important to consider the supply side in this context: how much each country is consuming in terms of energy. \textit{Eurostat} provides information regarding the quantity of oil equivalent (in kilograms), and this data is recorded annually. This indicator measures how much energy every citizen consumes at home excluding energy used for transportation. Since the indicator refers to final energy \textbf{consumption}, only energy used by end consumers is considered. The related consumption of the energy sector itself is excluded.\\
 
-\noindent Many European countries do not really have the capacity to produce enough electricity in order to be self-sufficient. The \textbf{dependency} indicator shows the share of total energy needs of a country met by imports from other countries. It is calculated from energy balances as net imports divided by the gross available energy. The formula is: $$ dependence = \frac{(imports – exports)}{GAE},$$ where GAE is the Gross Available Energy. A negative value indicates net exporter: a country that exports more fuels than it consumes. In the context of of the data set at hand this happens only for \textit{Norway}. Values higher than 100 generally refer to the build of stocks (increase of fule in stocks), yet might be also a result of statistical discrepancies in raw data. This information is available from \textit{Eurostat} and recorded once a year.\\
+\noindent Many European countries do not really have the capacity to produce enough electricity in order to be self-sufficient. The \textbf{dependency} indicator shows the share of total energy needs of a country met by imports from other countries. It is calculated from energy balances as net imports divided by the gross available energy. The formula for computing the dependence is: $$ \scalebox{2} {$\frac{(imports – exports)}{gross\;available\;energy}$}.$$ A negative value indicates net exporter: a country that exports more fuels than it consumes. In the context of of the data set at hand this happens only for \textit{Norway}. Values higher than 100 generally refer to the build of stocks (increase of fule in stocks), yet might be also a result of statistical discrepancies in raw data. This information is available from \textit{Eurostat} and recorded once a year.\\
 
-\noindent The electricity price is also, and maybe most importantly, dependent on how wealthy that single country is. \textit{Eurostat} provides the value of the \textbf{Real Gross Domestic Product} per capita, with data being published every quarter of year. Real in this context means deflated, so leaving prices unchanged. This is key: while the Gross Domestic Product tends to increase every year (given that the country is an inflation regime), the real GDP might be decreasing if, at those prices level, on average the citizens have a lower purchasing power. The reader could wonder why to exclude the average increase in prices from the consideration, although there is a clear correlation between increase and electricity price: the higher the increase in prices the higher the expected increase in the electricity bill. The answer lies in the fact that the \textbf{inflation} variable \textit{hides} the electricity price change variable itself: the average increase in prices is computed on a basket of goods electricity is part of, so it would be too easy to actually use this our variable in our models. The dependent variable exogeneity assumption would not met.
+\noindent In the last 20 years the major change in the way electricity is sold is the \textbf{liberalization} forced to member countries by the European Union authorities. The only data regarding the structure of the markets member countries disclosed by \textit{Eurostat} indicates the market share of the largest electricity generator. This information is disclosed annually. As also discussed in the Introduction, whether relying merely on the share of the largest generator is enough for having a solid idea of the structure of the market is a debatable idea. The best indicator for market concentration is the HHI (Herfindahl-Hirschman Index), and it is computed by adding the square root of the percentage market share of each individual firm in the industry.\\
 
+\noindent The electricity price is also, and maybe most importantly, dependent on how wealthy that single country is. \textit{Eurostat} provides the value of the \textbf{real gross domestic product} per capita, with data being published every quarter of year. Real in this context means deflated, so leaving prices unchanged. This is key: while the gross domestic product tends to increase every year (given that the country is an inflation regime), the real GDP might be decreasing if, at those prices level, on average the citizens have a lower purchasing power. The reader could wonder why to exclude the average increase in prices from the consideration, although there is a clear correlation between increase and electricity price: the higher the increase in prices the higher the expected increase in the electricity bill. The answer lies in the fact that the \textbf{inflation} variable \textit{hides} the electricity price change variable itself: the average increase in prices is computed on a basket of goods electricity is part of, so it would be too easy to actually use this our variable in our models. The dependent variable exogeneity assumption would not be met.
+
+\subsection*{Countries}
+
+\textit{Eurostat} provides information regarding the variables above mentioned for the members of the Union, of course, but also for some neighboring countries, which are included in the study. The idea is to understand whether the membership to the Union does have an effect when trying to predict the final price for electricity. \textit{Figure 19} shows which are the European countries included in the study.
+
+\bigskip
+\begin{figure}[H]
+\begin{center}
+\captionsetup{justification=centering}
+\includegraphics[width=0.8\textwidth]{Images/cantries.png}
+\caption{Countries which are included in the study.}
+\end{center}
+\end{figure}
+\bigskip
+
+As discussed in the previous subsection, most information data are not disclosed twice a year but only once: instead of dropping those rows where information data is not available, the mean between the previous and the following semester is computed and inserted in the data set. Other missing data substitution techniques are more sophisticated: for instance, Netherlands does not disclose information regarding electricity market concentration levels. To have an idea of the retail market for this country, an interesting reference is \cite{mulder2019dutch}.  The way out found for not discarding Netherlands from the analysis is to substitute those Not Availables with average values from markets with a similar structure, which are Germany, Denmark, Luxembourg and Belgium.
 \section*{Dynamic Model}
 
-\chapter*{Conclusions}
+\chapter{Conclusions}
+
+\begin{appendices}
+\chapter*{Data Cleaning}
+The library \textit{Eurostat} is used to get the tables from the \textbf{R} interface, in particular the \textit{get\_eurostat} function. For instance, to obtain the price of electricity for years after 2007 the code is:
+
+\begin{verbatim}
+X <- get_eurostat("nrg_pc_204", time_format = "num")
+X <- X[X$consom == "4161903" & X$tax == "X_TAX" & X$currency == "EUR", c(6:8)]
+X <- X[!(X$geo == "EA" | X$geo == "EU27_2020" | X$geo == "EU28"),]
+\end{verbatim}
+
+\noindent To widen the data set, a series of merge functions is prompted. For instance, to add information regarding dependency from imports:
+
+\begin{verbatim}
+I <- get_eurostat("nrg_ind_id", time_format = "num")
+I <- I[grep("TOTAL", I$siec), ]
+I <- I[,c(3:5)]
+names(I)[3] <- "DEP"
+X <- merge(X, I, by=c("time", "geo"), all.x=TRUE)
+\end{verbatim}
+
+\noindent As mentioned when introducing the renewable energy share variable, the major problem is in the transition from \textit{Eurostat} to \textit{World Bank} data for information prior to 2004. In this case the library \textit{wbstats} is used, and in particular the function \textit{wb}. There are small differences in the names assigned to the countries: in \textit{Eurostat} Greece is \textbf{EL} while in the \textit{World Bank} it is \textbf{GR}, United Kingdom is \textbf{UK} while in \textit{World Bank} it is \textbf{GB}. Data integration between the two data sources is carried out using the following code:
+
+\begin{verbatim}
+J <- wb(indicator = "EG.FEC.RNEW.ZS", startdate = 2000, 
+	  enddate = 2004, country=c(levels(X$geo), "GB", "GR"))
+J$iso2c <- gsub("GB", "UK", J$iso2c)
+J$iso2c <- gsub("GR", "EL", J$iso2c)
+J <- J[,c(2,3,6)]
+names(J) <- c("time", "WBren", "geo")
+I <- merge(I, J, by=c("time", "geo"))
+I$FAC <- I$REN / I$WBren
+I <- I[,c(2,5)]
+J <- merge(J, I, by="geo")
+J$REN <- round(J$WBren * J$FAC, 3)
+J <- J[J$time < 2004, c(1,2,5)]
+U <- rbind(U, J)
+X <- merge(X, U, by=c("time", "geo"), all.x=TRUE)
+\end{verbatim}
+
+\end{appendices}
+
+\noindent For a discrete number of countries, information regarding \textit{market concentration} is sometimes missing. In the case of Bulgaria, for instance, all the values prior to 2013 are not available; those NAs are substituted with the first available year (2013).
+
+\begin{verbatim}
+X[X$geo == "BG" & X$time \%in\% c(2000:2012), "MAR"] 
+	<- X[X$geo == "BG" & X$time == 2013, "MAR"]
+\end{verbatim}
 
 \bibliography{references}{}
 \bibliographystyle{plain}
