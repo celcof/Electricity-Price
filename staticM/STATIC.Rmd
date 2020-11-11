@@ -12,6 +12,7 @@ library(ggpubr)
 library(car)
 library(eurostat)
 library(HDCI)
+library(plm)
 library(caret)
 library(scales)
 library(glmnet)
@@ -30,12 +31,16 @@ Simple linear model with country label.
 
 ```{r}
 LMc <- lm(log(PRI) ~ geo + log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL) + MAR, D)
-coef(LMc)[42:length(coef(LMc))]
+summary(LMc)
 ```
 
 ```{R}
 LM <- lm(log(PRI) ~ log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL) + MAR, D)
 summary(LM)
+```
+
+```{R}
+anova(LMc,LM)
 ```
 
 In the case of a random effects model, we find that, interestingly REN is strongly significant and has a negative effect on the price. Instead, when we deal with a fixed effects model, the effect is not significant but with a positive coefficient. This may result from the fact that countries with high share of renewable energy have a lower dummy.

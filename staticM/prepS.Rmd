@@ -239,15 +239,15 @@ X[X$geo == "UK" & X$time %in% c(2014:2018), "MAR"] <- X[X$geo == "UK" & X$time =
 X[X$geo == "SI" & X$time %in% c(2000:2001), "MAR"] <- X[X$geo == "SI" & X$time == 2002, "MAR"]
 ```
 
-Finally, sub na for EMI 2018 and following the trend from 2016 and 2017 (value 2017 + t(value 2017 - value 2016)) with some inertia t (=1/3).
+Finally, sub na for EMI 2019 and 2020 the trend from 2017 and 2018 (value 2018 + t(value 2018 - value 2017)) with some inertia t (=1/3).
 
 ```{r}
 X$geo <- as.factor(as.character(X$geo))
 for (country in levels(X$geo)){
-  if (country != "GE") {
-  diff <- (X[X$time == 2017 & X$geo == country, "EMI"] - X[X$time == 2016 & X$geo == country, "EMI"])
-  X[X$time == 2018 & X$geo == country, "EMI"] <- round(X[X$time == 2017 & X$geo == country, "EMI"] + diff / 3, 1)
-  X[X$time == 2019 & X$geo == country, "EMI"] <- round(X[X$time == 2017 & X$geo == country, "EMI"] + 2 * diff / 3, 1) }
+  if (country != "AL" & country != "GE") {
+  diff <- (X[X$time == 2018 & X$geo == country, "EMI"] - X[X$time == 2017 & X$geo == country, "EMI"])
+  X[X$time == 2019 & X$geo == country, "EMI"] <- round(X[X$time == 2018 & X$geo == country, "EMI"] + diff / 3, 1)
+  X[X$time == 2020 & X$geo == country, "EMI"] <- round(X[X$time == 2018 & X$geo == country, "EMI"] + 2 * diff / 3, 1) }
 }
 rm(country, diff)
 ```

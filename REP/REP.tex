@@ -9,9 +9,16 @@
 \usepackage{wrapfig}
 \usepackage{listings}
 \usepackage{fullpage}
+\usepackage[table]{xcolor}
 \usepackage{caption}
 \usepackage{cite}
 \usepackage[toc,page]{appendix}
+\definecolor{maroon}{cmyk}{0,0,0.4,0}
+
+\newlength\tindent
+\setlength{\tindent}{\parindent}
+\setlength{\parindent}{0pt}
+\renewcommand{\indent}{\hspace*{\tindent}}
 
 \begin{document}
 
@@ -189,6 +196,7 @@ Finland & 15,520\\
 \caption{Countries with highest consumption per capita values, World Bank data.}
 \end{center}
 \end{table}
+\bigskip
 
 There are certain countries that are particularly ill-suited for the existence of individuals, and a large amount of energy has to be consumed in order to improve their well-being. It is the case of Iceland and Norway, where temperatures are very low and during winter months sunlight is available only for few hours. Or it is the case of Bahrain or Kuwait where contrarily it is simply too hot.
 
@@ -349,6 +357,7 @@ Moldova & 91.3\\
 \caption{Countries which reduced their emission intensity the most in the last 20 years.}
 \end{center}
 \end{table}
+\bigskip
 
 With \textit{Table 5}, instead, a summary is provided the countries which experienced the smallest drop in emission intensity in the last 20 years. It can be not that easy to match economic development with climate action, and progress in one field can hinder progress in the other.
 
@@ -357,7 +366,7 @@ With \textit{Table 5}, instead, a summary is provided the countries which experi
 \begin{center}
 \begin{tabular}{|c|c|}
 \hline
-Country & Emission Intensity \\
+\rowcolor{lightgray}Country & Emission Intensity \\
 \hline
 Bulgaria & 97\\
 Lithuania & 95.6\\
@@ -369,6 +378,7 @@ Estonia & 95\\
 \caption{Countries which reduced their emission intensity the most in the last 20 years.}
 \end{center}
 \end{table}
+\bigskip
 
 Eurostat does not provide absolute values for the Emission Intensity indicator, but the World Bank provides data for $CO_{2}$ emissions per capita. \textit{Figure 13} is helps to visualize which are the countries and most and least $CO_{2}$ intensive. One interesting area of focus for further discussion is the Baltic. To demonstrate how political decisions can result in building two radically different economies also for countries which are neighboring and similar, it is interesting to notice how Lithuania is one of the least polluting country in Europe and Estonia is instead the one that is polluting the most.
 
@@ -405,7 +415,7 @@ Although the EU electricity system has modernised and become greener, it has als
 \begin{center}
 \begin{tabular}{|c|c|c|}
 \hline
-\multicolumn{3}{|c|}{Electricity Prod. from Coal (\% of total)}\\
+\rowcolor{lightgray} \multicolumn{3}{|c|}{Electricity Prod. from Coal (\% of total)}\\
 \hline
 Country & 2015 & 2000 \\
 \hline
@@ -419,6 +429,7 @@ North Macedonia & 58.4 & 76.5\\
 \caption{Countries which rely on coal sources for electricity generation the most.}
 \end{center}
 \end{table}
+\bigskip
 
 The trend toward reducing the impact of coal in the energy mix has been set in all corners of Europe, now the focus is on the timing. Even Germany, a country which is very careful on environmental matters, in 2015 still relied on coal for 44\% of its energy production. The share of fossil fuel in the EU electricity generation mix stands at 25 percent, having declined by only 5 percentage points between 2000 and 2015. This is a problem, since as \cite{tagliapietra2017beyond} points out, to generate the same amount of electricity, a coal-fired power plant emits 40 percent more CO2 than a gas-fired power plant and 20 percent more than an oil-fired power plant.
 
@@ -467,7 +478,7 @@ Electricity can also be produced by a process which makes use of nuclear reactio
 \begin{center}
 \begin{tabular}{|c|c|c|}
 \hline
-\multicolumn{3}{|c|}{Nuclear Energy (\% of total)}\\
+\rowcolor{lightgray} \multicolumn{3}{|c|}{Nuclear Energy (\% of total)}\\
 \hline
 Country & 2015 & 2000 \\
 \hline
@@ -481,6 +492,7 @@ Belgium & 37.5 & 58.1\\
 \caption{Countries which rely on nuclear reactors for electricity generation the most.}
 \end{center}
 \end{table}
+\bigskip
 
 \subsubsection*{Renewable Sources}
 
@@ -518,7 +530,7 @@ European countries import a lot of energy from other countries, as Norway and Ru
 \begin{center}
 \begin{tabular}{|c|c|c|}
 \hline
-\multicolumn{3}{|c|}{Electricity Dependence (\%) }\\
+\rowcolor{lightgray} \multicolumn{3}{|c|}{Electricity Dependence (\%) }\\
 \hline
 Country & 2010 & 2018 \\
 \hline
@@ -560,11 +572,11 @@ Many authors have tried to measure the effect of market liberalization and green
 \noindent The main focus is on predicting how prices for electricity are going to evolve in the future, not merely on understanding the causal relationship. In this sense, while the European Union is the principal market on which the analysis is based, also \textit{World Bank} data is used as a source of information for countries all over the world. This section is structured as follows: first, models are built on top of \textit{Eurostat} data sets, and then to benchmark those findings, the most global patterns are investigated.
 
 \section{Static European Models}
-\subsection*{Variables}
+\subsection{Variables}
 
-The variables in consideration for the European market models seek to resemble the factors listed in the introduction. The response variable, electricity price itself, is expressed in \textit{Euros} and involves households who consume between 2 500 and 5 000 kWh. This means that the focus is on a certain category of consumers, families and not industries. For a panel data analysis on non-household consumers please instead refer to \cite{del2019industrial}.  The price used in the models as response variable does not include taxes. Most remarkably, electricity prices information is recorded twice a year, so in the models year variability is accounted. The time range chosen for the analysis is the last 20 years, from 2000 to the first semester of 2020. This makes the data at hand and the consequent results extremely up-to-date. Minor adjustments had to be carried out because of inconsistencies in the way of recording information between years before 2007 and years after.\\
+The variables in consideration for the European market models seek to resemble the factors listed in the introduction. The response variable, electricity price itself, is expressed in \textit{Euros} and involves households who consume between 2 500 and 5 000 kWh. This means that the focus is on a certain category of consumers, families and not industries. For a panel data analysis on non-household consumers please instead refer to \cite{del2019industrial}.  The price used in the models as response variable does not include taxes. Most remarkably, electricity prices information is recorded twice a year, so in the models year variability is accounted. The time range chosen for the analysis is the last 20 years, from 2000 to the first semester of 2020. This makes the data at hand and the consequent results extremely up-to-date. Minor adjustments had to be carried out because of inconsistencies in the way of recording information between years before 2007 and years after. The electricity price is going to serve the dependent variable in the later discussion, and referred as \textbf{PRI}, for short.\\
 
-\noindent The two main bills households receive regard electric power and \textbf{natural gas}, for cooking, heating, lighting and using domestic appliances inside the building. The two goods are strictly related, because electric power can be produced from gas, and because electricity can represent a substitute of gas (e.g.\ for households that use induction cooktops). Data is taken from \textit{Eurostat} and is also in this case bi-annual and expressed in \textit{Euros}. Taxes and levies are not considered, the price is the sum of the raw material value and the cost of transportation and distribution. \textit{Figure 18} shows the distribution of the gas price, with the median being around 10 - 11 euros per mega joule.
+\noindent The two main bills households receive regard electric power and \textbf{natural gas}, for cooking, heating, lighting and using domestic appliances inside the building. The two goods are strictly related, because electric power can be produced from gas, and because electricity can represent a substitute of gas (e.g.\ for households that use induction cooktops). Data is taken from \textit{Eurostat} and is also in this case bi-annual and expressed in \textit{Euros}. Taxes and levies are not considered, the price is the sum of the raw material value and the cost of transportation and distribution. \textit{Figure 18} shows the distribution of the gas price, with the median being around 10 - 11 euros per mega joule. In the later model discussion this variables is going to be names \textbf{GAS}, for short.
 
 \bigskip
 \begin{figure}[H]
@@ -576,21 +588,21 @@ The variables in consideration for the European market models seek to resemble t
 \end{figure}
 \bigskip
 
-The idea is to use the price of the resources from which electricity is produced to have an idea of what the price of the good could be. The choice of having the natural gas price as a variable in the data set goes in this sense. It would make sense to actually do the same for \textbf{oil}, but \textit{Eurostat} does not contain any data set with related price per country. Options could be either to use the US dollar price per barrel, which is the same for all countries or the pump price for gasoline. The choice falls on the latter, being considered as a good proxy for what is being tried to be measured. The data is available from the World Bank, and observations are recorded once every two years.\\
+The idea is to use the price of the resources from which electricity is produced to have an idea of what the price of the good could be. The choice of having the natural gas price as a variable in the data set goes in this sense. It would make sense to actually do the same for \textbf{oil}, but \textit{Eurostat} does not contain any data set with related price per country. Options could be either to use the US dollar price per barrel, which is the same for all countries or the pump price for gasoline. The choice falls on the latter, being considered as a good proxy for what is being tried to be measured. The data is available from the World Bank, and observations are recorded once every two years. In the later model it is going to be referred as \textbf{OIL}, for short.\\
 
-Electricity, as discussed in the introduction, is not only produced by burning coal, oil or natural gas, but also by using \textbf{renewable resources}. The share of electricity produced using sustainable practices on the total of electricity produced by each single country is also included in the data set. This information is recorded once a year and available from \textit{Eurostat}. However, some years are incomplete, specifically those before 2004, so those missing records are topped up with data from \textit{World Bank}. The sets from the two different sources describe the same information, e.g. for data regarding 2004, they are almost equivalent: however, just pasting data could be dangerous so normalization of the world bank information is carried out by multiplying each country value for 2000-2003 by a factor that makes records for 2004 match for both sources. \\
+Electricity, as discussed in the introduction, is not only produced by burning coal, oil or natural gas, but also by using \textbf{renewable resources}. The share of electricity produced using sustainable practices on the total of electricity produced by each single country is also included in the data set, and named as \textbf{REN}, for short. This information is recorded once a year and available from \textit{Eurostat}. However, some years are incomplete, specifically those before 2004, so those missing records are topped up with data from \textit{World Bank}. The sets from the two different sources describe the same information, e.g. for data regarding 2004, they are almost equivalent: however, just pasting data could be dangerous so normalization of the world bank information is carried out by multiplying each country value for 2000-2003 by a factor that makes records for 2004 match for both sources. \\
 
-\noindent Another variable that takes in consideration the level of sustainability of the electricity produced is the energy \textbf{intensity}. This indicator is used to monitor progress towards United Nations' goal on climate action and on affordable and clean energy and, as anticipated in the introduction, it is calculated as the ratio between energy-related GHG emissions and gross inland consumption of energy. The data on energy emissions are being sourced from the GHG emissions reported to the UNFCCC. Information is normalized with respect to year 2000, which is used as a benchmark. This variable hence expresses how fast that particular economy is in its path towards decarbonization. Data is recorded annually and sourced from \textit{Eurostat}.\\
+\noindent Another variable that takes in consideration the level of sustainability of the electricity produced is the emission \textbf{intensity}. This indicator is used to monitor progress towards United Nations' goal on climate action and on affordable and clean energy and, as anticipated in the introduction, it is calculated as the ratio between energy-related GHG emissions and gross inland consumption of energy. The data on energy emissions are being sourced from the GHG emissions reported to the UNFCCC. Information is normalized with respect to year 2000, which is used as a benchmark. This variable hence expresses how fast that particular economy is in its path towards decarbonization. Data is recorded annually and sourced from \textit{Eurostat}: in the later discussion it is going to be referred as \textbf{EMI}, for short.\\
 
-\noindent It is also important to consider the supply side in this context: how much each country is consuming in terms of energy. \textit{Eurostat} provides information regarding the quantity of oil equivalent (in kilograms), and this data is recorded annually. This indicator measures how much energy every citizen consumes at home excluding energy used for transportation. Since the indicator refers to final energy \textbf{consumption}, only energy used by end consumers is considered. The related consumption of the energy sector itself is excluded.\\
+\noindent It is also important to consider the supply side in this context: how much each country is consuming in terms of energy. \textit{Eurostat} provides information regarding the quantity of oil equivalent (in kilograms), and this data is recorded annually. This indicator measures how much energy every citizen consumes at home excluding energy used for transportation. Since the indicator refers to final energy \textbf{consumption}, only energy used by end consumers is considered. The related consumption of the energy sector itself is excluded. This variable is going to be shortened as \textbf{CON} in the following model discussion.\\
 
-\noindent Many European countries do not really have the capacity to produce enough electricity in order to be self-sufficient. The \textbf{dependency} indicator shows the share of total energy needs of a country met by imports from other countries. It is calculated from energy balances as net imports divided by the gross available energy. The formula for computing the dependence is: $$ \scalebox{2} {$\frac{(imports – exports)}{gross\;available\;energy}$}.$$ A negative value indicates net exporter: a country that exports more fuels than it consumes. In the context of of the data set at hand this happens only for \textit{Norway}. Values higher than 100 generally refer to the build of stocks (increase of fule in stocks), yet might be also a result of statistical discrepancies in raw data. This information is available from \textit{Eurostat} and recorded once a year.\\
+\noindent Many European countries do not really have the capacity to produce enough electricity in order to be self-sufficient. The \textbf{dependency} indicator shows the share of total energy needs of a country met by imports from other countries. It is calculated from energy balances as net imports divided by the gross available energy. The formula for computing the dependence is: $$ \scalebox{2} {$\frac{(imports – exports)}{gross\;available\;energy}$}.$$ A negative value indicates net exporter: a country that exports more fuels than it consumes. In the context of of the data set at hand this happens only for \textit{Norway}. Values higher than 100 generally refer to the build of stocks (increase of fule in stocks), yet might be also a result of statistical discrepancies in raw data. This information is available from \textit{Eurostat} and recorded once a year. This variable is going to be shortened as \textbf{DEP} in the models discussed later.\\
 
-\noindent In the last 20 years the major change in the way electricity is sold is the \textbf{liberalization} forced to member countries by the European Union authorities. The only data regarding the structure of the markets member countries disclosed by \textit{Eurostat} indicates the market share of the largest electricity generator. This information is disclosed annually. As also discussed in the Introduction, whether relying merely on the share of the largest generator is enough for having a solid idea of the structure of the market is a debatable idea. The best indicator for market concentration is the HHI (Herfindahl-Hirschman Index), and it is computed by adding the square root of the percentage market share of each individual firm in the industry.\\
+\noindent In the last 20 years the major change in the way electricity is sold is the \textbf{liberalization} forced to member countries by the European Union authorities. The only data regarding the structure of the markets member countries disclosed by \textit{Eurostat} indicates the market share of the largest electricity generator. This information is disclosed annually, and in the following models it is going to appear as \textbf{MAR}, for short. As also discussed in the Introduction, to rely merely on the share of the largest generator is enough for having a solid idea of the structure of the market may be sometimes not adequate. The best indicator for market concentration is the HHI (Herfindahl-Hirschman Index), and it is computed by adding the square root of the percentage market share of each individual firm in the industry.\\
 
-\noindent The electricity price is also, and maybe most importantly, dependent on how wealthy that single country is. \textit{Eurostat} provides the value of the \textbf{real gross domestic product} per capita, with data being published every quarter of year. Real in this context means deflated, so leaving prices unchanged. This is key: while the gross domestic product tends to increase every year (given that the country is an inflation regime), the real GDP might be decreasing if, at those prices level, on average the citizens have a lower purchasing power. The reader could wonder why to exclude the average increase in prices from the consideration, although there is a clear correlation between increase and electricity price: the higher the increase in prices the higher the expected increase in the electricity bill. The answer lies in the fact that the \textbf{inflation} variable \textit{hides} the electricity price change variable itself: the average increase in prices is computed on a basket of goods electricity is part of, so it would be too easy to actually use this our variable in our models. The dependent variable exogeneity assumption would not be met.
+\noindent The electricity price is also, and maybe most importantly, dependent on how wealthy that single country is. \textit{Eurostat} provides the value of the \textbf{real gross domestic product} per capita, with data being published every quarter of year. Real in this context means deflated, so leaving prices unchanged. This is key: while the gross domestic product tends to increase every year (given that the country is an inflation regime), the real GDP might be decreasing if, at those prices level, on average the citizens have a lower purchasing power. The reader could wonder why to exclude the average increase in prices from the consideration, although there is a clear correlation between increase and electricity price: the higher the increase in prices the higher the expected increase in the electricity bill. The answer lies in the fact that the \textbf{inflation} variable \textit{hides} the electricity price change variable itself: the average increase in prices is computed on a basket of goods electricity is part of, so it would be too easy to actually use this our variable in our models. The dependent variable exogeneity assumption would not be met. In the following models, the real Gross Domestic Product per capita variable is going to be called \textbf{GDP}, for short.
 
-\subsection*{Countries}
+\subsection{Countries}
 
 \textit{Eurostat} provides information regarding the variables above mentioned for the members of the Union, of course, but also for some neighboring countries, which are included in the study. The idea is to understand whether the membership to the Union does have an effect when trying to predict the final price for electricity. \textit{Figure 19} shows which are the European countries included in the study.
 
@@ -605,12 +617,153 @@ Electricity, as discussed in the introduction, is not only produced by burning c
 \bigskip
 
 As discussed in the previous subsection, most information data are not disclosed twice a year but only once: instead of dropping those rows where information data is not available, the mean between the previous and the following semester is computed and inserted in the data set. Other missing data substitution techniques are more sophisticated: for instance, Netherlands does not disclose information regarding electricity market concentration levels. To have an idea of the retail market for this country, an interesting reference is \cite{mulder2019dutch}.  The way out found for not discarding Netherlands from the analysis is to substitute those Not Availables with average values from markets with a similar structure, which are Germany, Denmark, Luxembourg and Belgium.
+
+\subsection{Random Effects}
+
+Statistical models always describe variation in observed variables in terms of systematic and unsystematic components. In econometrics, a andom-effects model is a statistical model in which some of the parameters (effects) that define systematic components of the model exhibit some form of random variation.\cite{salkind2010encyclopedia} In the context of the problem at hand, which is the electricity price prediction, the parameters (effects) that shall be taken as random factors are the country identifiers. For the time being, the assumption is that, given certain values for market concentration, share of renewable energy produced ecc. ecc., no country is different than any other. This is not such an unlikely supposition: after all, the countries in the analysis all belong to the European continent. The summary of the random effects model is displayed below, in \textit{Table 2.1}. On variables that are not on a percentage scale, a logarithmic transformation is carried out in order to reduce the influence of the potential outliers. For the moment the variable \textbf{EMI} is going to be excluded from the analysis.
+
+\bigskip
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\rowcolor{lightgray} \multicolumn{5}{|c|}{Coefficients}\\
+\hline
+&Estimate&Std Error&T-Value&5\% Sign\\
+\hline
+(Intercept)&-4.1&0.09&-44&*\\
+log(GAS)&0.2&0.02&9&*\\
+DEP&1E-4&6E-5&2&*\\
+log(CON)&-0.08&0.01&-6&*\\
+REN&-5E-3&5E-4&-10&*\\
+log(GDP)&0.2&0.01&22&*\\
+log(OIL)&0.3&0.03&11&*\\
+MAR&-1E-3&2E-4&-5&*\\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\rowcolor{maroon} \multicolumn{4}{|c|}{Global Performance}\\
+\hline
+R-Squared&0.597&Adj R-Squared&0.595\\
+\hline
+\end{tabular}
+\caption{Model 1 summary.}
+\end{center}
+\end{table}
+\bigskip
+
+The model at hand captures 60\% of the variability of the data points. All variables are significant at the 5\% confidence level: GDP, natural gas and oil prices and dependency from imports all are positively related with the electricity price. Interestingly enough, the coefficient for share of renewable energy produced is negative, meaning that countries with less sustainable energy generation practices are expected to have a lower electricity price, leaving everything else equal.\\
+
+\subsection{Fixed Effects}
+
+\textit{Model 1}, as discussed before, does not consider geographic information: the effect of country variables is assumed to be random. It is now time to check whether that assumption is fair or not. \textit{Model 2} considers all the variables already considered in \textit{Model 1} but also includes the geographical identifier. An Analysis of Variance test is a way to find out if an experiment results are significant. In other words, it helps to figure out whether to reject the null hypothesis or accept the alternative hypothesis. In this case the aim is to understand whether there is a difference in significance between a model with the geographic identifier and one without. \textit{Table 2.2} displays the R output when the \textit{anova} function is called on the two models.
+
+\bigskip
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+\rowcolor{lightgray} \multicolumn{7}{|c|}{Analysis of Variance Table}\\
+\hline
+&Res. DF&RSS&Df&Sum of Sq&F&Pr($>F$)\\
+\hline
+1&1231&21.176&&&&\\
+2&1271&55.337&-40&-34.16&49.6&2.2E-16\\
+\hline
+\end{tabular}
+\caption{Anova test to compare Model 1 and Model 2.}
+\end{center}
+\end{table}
+
+40 degrees of freedom are lost by including the country identifier, but there is a corresponding drop in the Residual Sum of Squares. In this case, the \textit{anova} test suggests that the geographical information should be included in the model, since the p-value is very close to zero. \textit{Table 2.3} summarizes \textit{Model 2} listing its coefficients and corresponding confidence levels.
+
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\rowcolor{lightgray} \multicolumn{4}{|c|}{Coefficients}\\
+\hline
+&Estimate&Std. Error&\\
+\hline
+(Intercept) & -4.37 & 0.20&*** \\
+geoAT&0.15&0.06&*\\
+geoBA&-0.03&0.04&\\
+geoBE&0.38&0.07&***\\
+geoBG&0.01&0.04&\\
+geoCY&0.48&0.06&***\\
+geoCZ&0.24&0.05&***\\
+geoDE&0.26&0.06&***\\
+geoDK&-0.11&0.07&\\
+geoEE&0.09&0.05&\\
+geoEL&-0.02&0.05&\\
+geoES&0.24&0.05&***\\
+geoFI&-0.12&0.06&*\\
+geoFR&0.00&0.06&\\
+geoGE&0.05&0.07&\\
+geoHR&0.24&0.05&***\\
+geoHU&0.31&0.05&***\\
+geoIE&0.32&0.07&***\\
+geoIS&-0.16&0.07&*\\
+geoIT&0.32&0.06&***\\
+geoLI&0.20&0.07&**\\
+geoLT&0.06&0.05&\\
+geoLU&0.22&0.09&**\\
+geoLV&0.23&0.05&***\\
+geoMD&0.48&0.05&***\\
+geoME&0.11&0.05&*\\
+geoMK&-0.29&0.05&***\\
+geoMT&0.13&0.05&*\\
+geoNL&0.13&0.07&\\
+geoNO&-0.11&0.09&\\
+geoPL&0.24&0.05&***\\
+geoPT&0.13&0.05&**\\
+geoRO&0.34&0.05&***\\
+geoRS&-0.27&0.05&***\\
+geoSE&-0.10&0.06&\\
+geoSI&0.15&0.05&**\\
+geoSK&0.34&0.05&***\\
+geoTR&0.22&0.04&***\\
+geoUA&-0.51&0.06&***\\
+geoUK&0.22&0.07&**\\
+geoXK&-0.39&0.05&***\\
+log(GAS)&0.29&0.02&***\\
+DEP&-0.00&0.00&\\
+log(CON)&-0.05&0.01&***\\
+REN&0.00&0.00&\\
+log(GDP)&0.19&0.03&***\\
+log(OIL)&0.25&0.02&***\\
+MAR&-0.00&0.00&* \\
+\hline
+\multicolumn{2}{l}{\scriptsize{$^{***}p<0.001$; $^{**}p<0.01$; $^{*}p<0.05$}}
+\end{tabular}
+\end{center}
+\end{table}
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\rowcolor{maroon} \multicolumn{4}{|c|}{Global Performance}\\
+\hline
+R-Squared&0.8458&Adj R-Squared&0.8399\\
+\hline
+\end{tabular}
+\caption{Model 2 summary.}
+\end{center}
+\end{table}
+\bigskip
+
 \section*{Dynamic Model}
 
 \chapter{Conclusions}
 
 \begin{appendices}
 \chapter*{Data Cleaning}
+\section*{European Static}
 The library \textit{Eurostat} is used to get the tables from the \textbf{R} interface, in particular the \textit{get\_eurostat} function. For instance, to obtain the price of electricity for years after 2007 the code is:
 
 \begin{verbatim}
@@ -655,6 +808,102 @@ X <- merge(X, U, by=c("time", "geo"), all.x=TRUE)
 \begin{verbatim}
 X[X$geo == "BG" & X$time \%in\% c(2000:2012), "MAR"] 
 	<- X[X$geo == "BG" & X$time == 2013, "MAR"]
+\end{verbatim}
+
+While for Bulgaria it was use possible to simply copy and paste the information from following years, the Netherlands have never disclosed any information regarding market concentration. In this case data is substituted with averages from countries with similar market structure, as Belgium, Germany, Luxembourg and Denmark.
+
+\begin{verbatim}
+for (i in 1:nrow(X)) {
+  year <- X$time[i]
+  if (X$geo[i] == "NL" & year\%\%1==0){
+    DEvalue <- X[X$geo == "DE" & X$time == year, "MAR"]
+    BEvalue <- X[X$geo == "BE" & X$time == year, "MAR"]
+    LUvalue <- X[X$geo == "LU" & X$time == year, "MAR"]
+    DKvalue <- X[X$geo == "DK" & X$time == year, "MAR"]
+    NLvalue <- mean(c(DEvalue, BEvalue, LUvalue, DKvalue), na.rm=T)
+    X[X$geo == "NL" & X$time == year, "MAR"] <- NLvalue
+  }
+}
+\end{verbatim}
+
+\noindent \textit{Eurostat}, at the time of the writing, has not yet published data regarding emission intensity for years 2019 and 2020. Since these values are likely to have changed in the last years, the assumption is that the direction of the change follows the trend of the difference from 2017 to 2018, with some inertia (equal to 0.33). The achieve this on \textbf{R}:
+
+\begin{verbatim}
+for (country in levels(X$geo)){
+  if (country != "GE") {
+  diff <- (X[X$time == 2018 & X$geo == country, "EMI"] -
+	X[X$time == 2017 & X$geo == country, "EMI"])
+  X[X$time == 2019 & X$geo == country, "EMI"] 
+	<- round(X[X$time == 2018 & X$geo == country, "EMI"] + diff / 3, 1)
+  X[X$time == 2020 & X$geo == country, "EMI"]
+	<- round(X[X$time == 2018 & X$geo == country, "EMI"] + 2 * diff / 3, 1) }
+}
+\end{verbatim}
+
+\noindent Price of natural gas tends to increase over time. For this reason, when substituting Not Availables for the Gas variable when it is missing, both the history of the price for that country and the average of countries in that year is taken into account. For countries that never disclose information regarding the natural gas price, averages from neighboring or similar countries is used. In the case of the missing value for Malta, for instance, an average of the information from Italy and Greece is used.
+
+\begin{verbatim}
+for (i in 1:nrow(X)) {
+  year <- X$time[i]
+  country <- X$geo[i]
+  if (country \%in\% c("BE", "CZ", "DE", "EE", "EL", "LI", "LU", "MK", "PL", "PT") 
+		& is.na(X[i, "GAS"])) {
+      X[i, "GAS"] <- weighted.mean(c(mean(X[X$geo==country,"GAS"],na.rm=T),
+		mean(X[X$time==year,"GAS"],na.rm=T)),c(0.25,0.75))
+  }
+  else if (country == "MT") {
+    value1 <- X[X$geo == "IT" & X$time == year, "GAS"]
+    value2 <- X[X$geo == "EL" & X$time == year, "GAS"]
+    value <- mean(c(value1, value2), na.rm=T)
+    X[i,"GAS"] <- value
+  }
+}
+\end{verbatim}
+
+\noindent For all other Not Availables referring to non mid-term records, for variables such as Dependence, Consumption, Inflation and Emission Intensity, both the average from the year and the average from the country is taken into consideration, using a weighted mean. This schema is implemented so that if information regarding previous years is missing, the NA can still be replaced with a reasonable value. To bring an example, the code for substituting Dependence missing values is reported below.
+
+\begin{verbatim}
+for (i in 1:nrow(X)) {
+  year <- X$time[i]
+  country <- X$geo[i]
+  if ((is.na(X[i, "DEP"]) & year\%\%1==0)) {
+      X[i, "DEP"] <- weighted.mean(c(mean(X[X$geo==country,"DEP"],na.rm=T),
+	mean(X[X$time==year,"DEP"],na.rm=T)),c(0.0005,0.9995),na.rm=T)
+  }
+\end{verbatim}
+
+\noindent For Gross Domestic Product missing values an additional intake of care is needed, since geographically close regions may present completely different wealth levels. In the case no historic value is found, countries that are expected to have a similar GDP are used as a benchmark. The problem with the above-mentioned technique is in the fact that using the average from historic values is likely to under-estimate the real GDP value, since for most years the economy tends to grow rather than shrink. For this reason the mean is positively adjusted by multiplying it by 1.02 (the European economy in recent years has been growing by about 2 percentage point per year on average).
+
+\begin{verbatim}
+historic1 <- c()
+for (i in 1:nrow(X)) {
+  year <- X$time[i]
+  country <- X$geo[i]
+  if (country == "XK" | country == "AL" | country == "ME" | country == "MK" | country == "BA") {
+    value1 <- X[X$geo == "RO" & X$time == year, "GDP"]
+    value2 <- X[X$geo == "HR" & X$time == year, "GDP"]
+    value3 <- X[X$geo == "RS" & X$time == year, "GDP"]
+    value4 <- X[X$geo == "BG" & X$time == year, "GDP"]
+    outside <- mean(c(value1, value2, value3, value4),na.rm=T)
+    value <- weighted.mean(c(outside,1.01*mean(historic1)),w=c(0.0005,0.9995),na.rm=T)
+    historic1 <- c(historic1, value)
+    X[i,"GDP"] <- value
+  }
+\end{verbatim}
+
+\noindent The remaining missing values all refer to mid-year records. When both the following semester value and the previous semester value are present, a simple average is computed.
+
+\begin{verbatim}
+for (i in 1:nrow(X)) {
+  year <- X$time[i]
+  country <- X$geo[i]
+  if (year \%\% 1 != 0)
+    for (col in c("DEP", "CON", "EMI", "MAR", "REN", "OIL")) {
+      prev <- X[X$time==(year-0.5) & X$geo==country, col]
+      after <- X[X$time==(year+0.5) & X$geo==country, col]
+      X[i, col] <- mean(c(prev,after),na.rm=T)
+    }
+}
 \end{verbatim}
 
 \bibliography{references}{}
