@@ -657,7 +657,7 @@ R-Squared&0.597&Adj R-Squared&0.595\\
 \end{table}
 \bigskip
 
-The model at hand captures 60\% of the variability of the data points. All variables are significant at the 5\% confidence level: GDP, natural gas and oil prices and dependency from imports all are positively related with the electricity price. Interestingly enough, the coefficient for share of renewable energy produced is negative, meaning that countries with less sustainable energy generation practices are expected to have a lower electricity price, leaving everything else equal.\\
+The model at hand captures 60\% of the variability of the data points. All variables are significant at the 5\% confidence level: GDP, natural gas and oil prices and dependency from imports all are positively related with the electricity price. Interestingly enough, the coefficient for share of renewable energy produced is negative, meaning that countries with more sustainable energy generation practices are expected to have a lower electricity price, leaving everything else equal.\\
 
 \subsection{Fixed Effects}
 
@@ -688,7 +688,7 @@ The model at hand captures 60\% of the variability of the data points. All varia
 \hline
 \rowcolor{lightgray} \multicolumn{4}{|c|}{Coefficients}\\
 \hline
-&Estimate&Std. Error&\\
+&Estimate&Std. Error&p\\
 \hline
 (Intercept) & -4.37 & 0.20&*** \\
 geoAT&0.15&0.06&*\\
@@ -757,13 +757,76 @@ R-Squared&0.8458&Adj R-Squared&0.8399\\
 \end{table}
 \bigskip
 
+\textit{Model 2} captures around 85\% of the variability of the data points. The coefficients for the geographical identifier dummy variables provide an indication whether the single countries pay more than they should given their wealth, market concentration, consumption levels and so on. To provide an example, Belgian households pay for electricity bills an amount which is significantly higher than what would be expected, while the opposite happens for Serbia.\\
+
+It is interesting to notice how the coefficients of some of the variables of \textit{Model 1} change when moving to \textit{Model 2}. For instance, the already discussed Renewable Energy Share this time shows a negative coefficient, even though it is not significant at the 5\% confidence level. This means that, opposite to what said before, a higher share of energy produced sustainably leads to a decrease in the price of electricity, every else left equal. The reason for this discrepancy is that countries with a high share of renewable energy production are going to have a lower geographical dummy variable (e.g. Denmark and Norway coefficient is -0.11, Sweden coefficient is -0.1).\\
+
+Creating a dummy variable for each one of the countries in the data set, fixing the geographical effects, reduces the degrees of freedom which are available, and it is also too aggressive in simplifying the regression problem at hand. For example \textit{Model 2} suggests that Northern Europe households pay less than they should for their electricity, but any information regarding the why this is the case is not available. Is it because, as was suggested in \textit{Model 1}, the \textbf{REN} variable is higher, is it because these countries are closer to Russia, which is a strong Natural Gas provider or because of something else? Hard to say at this point.\\
+
+An alternative solution, rather than relying on so many geographical identifiers or to none of them, would be to include information regarding the membership to the European Union. Countries which use the Euro as their currency belong to the Economic Area group (\textbf{EA} dummy), other member states are referred to as \textbf{EU} countries (examples are Sweden, Denmark, which use their currency). Among the non EU-member states, an \textbf{EFTA} (European Free Trade Association) dummy variable is introduced to refer to countries as Norway that still have access to the common market. The set of commands to obtain the expanded data set with the dummy variables is displaced in the appendix. \textit{Table 2.4} summarized
+
+\bigskip
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\rowcolor{lightgray} \multicolumn{4}{|c|}{Coefficients}\\
+\hline
+&Estimate&Std. Error&p\\
+\hline
+(Intercept)&-3.81&0.10&***\\
+log(GAS)&0.21&0.02&***\\
+DEP&0.00&0.00&*\\
+log(CON)&-0.10&0.01&***\\
+REN&-0.00&0.00&***\\
+log(GDP)&0.17&0.01&***\\
+log(OIL)&0.32&0.03&***\\
+MAR&-0.00&0.00&***\\
+EA&0.23&0.02&***\\
+EFTA&0.24&0.04&***\\
+EU&0.20&0.02&***\\
+\hline
+\multicolumn{2}{l}{\scriptsize{$^{***}p<0.001$; $^{**}p<0.01$; $^{*}p<0.05$}}
+\end{tabular}
+\end{center}
+\end{table}
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\rowcolor{maroon} \multicolumn{4}{|c|}{Global Performance}\\
+\hline
+R-Squared&0.6272&Adj R-Squared&0.6242\\
+\hline
+\end{tabular}
+\caption{Model 3 summary.}
+\end{center}
+\end{table}
+\bigskip
+
+\textit{Table 2.4} summarizes coefficients and performance of \textit{Model 3}, which includes the European membership identifier among its variables. Countries which have some kind of bond with the European Union, both members and free trade associates, result having a higher intercept in the regression problem: their citizens are expected to pay a higher price for electricity with respect to citizens from outside countries.
+
+\subsection{Checking Assumptions}
+
+The relationship between the predictors and the outcome variable is assumed to be linear. The Residuals vs Fitted plot is used to check the linear relationship assumption. A horizontal line, without distinct patterns is an indication for a linear relationship. In \textit{Figure 2.3}, data points are plot in the Fitted vs Residual space, so with the predicted value on the x-axis and the residual value on the y-axis. Since no distinct pattern is recognizable, the relationship is assumed to be close to linear.
+
+\bigskip
+\begin{figure}[H]
+\begin{center}
+\captionsetup{justification=centering}
+\includegraphics[width=0.8\textwidth]{Images/fitres.png}
+\caption{Countries which are included in the study.}
+\end{center}
+\end{figure}
+\bigskip
+
 \section*{Dynamic Model}
 
 \chapter{Conclusions}
 
 \begin{appendices}
 \chapter*{Data Cleaning}
-\section*{European Static}
+\section*{Static}
 The library \textit{Eurostat} is used to get the tables from the \textbf{R} interface, in particular the \textit{get\_eurostat} function. For instance, to obtain the price of electricity for years after 2007 the code is:
 
 \begin{verbatim}
@@ -800,8 +863,6 @@ J <- J[J$time < 2004, c(1,2,5)]
 U <- rbind(U, J)
 X <- merge(X, U, by=c("time", "geo"), all.x=TRUE)
 \end{verbatim}
-
-\end{appendices}
 
 \noindent For a discrete number of countries, information regarding \textit{market concentration} is sometimes missing. In the case of Bulgaria, for instance, all the values prior to 2013 are not available; those NAs are substituted with the first available year (2013).
 
@@ -905,6 +966,27 @@ for (i in 1:nrow(X)) {
     }
 }
 \end{verbatim}
+
+\section*{Membership to EU}
+
+To understand whether the membership to the European Union corresponds to a higher electricity price, left constant all other model parameters, it is necessary to first introduce some membership dummy variables. The \textbf{EA} parameter becomes one when the country belongs to the EU Economic Area, where Euro is used as a currency; for all other member countries the identifier is simply \textbf{EU}. Among the non-member countries, the ones which agreed to join the European Free Trade Association are identified as \textbf{EFTA}.
+
+\begin{verbatim}
+for (row in 1:nrow(DP)) {
+  if (as.character(DP[row, "geo"]) \%in\% c("BG", "RO", "CZ", "HU", "HR",
+	 "SE", "DK", "PL", "UK")) {
+    DP$EU[row] <- "EU"
+}
+  else if (as.character(DP[row, "geo"]) \%in\% c("NO", "IS", "LI")) {
+    DP$EU[row] <- "EFTA"
+  }
+  else if (as.character(DP[row, "geo"]) \%in\% c("BE", "EL", "LT", "PT", "ES", "LU", "FR",
+	 "SI", "MT", "SK", "DE", "IT", "NL", "FI", "EE", "CY", "AT", "IE", "LV")){
+    DP$EU[row] <- "EA"
+    }
+}
+\end{verbatim}
+\end{appendices}
 
 \bibliography{references}{}
 \bibliographystyle{plain}
