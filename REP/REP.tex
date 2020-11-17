@@ -661,7 +661,7 @@ The model at hand captures 60\% of the variability of the data points. All varia
 
 \subsection{Fixed Effects}
 
-\textit{Model 1}, as discussed before, does not consider geographic information: the effect of country variables is assumed to be random. It is now time to check whether that assumption is fair or not. \textit{Model 2} considers all the variables already considered in \textit{Model 1} but also includes the geographical identifier. An Analysis of Variance test is a way to find out if an experiment results are significant. In other words, it helps to figure out whether to reject the null hypothesis or accept the alternative hypothesis. In this case the aim is to understand whether there is a difference in significance between a model with the geographic identifier and one without. \textit{Table 2.2} displays the R output when the \textit{anova} function is called on the two models.
+\textit{Model 1}, as discussed before, does not consider geographic information: the effect of country variables is assumed to be random. It is now time to check whether that assumption is fair or not. \textit{Model 2} considers all the variables already considered in \textit{Model 1} but also includes the geographical identifier. An Analysis of Variance test is a way to find out if an experiment results are significant. In this case the null hypothesis is that there is no difference in significance between a model with the geographic identifier and one without, the alternative hypothesis is that there is a difference in significance. \textit{Table 2.2} displays the R output when the \textit{anova} function is called on the two models.
 
 \bigskip
 \begin{table}[H]
@@ -763,7 +763,7 @@ It is interesting to notice how the coefficients of some of the variables of \te
 
 Creating a dummy variable for each one of the countries in the data set, fixing the geographical effects, reduces the degrees of freedom which are available, and it is also too aggressive in simplifying the regression problem at hand. For example \textit{Model 2} suggests that Northern Europe households pay less than they should for their electricity, but any information regarding the why this is the case is not available. Is it because, as was suggested in \textit{Model 1}, the \textbf{REN} variable is higher, is it because these countries are closer to Russia, which is a strong Natural Gas provider or because of something else? Hard to say at this point.\\
 
-An alternative solution, rather than relying on so many geographical identifiers or to none of them, would be to include information regarding the membership to the European Union. Countries which use the Euro as their currency belong to the Economic Area group (\textbf{EA} dummy), other member states are referred to as \textbf{EU} countries (examples are Sweden, Denmark, which use their currency). Among the non EU-member states, an \textbf{EFTA} (European Free Trade Association) dummy variable is introduced to refer to countries as Norway that still have access to the common market. The set of commands to obtain the expanded data set with the dummy variables is displaced in the appendix. \textit{Table 2.4} summarized
+An alternative solution, rather than relying on so many geographical identifiers or to none of them, would be to include information regarding the membership to the European Union. Countries which use the Euro as their currency belong to the Economic Area group (\textbf{EA} dummy), other member states are referred to as \textbf{EU} countries (examples are Sweden, Denmark, which use their currency). Among the non EU-member states, an \textbf{EFTA} (European Free Trade Association) dummy variable is introduced to refer to countries as Norway that still have access to the common market. The set of commands to obtain the expanded data set with the dummy variables is displaced in the appendix. \textit{Table 2.4} summarizes the linear model 3.
 
 \bigskip
 \begin{table}[H]
@@ -808,19 +808,251 @@ R-Squared&0.6272&Adj R-Squared&0.6242\\
 
 \subsection{Checking Assumptions}
 
-The relationship between the predictors and the outcome variable is assumed to be linear. The Residuals vs Fitted plot is used to check the linear relationship assumption. A horizontal line, without distinct patterns is an indication for a linear relationship. In \textit{Figure 2.3}, data points are plot in the Fitted vs Residual space, so with the predicted value on the x-axis and the residual value on the y-axis. Since no distinct pattern is recognizable, the relationship is assumed to be close to linear.
+The relationship between the predictors and the outcome variable is assumed to be linear. The Residuals vs Fitted plot is used to check the linear relationship assumption. A horizontal line, without distinct patterns is an indication for a linear relationship. In \textit{Figure 2.3}, data points are plot in the Fitted vs Residual space, so with the predicted value on the x-axis and the residual value on the y-axis.
 
 \bigskip
 \begin{figure}[H]
 \begin{center}
 \captionsetup{justification=centering}
 \includegraphics[width=0.8\textwidth]{Images/fitres.png}
-\caption{Countries which are included in the study.}
+\caption{Residuals vs Fitted plot.}
 \end{center}
 \end{figure}
 \bigskip
 
-\section*{Dynamic Model}
+Since no distinct pattern is recognizable, the relationship between the predictors and the outcome variable is assumed to be close to linear. Points 956 and 996 seem to positioned quite far from the others, on the bottom left: they are two observations from Ukraine, a country which produces electricity at a low price thanks to its natural resources. Hence, the hypothesis that those are mistaken records is discarded. \textit{Figure 2.4} shows how the residuals are distributed.
+
+\bigskip
+\begin{figure}[H]
+\begin{center}
+\captionsetup{justification=centering}
+\includegraphics[width=0.8\textwidth]{Images/distres.png}
+\caption{Distribution of the Residuals.}
+\end{center}
+\end{figure}
+\bigskip
+
+Residuals show a distribution which is slightly skewed to the left: it happens more often that the simple linear model that has been built underestimates the real value with respect to a no residual situation. However, also given the large number of data points, this small deviation from perfect normality is not too alarming. One note: to the outcome variable at hand the logarithmic transformation has been applied, so a 0.1 residual does not correspond to a 10 cents of a dollar estimation error.\\
+
+Another problem that can pop up in regression models is the collinearity or the multi-collinearity of the predictor variables. In the presence of collinearity, the solution of the regression model becomes unstable. This hurdle can be assessed by computing a score called the variance inflation factor (or \textbf{VIF}), which measures how much the variance of a regression coefficient is inflated due to multi-collinearity in the model. \textbf{Table 2.5} displays the result of running VIF on the variables from Model 3.
+
+\bigskip
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\rowcolor{lightgray} \multicolumn{4}{|c|}{Variance Inflation Factor}\\
+\hline
+&GVIF&Df&$GVIF^{\frac{1}{2*Df}}$\\
+\hline
+log(GAS)&2.1&1&1.4\\
+DEP&2.4&1&1.5\\
+log(CON)&1.4&1&1.2\\
+REN&1.8&1&1.3\\
+log(GDP)&2.6&1&1.6\\
+log(OIL)&1.5&1&1.2\\
+MAR&1.3&1&1.1\\
+EU&4.9&3&1.3\\
+\hline
+\end{tabular}
+\caption{VIF test.}
+\end{center}
+\end{table}
+\bigskip
+
+Since GVIF and adjusted GVIF values are rather low, well under the critical 10 threshold, multi-collinearity can be safely considered as not an issue in this case.\\
+
+\textit{Figure 2.5} displays the scale-location plot, which is used to check homoscedasticity, i.e.\ the homogeneity of variance of the residuals. On the horizontal axis the fitted values are reported, as in \textit{Figure 2.3}, while on the vertical axis the residual value is taken in its absolute value and then transformed using a square root operation.
+
+\bigskip
+\begin{figure}[H]
+\begin{center}
+\captionsetup{justification=centering}
+\includegraphics[width=0.8\textwidth]{Images/scalelog.png}
+\caption{Scale-Location plot.}
+\end{center}
+\end{figure}
+\bigskip
+
+Equally spread points and consequent horizontal line of fit is a good indication of homoscedasticity: in this case, hard to give a definite answer. On the left-hand side of the plot, so when the fitted values are particularly small, the residuals tend to be greater. To investigate further, one idea is to run the \textbf{Breusch-Pagan} test, which fits a linear regression model to the previous residuals and rejects if too much of the variance is explained by the additional explanatory variables. \textit{Table 2.6} provides a summary.
+
+\bigskip
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+\rowcolor{lightgray} \multicolumn{3}{|c|}{BP Test}\\
+\hline
+BP&df&p-value\\
+179&10&$<$2E-16\\
+\hline
+\end{tabular}
+\caption{BP test.}
+\end{center}
+\end{table}
+\bigskip
+
+The test detects heteroscedasticity. This means that the least squares estimator is still a linear and unbiased estimator, but it may no longer be the best. That is, there is another estimator with a smaller variance. In order to correct for heteroscedasticity, a \textbf{Box Cox} transformation is applied on the dependent variable, electricity price. A transformation of this type makes a non-normal dependent variable into a normal shape. \cite{box1964analysis} Code for applying Box-Cox transformation on the dependent variable is left in the appendix: in any case, as displayed in \textit{Table 2.7}, the overall situation improves but the BP test still detects heteroscedasticity.
+
+\bigskip
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+\rowcolor{lightgray} \multicolumn{3}{|c|}{BP Test}\\
+\hline
+BP&df&p-value\\
+114&10&$<$2E-16\\
+\hline
+\end{tabular}
+\caption{BP test after having applied BC transformation on outcome variable.}
+\end{center}
+\end{table}
+\bigskip
+
+\subsection{Weighted Least Squares}
+
+Another option to better deal with non-constant variance is to deviate from ordinary least squares to use weighted least squares model. Weighted least squares corrects homoscedasticity by weighting each observation by the reciprocal of its estimated variance. Observations with small estimated variances are weighted higher than observations with large estimated variances. The precise steps are reported in the appendix, but the idea is to store the residuals from \textit{Model 3} and then run a regression on the residuals themselves. The weights for the final model are then obtained by taking the reciprocal of the square root of the exponential of the fitted values from this intermediate model. Since the weights are inversely proportional to the error variance, they reflect the information in that observation. So, an observation with small error variance has a large weight since it contains relatively more information than an observation with large error variance.\textit{Table 2.8} compares the resulting coefficients from \textit{Model 3}, with Ordinary Least Squares, and the linear model with weighted regression, which is going to be referred to as \textit{Model 4}.
+
+\bigskip
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+\rowcolor{maroon} \multicolumn{3}{|c|}{Coefficients Comparison}\\
+\hline
+coef&OLS&WLS\\
+\hline
+intercept&-3.81&-3.71\\
+log(GAS)&0.21&0.24\\
+DEP&0&0\\
+log(CON)&-0.1&-0.11\\
+REN&0&0\\
+log(GDP)&0.18&0.16\\
+log(OIL)&0.32&0.3\\
+MAR&0&0\\
+EA&0.23&0.23\\
+EFTA&0.24&0.27\\
+EU&0.2&0.2\\
+\hline
+\end{tabular}
+\caption{Comparison of Coefficients obtained through OLS and WLS.}
+\end{center}
+\end{table}
+\bigskip
+
+There are no major differences between the two models but the one built through Weighted Least Squares is supposed to be more robust. The interpretation of the resulting coefficients and standard errors remains the same as before.\\
+
+It is important to note that the fact that some heteroscedasticity is detected while not using weights should not be too worrisome: most real world data is in fact heteroscedastic. If the sample size is large enough, however, the variance of the least squares estimator is supposed to be sufficiently small to get precise estimates. That is why from the following section, the use of the weights inside models is going to be carried out only sporadically.
+
+\subsection{Subset Selection}
+
+To have an idea of the goodness of models there are several options: one could look at the \textit{Adjusted $R^{2}$} values, as previously done in the chapter, or at some alternative accuracy metrics, as \textit{AIC}, \textit{BIC} or \textit{CP}. R squared is the proportion of variation in the outcome that is explained by the predictor variables: sadly, any variable which is added to the model is going to increase this accuracy metric, which is hence usually adjusted by the number of variables $n$. Akaike's Information Criteria (shortened AIC), Bayesian Information Criteria (shortened BIC) and Cp's basic idea is instead to penalize the inclusion of additional variables to the model. The lower the levels for these metrics, the better the model.\\
+
+The take-home message is that having a very large model including variables which are not really significant can decrease the likelihood of the final predictions produced being reliable. The next step is to assess whether the model with all the variables from \textit{Model 3} is supposed to be the best or it is better to focus on a subset of those predictors. \textit{Table 2.9} displays the performance of the different models while one variable at a time is excluded from the model. For the steps to obtain such a table for subset selection, please refer to the appendix.
+
+\bigskip
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\rowcolor{lightgray} \multicolumn{5}{|c|}{Subset Selection}\\
+\hline
+Excl Var&N of Vars&Adj $R^2$&BIC&Cp\\
+\hline
+&10&0.62&-1183&11\\
+DEP&9&0.62&-1186&13\\
+MAR&8&0.62&-1180&25\\
+EFTA&7&0.61&-1158&52\\
+EA&6&0.6&-1123&94\\
+EU&5&0.59&-1092&133\\
+log(CON)&4&0.57&-1058&177\\
+log(OIL)&3&0.54&-966&292\\
+REN&2&0.5&-858&438\\
+log(GAS)&1&0.4&-647&753\\
+\hline
+\end{tabular}
+\caption{Comparison of accuracy metrics while removing one variable at a time.}
+\end{center}
+\end{table}
+\bigskip
+
+The first variables to be excluded from the model are Dependence on Imports and Market Concentration, followed by the geographical dummy variables. Contrarily, log(GDP) does not appear in the table which means that it is the last variable to be left. To decide which the best model is one has to look at the accuracy metrics: adjusted $R^2$ and Cp would suggest to opt for the model including all the variables, while BIC suggests to exclude DEP.\\
+
+The problem with the accuracy metrics described above is that they are computed on the same data set that is used for training the model. When there is enough information availability an option is to use a a part of the data to actually measure performance only. For instance, to understand which one of two models is the most reliable it is only necessary to compare the performance of the two models on the real-world data that is left for validation. In the case of the electricity data set at disposal, the idea is to split information on a temporal basis: the training set includes data prior to 2015, validation set includes the most recent information.\\
+
+At this point, simple and weighted linear regressions are recomputed on the smaller size training set. Performance of this two models on the validation set is reported in \textit{Table 2.10}. The accuracy metric used is the \textit{Mean Absolute Error}, which is computed as the arithmetic average of the absolute errors.
+
+\bigskip
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\rowcolor{maroon} \multicolumn{4}{|c|}{Mean Absolute Error}\\
+\hline
+OLS&0.0181&WLS&0.189\\
+\hline
+\end{tabular}
+\caption{Comparison of performance between OLS and WLS.}
+\end{center}
+\end{table}
+\bigskip
+
+Ordinary Least Squares seems to outperform Weighted Least Squares when testing the models on the validation set. Adjusted $R^2$, BIC and Cp metrics suggested to keep all the variables in the models, or in the worst case drop DEP. Now it could be interesting to check whether also Mean Absolute Error result proves to go in this direction. \textit{Table 2.11} summarizes information regarding the best model for $N$=1,...,10 where $N$ is the number of variables in the model. Resulting Mean Absolute Error, measured in US dollar cents, is reported in the final column. Models are obtained through Ordinary Least Squares.
+
+\bigskip
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|}
+\hline
+\rowcolor{lightgray} \multicolumn{12}{|c|}{Mean Absolute Error, OLS}\\
+\hline
+log(GAS)&DEP&log(CON)&REN&log(GDP)&log(OIL)&MAR&EA&EF&EU&NVars&MAE\\
+\hline
+x&x&x&x&x&x&x&x&x&x&10&1.81\\
+x&&x&x&x&x&x&x&x&x&9&1.82\\
+x&&&x&x&x&x&x&x&x&8&2.02\\
+x&&&x&x&x&&x&x&x&7&2.05\\
+x&&&x&x&x&&x&x&&6&1.97\\
+x&&&x&x&x&&&x&&5&1.96\\
+x&&&x&x&x&&&&&4&2.01\\
+&&&x&x&x&&&&&3&2.22\\
+x&&&&x&&&&&&2&2.03\\
+\hline
+\end{tabular}
+\caption{Models obtained through OLS and corresponding error.}
+\end{center}
+\end{table}
+\bigskip
+
+As expected, the best performing model is the one built including all the variables of the data set. As discussed earlier, however, Ordinary Least Squares may be not the only option. It may result interesting to see what happens when the data points effect on the model is weighted through our weights $W$.
+
+\bigskip
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|}
+\hline
+\rowcolor{maroon} \multicolumn{12}{|c|}{Mean Absolute Error, WLS}\\
+\hline
+log(GAS)&DEP&log(CON)&REN&log(GDP)&log(OIL)&MAR&EA&EF&EU&NVars&MAE\\
+\hline
+x&x&x&x&x&x&x&x&x&x&10&1.89\\
+x&&x&x&x&x&x&x&x&x&9&1.88\\
+x&&&x&x&x&x&x&x&x&8&2.07\\
+x&&&x&x&x&&x&x&x&7&2.09\\
+x&&&x&x&x&x&x&&&6&2.08\\
+x&&&x&x&x&x&&&&5&2.07\\
+x&&&x&x&x&&&&&4&1.95\\
+&&&x&x&x&&&&&3&2.23\\
+&&&&x&x&&&&&2&1.75\\
+\hline
+\end{tabular}
+\caption{Models obtained through WLS and corresponding error.}
+\end{center}
+\end{table}
+\bigskip
+
+Interestingly enough, the model which results as the best performing on the validation set is not the one including all the variables but the one which includes only two, Gas price and Real GDP per person. This outcome seems to oppose the idea that using all the variables is the best available option. \textit{WLS} with two variables is also able to outperform the best \textit{OLS} model by more than half a cent. All the code for measuring performance for Ordinary Least Squares, Weighted Least Squares and Exhaustive Subset Selection is left for the appendix.
 
 \chapter{Conclusions}
 
@@ -986,7 +1218,99 @@ for (row in 1:nrow(DP)) {
     }
 }
 \end{verbatim}
+
+\chapter*{Models}
+\section*{Static}
+
+To create a simple linear model, the command \textit{lm} needs to be run in R. For instance, \textit{Model 3} was computed by running the following.
+
+\begin{verbatim}
+LMeP <- lm(log(PRI) ~ log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL) + MAR + EU, DP)
+\end{verbatim}
+
+To compute analysis-of-variance tables for model objects produced by \textbf{lm}, the function \textit{anova} is used. The objective is to compare models in order to evaluate differences in significance.
+
+\begin{verbatim}
+LM <- lm(log(PRI) ~ log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL) + MAR, DP)
+anova(LM, LMeP)
+\end{verbatim}
+
+The library \textit{caret} is instead used to carry out the \textbf{Box-Cox} transformation on the outcome variable. A new model is then built upon the new outcome and the previous predictor values.
+
+\begin{verbatim}
+bpt <- caret::BoxCoxTrans(DP$PRI)
+DP <- cbind(DP, nP=predict(bpt, DP$PRI))
+LMeB <- lm(nP ~ log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL) + MAR + EU, DP)
+\end{verbatim}
 \end{appendices}
+
+Since applying the Box-Cox transformation to the outcome variable is not always sufficient to solve problems of non-constant variance, another option is to use \textbf{Weighted Least Regression} instead of Ordinary Least Regression. Steps are displayed below.
+
+\begin{verbatim}
+DP$resi <- LMeP$residuals
+LMeR <- lm(log(resi^2) ~
+ log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL) + MAR + EU, DP)
+DP$varFunc <- exp(LMeR$fitted.values)
+LMwls <- lm(log(PRI) ~ log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL) + MAR + EU,
+ weights = 1/sqrt(varFunc), DP)
+\end{verbatim}
+
+To perform subset selection, the library \textit{leaps} is used. It is necessary to specify the option \textit{nvmax}, which represents the maximum number of predictors to incorporate in the model. In the case of this research \textit{nvmax} = 5, so the function will return up all the variables model, that is, it returns the best 1-variable model, the best 2-variables model, …, the best 12-variables models. Backward and forward step-wise regression is instead faster and less computationally expensive because it works as a sequential system of inclusion (or exclusion) of variables, without having to compute the best subset for each $N$ from 1 to $nvmax$. Code for performing exhaustive subset selection on R is reported below.
+
+\begin{verbatim}
+leaps::regsubsets(log(PRI) ~ log(GAS) + DEP + log(CON) + REN
++ log(GDP) + log(OIL) + MAR + EU, DP, nvmax = 12)
+\end{verbatim}
+
+To split the data set in training and validation sets on a temporal basis (before and after 2015), it is sufficient to prompt the following:
+
+\begin{verbatim}
+train <- (DP$time < 2015)
+test <- (!train)
+\end{verbatim}
+
+Now the idea is to use the training set to build a model which can then be tested on the most recent validation data. To correctly determine the mean difference in US cents between the real information and the model prediction it is necessary to compute the exponential transformation on the model prediction, since in the model this variable is used in its logged form.
+
+\begin{verbatim}
+LMeP <- lm(log(PRI) ~ log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL) + MAR + EU,
+ DP, subset=train)
+pred <- predict(LMeP, DP[test,])
+mean(abs(DP$PRI[test] - exp(pred)))
+\end{verbatim}
+
+If instead weighted least squares was used instead of OLS for building the model:
+
+\begin{verbatim}
+DP$resi[train] <- LMeP$residuals
+LMeR <- lm(log(resi^2) ~ log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL) + MAR + EU,
+ DP, subset=train)
+
+DP$varFunc[train] <- exp(LMeR$fitted.values)
+LMgls <- lm(log(PRI) ~ log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL) + MAR + EU,
+ weights = 1/sqrt(varFunc), DP, subset=train)
+pred <- predict(LMgls, DP[test,])
+mean(abs(DP$PRI[test] - exp(pred)))
+\end{verbatim}
+
+In the previous two models all data set variables were used, but it may be that reducing the number of variables actually boosts the performance on the validation set. To evaluate the mean absolute error between the predictions and the actual data at disposal, a vector with the errors is created in order to store the performance information. For every step N in the cycle 1-10 the best subset of variables including N of them is determined and then mean absolute error is computed. In this example the weights are used in the runs but the code is very similar if OLS is preferred to WLS.
+
+\begin{verbatim}
+W <- 1/sqrt(DP$varFunc[train])
+tLM <- regsubsets(log(PRI) ~ log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL)
++ MAR + EU, DP[train,], weights=W, nvmax = 11)
+test.mat <- model.matrix(log(PRI) ~ log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL)
++ MAR + EU, data=DP[test,])
+val.errors <- rep(NA, 10)
+for (i in 1:10){
+  coefi <- coef(tLM, id=i)
+  pred <- test.mat[,names(coefi)] \%*\% coefi
+  val.errors[i] <- mean(abs(DP$PRI[test] - exp(pred)))
+}
+which.min(val.errors)
+val.errors[which.min(val.errors)]
+coef(tLM, 4)
+val.errors
+\end{verbatim}
 
 \bibliography{references}{}
 \bibliographystyle{plain}

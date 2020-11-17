@@ -115,7 +115,7 @@ vif(LMeP)
 Variance Inflator Formula also ok.
 
 ```{r}
-plot(LMeP,1)
+bptest(LMeP)
 ```
 
 The lower the fitted value, the higher the variance in the residual: we detect a certain amount of heteroskedasticity, confirmed by the value of the bptest.
@@ -156,8 +156,7 @@ coef(LMgls)
 Subset selection. We want to maximize adjusted R squared and minimize cp and bic.
 
 ```{R}
-library(leaps)
-LM3 <- regsubsets(log(PRI) ~ log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL) + MAR + EU, DP, nvmax = 12)
+LM3 <- leaps::regsubsets(log(PRI) ~ log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL) + MAR + EU, DP, nvmax = 12)
 which.max(summary(LM3)$adjr2)
 which.min(summary(LM3)$bic)
 which.min(summary(LM3)$cp)
