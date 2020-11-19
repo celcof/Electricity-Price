@@ -162,14 +162,14 @@ which.min(summary(LM3)$bic)
 which.min(summary(LM3)$cp)
 ```
 
-Optimal values for adjusted R squared and cp are obtained with 32 values while 27 variables are enough for bic. MAR, NUC and OIL are dropped. Rather than using proxies for test error, let us directly compute this error through validation set approach.
+Optimal values for adjusted R squared and cp are obtained with 10 variables while 9 are sufficient when looking at bic. Rather than using proxies for test error, an option is to compute this error through validation set approach.
 
 ```{R}
 train <- (DP$time < 2015)
 test <- (!train)
 ```
 
-Simple linear regression on train now. To compare accuracies of models we are going to use Mean Absolute Error (for interpretability reasons). Since our dependent variable is measured on a log scale we have to have to exponentiate prediction vectors. 
+Simple linear regression on training set now. To compare accuracies of models we are going to use Mean Absolute Error (for interpretability reasons). Since our dependent variable is measured on a log scale we have to have to exponentiate prediction vectors. 
 
 ```{r}
 LMeP <- lm(log(PRI) ~ log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL) + MAR + EU, DP, subset=train)
@@ -190,11 +190,12 @@ mean(abs(DP$PRI[test] - exp(pred)))
 rm(LMeR)
 ```
 
-Performance better with weighted regression, confirming our hypothesis that ordinary least squares in this context may not be optimal. 
+Simple linear regression slightly outperforms weighted linear regression.
 
 We can now now check that the best model is the one including all variables.
 
 ```{R}
+library(leaps)
 W <- 1/sqrt(DP$varFunc[train])
 tLM <- regsubsets(log(PRI) ~ log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL) + MAR + EU, DP[train,], weights=W, nvmax = 11)
 test.mat <- model.matrix(log(PRI) ~ log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL) + MAR + EU, data=DP[test,])
@@ -209,14 +210,17 @@ val.errors[which.min(val.errors)]
 coef(tLM, which.min(val.errors))
 ```
 
+Surprisingly enough, the model with only two variables, GAS and GDP, outperforms the others.
+
 Now, time for ridge regression.
 
 ```{r}
 x <- model.matrix(log(PRI) ~ log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL) + MAR + EU, DP)[,-1]
 y <- DP$PRI
 set.seed(35)
-ridge <- cv.glmnet(x[train,], log(y[train]), alpha=0, weights=W, standardize=T)
+ridge <- cv.glmnet(x[train,], log(y[train]), alpha=0, standardize=T)
 bestlam <- min(ridge$lambda)
+bestlam
 ```
 
 What is the test average difference between the prediction and the actual price of electricity?
@@ -230,6 +234,9 @@ Coefficients.
 
 ```{r}
 predict(ridge, type="coefficients", s=bestlam)
+mat <- as.matrix(ridge$glmnet.fit$beta)
+forplot <- data.frame(t(rbind(mat, ridge$glmnet.fit$lambda)))
+write.csv(forplot, "risf.csv")
 ```
 
 Time for lasso.
