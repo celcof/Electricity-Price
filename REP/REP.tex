@@ -567,16 +567,16 @@ Slovakia & 64.4 & 63.7 \\
 
 \chapter{Methodology}
 
-Many authors have tried to measure the effect of market liberalization and green energy investment, starting from \cite{moreno2012electricity}, which performs the analysis in European Union member countries markets'. \cite{nagayama2009electric} takes a broader perspective, looking at more countries but with older data. The cause-effect analysis is carried out in these studies with an econometric approach, without splitting the data in different subsets for training and validating the results, which represented one of the main novelties of the method implemented here.\\
+Many authors have tried to measure the effect of market liberalization and green energy investment, starting from \cite{moreno2012electricity}, in which the analysis  is performed on European Union member countries markets'. \cite{nagayama2009electric} takes a broader perspective, looking at more countries but with older data. The cause-effect analysis is carried out in these studies with an econometric approach, without splitting the data in different subsets for training and validating the results, fact that represents one of the main novelties of the method implemented here.\\
 
-\noindent The main focus is on predicting how prices for electricity are going to evolve in the future, not merely on understanding the causal relationship. In this sense, while the European Union is the principal market on which the analysis is based, also \textit{World Bank} data is used as a source of information for countries all over the world. This section is structured as follows: first, models are built on top of \textit{Eurostat} data sets, and then to benchmark those findings, the most global patterns are investigated.
+\noindent The main focus is on predicting how prices for electricity are going to evolve in the future, and not merely on understanding the causal relationship. In this sense, while the European Union is the main market on which the analysis is based, also \textit{World Bank} data is used as a source of information for countries all over the world. This section is structured as follows: first, models are built on top of \textit{Eurostat} data sets, and then to benchmark those findings, the most global patterns are investigated.
 
 \section{Static European Models}
 \subsection{Variables}
 
-The variables in consideration for the European market models seek to resemble the factors listed in the introduction. The response variable, electricity price itself, is expressed in \textit{Euros} and involves households who consume between 2 500 and 5 000 kWh. This means that the focus is on a certain category of consumers, families and not industries. For a panel data analysis on non-household consumers please instead refer to \cite{del2019industrial}.  The price used in the models as response variable does not include taxes. Most remarkably, electricity prices information is recorded twice a year, so in the models year variability is accounted. The time range chosen for the analysis is the last 20 years, from 2000 to the first semester of 2020. This makes the data at hand and the consequent results extremely up-to-date. Minor adjustments had to be carried out because of inconsistencies in the way of recording information between years before 2007 and years after. The electricity price is going to serve the dependent variable in the later discussion, and referred as \textbf{PRI}, for short.\\
+The variables in consideration for the European market models seek to resemble the factors listed in the introduction. The response variable, electricity price itself, is expressed in \textit{Euros} and involves households who consume between 2 500 and 5 000 kWh. This means that the focus is on a certain category of consumers: families and not industries. For a panel data analysis on non-household consumers please instead refer to \cite{del2019industrial}.  The price used in the models as response variable does not include taxes. Most remarkably, electricity prices information is recorded twice a year, so in the models year variability is accounted. The time range chosen for the analysis is the last 20 years, from 2000 to the first semester of 2020. This makes the data at hand and the consequent results extremely up-to-date. Minor adjustments had to be carried out because of inconsistencies in the way of recording information between years prior to 2007 and years that follow. The electricity price is going to serve as the outcome variable in the later discussion, and referred as \textbf{PRI}, for short.\\
 
-\noindent The two main bills households receive regard electric power and \textbf{natural gas}, for cooking, heating, lighting and using domestic appliances inside the building. The two goods are strictly related, because electric power can be produced from gas, and because electricity can represent a substitute of gas (e.g.\ for households that use induction cooktops). Data is taken from \textit{Eurostat} and is also in this case bi-annual and expressed in \textit{Euros}. Taxes and levies are not considered, the price is the sum of the raw material value and the cost of transportation and distribution. \textit{Figure 18} shows the distribution of the gas price, with the median being around 10 - 11 euros per mega joule. In the later model discussion this variables is going to be names \textbf{GAS}, for short.
+The two main bills households receive contemplate electric power and \textbf{natural gas}, for cooking, heating, lighting and using domestic appliances inside the building. The two goods are strictly related, because electric power can be produced from gas, and because electricity can represent a substitute of gas (e.g.\ for households that use induction cooktops). Data is taken from \textit{Eurostat} and is also in this case bi-annual and measured in \textit{Euros}. Taxes and levies are not considered: the price is the sum of the raw material value and the cost of transportation and distribution. \textit{Figure 18} shows the distribution of the gas price, with the median being around 10 - 11 euros per mega joule. In the later model discussion this variables is going to be named \textbf{GAS}, for short.
 
 \bigskip
 \begin{figure}[H]
@@ -588,19 +588,19 @@ The variables in consideration for the European market models seek to resemble t
 \end{figure}
 \bigskip
 
-The idea is to use the price of the resources from which electricity is produced to have an idea of what the price of the good could be. The choice of having the natural gas price as a variable in the data set goes in this sense. It would make sense to actually do the same for \textbf{oil}, but \textit{Eurostat} does not contain any data set with related price per country. Options could be either to use the US dollar price per barrel, which is the same for all countries or the pump price for gasoline. The choice falls on the latter, being considered as a good proxy for what is being tried to be measured. The data is available from the World Bank, and observations are recorded once every two years. In the later model it is going to be referred as \textbf{OIL}, for short.\\
+The idea is to use the price of the resources from which electricity is produced to have an idea of what the price of the good could be. The choice of having the natural gas price as a variable in the data set goes in this sense. It would be reasonable to actually do the same for \textbf{oil}, but \textit{Eurostat} does not disclose any information regard this good price. Options could be either to use the US dollar price per barrel, which is the same for all countries or the pump price for gasoline. The choice falls on the latter, being considered as a good proxy for the price of oil in the country. The data is available from the World Bank, and observations are recorded once every two years. In the later model it is going to be referred as \textbf{OIL}, for short.\\
 
-Electricity, as discussed in the introduction, is not only produced by burning coal, oil or natural gas, but also by using \textbf{renewable resources}. The share of electricity produced using sustainable practices on the total of electricity produced by each single country is also included in the data set, and named as \textbf{REN}, for short. This information is recorded once a year and available from \textit{Eurostat}. However, some years are incomplete, specifically those before 2004, so those missing records are topped up with data from \textit{World Bank}. The sets from the two different sources describe the same information, e.g. for data regarding 2004, they are almost equivalent: however, just pasting data could be dangerous so normalization of the world bank information is carried out by multiplying each country value for 2000-2003 by a factor that makes records for 2004 match for both sources. \\
+Electricity, as discussed in the introduction, is not only produced by burning coal, oil or natural gas, but also by using \textbf{renewable resources}. The share of electricity produced using sustainable practices on the total of electricity produced by each single country is also included in the data set, and named as \textbf{REN}, for short. This information is recorded once a year and available from \textit{Eurostat}. However, some years the information is incomplete, specifically those before 2004, so those missing records are topped up with data from \textit{World Bank}. The sets from the two different sources describe the same information, e.g. for data regarding 2004, numbers are almost equivalent: however, just pasting data could be dangerous so normalization of the world bank information is carried out by multiplying each country value for 2000-2003 by a factor that makes records for 2004 match for both sources. \\
 
 \noindent Another variable that takes in consideration the level of sustainability of the electricity produced is the emission \textbf{intensity}. This indicator is used to monitor progress towards United Nations' goal on climate action and on affordable and clean energy and, as anticipated in the introduction, it is calculated as the ratio between energy-related GHG emissions and gross inland consumption of energy. The data on energy emissions are being sourced from the GHG emissions reported to the UNFCCC. Information is normalized with respect to year 2000, which is used as a benchmark. This variable hence expresses how fast that particular economy is in its path towards decarbonization. Data is recorded annually and sourced from \textit{Eurostat}: in the later discussion it is going to be referred as \textbf{EMI}, for short.\\
 
 \noindent It is also important to consider the supply side in this context: how much each country is consuming in terms of energy. \textit{Eurostat} provides information regarding the quantity of oil equivalent (in kilograms), and this data is recorded annually. This indicator measures how much energy every citizen consumes at home excluding energy used for transportation. Since the indicator refers to final energy \textbf{consumption}, only energy used by end consumers is considered. The related consumption of the energy sector itself is excluded. This variable is going to be shortened as \textbf{CON} in the following model discussion.\\
 
-\noindent Many European countries do not really have the capacity to produce enough electricity in order to be self-sufficient. The \textbf{dependency} indicator shows the share of total energy needs of a country met by imports from other countries. It is calculated from energy balances as net imports divided by the gross available energy. The formula for computing the dependence is: $$ \scalebox{2} {$\frac{(imports – exports)}{gross\;available\;energy}$}.$$ A negative value indicates net exporter: a country that exports more fuels than it consumes. In the context of of the data set at hand this happens only for \textit{Norway}. Values higher than 100 generally refer to the build of stocks (increase of fule in stocks), yet might be also a result of statistical discrepancies in raw data. This information is available from \textit{Eurostat} and recorded once a year. This variable is going to be shortened as \textbf{DEP} in the models discussed later.\\
+\noindent Many European countries do not really have the capacity to produce enough electricity in order to be self-sufficient. The \textbf{dependency} indicator shows the share of total energy needs of a country met by imports from other countries. It is calculated from energy balances as net imports divided by the gross available energy. The formula for computing the dependence is: $$ \scalebox{2} {$\frac{(imports – exports)}{gross\;available\;energy}$}.$$ A negative value indicates a net exporter: a country that exports more fuels than it consumes. In the context of the data set at hand this happens only for \textit{Norway}. Values higher than 100 generally refer to the build of stocks (increase of fule in stocks), yet might be also a result of statistical discrepancies in raw data. This information is available from \textit{Eurostat} and recorded once a year. This variable is going to be shortened as \textbf{DEP} in the models discussed later.\\
 
-\noindent In the last 20 years the major change in the way electricity is sold is the \textbf{liberalization} forced to member countries by the European Union authorities. The only data regarding the structure of the markets member countries disclosed by \textit{Eurostat} indicates the market share of the largest electricity generator. This information is disclosed annually, and in the following models it is going to appear as \textbf{MAR}, for short. As also discussed in the Introduction, to rely merely on the share of the largest generator is enough for having a solid idea of the structure of the market may be sometimes not adequate. The best indicator for market concentration is the HHI (Herfindahl-Hirschman Index), and it is computed by adding the square root of the percentage market share of each individual firm in the industry.\\
+\noindent In the last 20 years the major change in the way electricity is sold is the \textbf{liberalization} forced to member countries by the European Union authorities. The only data regarding the structure of the markets member countries disclosed by \textit{Eurostat} indicates the market share of the largest electricity generator. This information is disclosed annually, and in the following models it is going to appear as \textbf{MAR}, for short. As also discussed in the Introduction, to rely merely on the share of the largest generator may not be enough for having a solid idea of the structure of the market may be sometimes not adequate. The best indicator for market concentration is the HHI (Herfindahl-Hirschman Index), and it is computed by adding the square root of the percentage market share of each individual firm in the industry.\\
 
-\noindent The electricity price is also, and maybe most importantly, dependent on how wealthy that single country is. \textit{Eurostat} provides the value of the \textbf{real gross domestic product} per capita, with data being published every quarter of year. Real in this context means deflated, so leaving prices unchanged. This is key: while the gross domestic product tends to increase every year (given that the country is an inflation regime), the real GDP might be decreasing if, at those prices level, on average the citizens have a lower purchasing power. The reader could wonder why to exclude the average increase in prices from the consideration, although there is a clear correlation between increase and electricity price: the higher the increase in prices the higher the expected increase in the electricity bill. The answer lies in the fact that the \textbf{inflation} variable \textit{hides} the electricity price change variable itself: the average increase in prices is computed on a basket of goods electricity is part of, so it would be too easy to actually use this our variable in our models. The dependent variable exogeneity assumption would not be met. In the following models, the real Gross Domestic Product per capita variable is going to be called \textbf{GDP}, for short.
+\noindent The electricity price is also, and maybe most importantly, dependent on how wealthy that single country is. \textit{Eurostat} provides the value of the \textbf{real gross domestic product} per capita, with data being published every quarter of year. ``Real" in this context means deflated, so leaving prices unchanged. This is key: while the gross domestic product tends to increase every year (given that the country is an in inflation regime), the real GDP might be decreasing if, at those prices level, on average the citizens have a lower purchasing power. The reader could wonder why to exclude the average increase in prices from the consideration, although there is a clear correlation between price increase and electricity price: the higher the increase in prices the higher the expected increase in the electricity bill. The answer lies in the fact that the \textbf{inflation} variable \textit{hides} the electricity price change variable itself: the average increase in prices is computed on a basket of goods electricity is part of, so it would be too easy to actually use this variable in the models. The outcome variable exogeneity assumption would not be met. In the following models, the real Gross Domestic Product per capita variable is going to be called \textbf{GDP}, for short.
 
 \subsection{Countries}
 
@@ -616,11 +616,11 @@ Electricity, as discussed in the introduction, is not only produced by burning c
 \end{figure}
 \bigskip
 
-As discussed in the previous subsection, most information data are not disclosed twice a year but only once: instead of dropping those rows where information data is not available, the mean between the previous and the following semester is computed and inserted in the data set. Other missing data substitution techniques are more sophisticated: for instance, Netherlands does not disclose information regarding electricity market concentration levels. To have an idea of the retail market for this country, an interesting reference is \cite{mulder2019dutch}.  The way out found for not discarding Netherlands from the analysis is to substitute those Not Availables with average values from markets with a similar structure, which are Germany, Denmark, Luxembourg and Belgium.
+As discussed in the previous subsection, most information data are not disclosed twice a year but only once: instead of dropping those rows where information data is not available, the mean between the previous and the following semester is computed and inserted in the data set. Other missing data substitution techniques are more sophisticated: for instance, Netherlands does not disclose information regarding electricity market concentration levels. To have an idea of the retail market for this country, an interesting reference is \cite{mulder2019dutch}.  The way out of this found for not discarding Netherlands from the analysis is to substitute those Not Availables with average values from markets with a similar structure, which are Germany, Denmark, Luxembourg and Belgium.
 
 \subsection{Random Effects}
 
-Statistical models always describe variation in observed variables in terms of systematic and unsystematic components. In econometrics, a andom-effects model is a statistical model in which some of the parameters (effects) that define systematic components of the model exhibit some form of random variation.\cite{salkind2010encyclopedia} In the context of the problem at hand, which is the electricity price prediction, the parameters (effects) that shall be taken as random factors are the country identifiers. For the time being, the assumption is that, given certain values for market concentration, share of renewable energy produced ecc. ecc., no country is different than any other. This is not such an unlikely supposition: after all, the countries in the analysis all belong to the European continent. The summary of the random effects model is displayed below, in \textit{Table 2.1}. On variables that are not on a percentage scale, a logarithmic transformation is carried out in order to reduce the influence of the potential outliers. For the moment the variable \textbf{EMI} is going to be excluded from the analysis.
+Statistical models always describe variation in observed variables in terms of systematic and unsystematic components. In econometrics, a random-effects model is a statistical model in which some of the parameters (effects) that define systematic components of the model exhibit some form of random variation.\cite{salkind2010encyclopedia} In the context of the problem at hand, which is the electricity price prediction, the parameters (effects) that shall be taken as random factors are the country identifiers. For the time being, the assumption is that, given certain values for market concentration, share of renewable energy produced ecc. ecc., no country is different than any other. This is not such an unlikely supposition: after all, the countries in the analysis all belong to the European continent. The summary of the random effects model is displayed below, in \textit{Table 2.1}. On variables that are not on a percentage scale, a logarithmic transformation is carried out in order to reduce the influence of the potential outliers. For the time beingg the variable \textbf{EMI} is going to be excluded from the analysis.
 
 \bigskip
 \begin{table}[H]
@@ -1063,12 +1063,79 @@ Rather than completely excluding some variables it could be beneficial to simply
 \begin{center}
 \captionsetup{justification=centering}
 \includegraphics[width=1\textwidth]{Images/ridge.png}
-\caption{Coefficient Estimates.}
+\caption{Coefficient Estimates for ridge regression.}
 \end{center}
 \end{figure}
 \bigskip
 
 The next step is now to decide where to draw the vertical line on the graph to settle for a specific value of the parameter $\lambda$. The best way to do so is, once again, using part of the data to measure performance, in this case through cross-validation. The $\lambda$ parameter which results as the best performing is 0.018, so extremely low: this is an indication that regularizing the parameters may not be that beneficial, in this context. In fact, the average value error of the prediction with respect to the actual electricity price is of about 1.8 cents, not a real improvement with respect to previous models.
+
+\subsection{Lasso}
+
+One drawback of ridge regression models is that even variables that do not present any significance in the problem context do have a non-zero estimate. Ridge regression includes all predictors in the final model, since increasing the value of $\lambda$ will tend to reduce the coefficient estimates, but will result in no variable exclusion. If however the shrinkage penalty formulation is slightly changed, some of the coefficient shall be forced to be exactly equal to zero when when the tuning parameter $\lambda$ is sufficiently large. This type of regularization and it can be considered as a sort of blend between ridge regularization, because the coefficient estimates are shrunk towards zero, and subset selection, because some of the coefficient estimates are effectively turned to zero. As it was the case for ridge regression, the choice of the $\lambda$ value is critical: cross validation on the training set, once again, is going to be used to settle for a specific value of this parameter. \textit{Figure 2.7} displays how the coefficient estimates shrink to zero while the value of $\lambda$ in increased.
+
+\bigskip
+\begin{figure}[H]
+\begin{center}
+\captionsetup{justification=centering}
+\includegraphics[width=1\textwidth]{Images/lasso.png}
+\caption{Coefficient Estimates for lasso.}
+\end{center}
+\end{figure}
+\bigskip
+
+The way the coefficients shrink to zero is less regular with respect to what happens for ridge regression. Gas and Oil, Gdp variables are the last ones to get to zero, a further hint that they are the most significant variables at disposal. Once again, the $\lambda$ value that results as the best performing through cross validation is low, $5*10^{-5}$, so this lasso regression is quite close to linear model regression without regularization. Also the mean absolute error on the training set does not get decrease: 1.81 dollar cents. Lasso and Ridge regularization techniques respectively use so-called L1 and L2 penalties. One can go from one system to the other simply trying the model and looking at the one that performs best, but another possibility is to linearly combine the two systems, with the so-called Elastic Net regression. In this case cross validation is not only used to choose $\lambda$ but also to settle for the best $\alpha$, a parameter that allows to determine the weight of L1 with respect to the L2 penalty to be applied to the model. In this section Elastic Net is not going to be used simply because the results with these regularization techniques is rather unsatisfactory.
+
+\subsection{Interactions and Polynomials}
+
+For the time being one assumption was made: that the predictor variables have a linear interaction with the outcome variable. This idea is partially supported by regression plots, but some meaningful interactions may have been excluded from the model. For instance, it may be that gas price and share of renewable energy are not that significant when considered alone but the interaction, so the first multiplier by the latter, is. A situation of high gas price and simultaneous high share of renewable of energy produced may hide some meaning that only the interaction term would bring to the surface. In the case of the electricity price regression, this is exactly what happens, and the coefficient of this GAS:REN interaction term is negative, meaning that the higher its value, the lower the final electricity price. To determine which the most significant interaction terms are Subset Selection is again used, with the accuracy metric being the Mean Absolute Error on the validation set. \textit{Table 2.13} displays the coefficients and corresponding errors for the models with the lowest number of variables (which are also the best performing ones). Please note that some of the variables are still taken in their logged form.
+
+\bigskip
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|}
+\hline
+\rowcolor{lightgray} \multicolumn{9}{|c|}{Models with Interactions}\\
+\hline
+GDP&GAS:DEP&GAS:OIL&DEP:REN&CON:REN&GAS:REN&GAS:GDP&NVars&MAE\\
+\hline
+x&x&x&x&&&&4&2.02\\
+x&&x&&x&&&3&2.1\\
+&&&&&x&x&2&1.69\\
+&&&&&&x&1&1.78\\
+\hline
+\end{tabular}
+\caption{Variables and Errors of the models with interactions.}
+\end{center}
+\end{table}
+\bigskip
+
+Allowing the models to include interactions results in a wide use of those terms, that are often preferred to the single predictor values that were used in \textit{Model 3}. In particular, when only two variables are included as predictors, and these two variables are the interaction terms \textit{log(GAS):REN} and \textit{log(GAS):log(GDP)}, the result in performance is remarkable.\\
+
+Looking at interaction terms is one option, but another assumption that it could be interesting to relax is that the predictor variables should enter the regression model only linearly. There may some variables, as it is the case for Dependence on Imports, which are meaningful not in their linear term, but rather in their second order polynomial. \textit{Table 2.14} illustrates which are the variables used in the models which perform best on the validation set. Only one polynomial term, DEP squared, is included, but does not seem to improve performance since the model with the lowest mean absolute error is a simple linear regression with GDP as predictor.
+
+\bigskip
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|c|c|}
+\hline
+\rowcolor{maroon} \multicolumn{8}{|c|}{Models with Polynomials}\\
+\hline
+GDP&OIL&REN&DEP$^2$&GAS&MAR&NVars&MAE\\
+\hline
+x&x&x&x&x&x&6&2.34\\
+x&x&x&x&x&&5&2.22\\
+x&x&x&x&&&4&2.41\\
+x&x&x&&&&3&2.18\\
+x&x&&&&&2&2.17\\
+x&&&&&&1&1.96\\
+\hline
+\end{tabular}
+\caption{Variables and Errors of the models with polynomials.}
+\end{center}
+\end{table}
+\bigskip
+
 \chapter{Conclusions}
 
 \begin{appendices}
@@ -1327,10 +1394,11 @@ coef(tLM, 4)
 val.errors
 \end{verbatim}
 
-The library \textit{glmnet} can be used in order to create ridge, lasso and elastic net models. In particular, the function \textit{cv.glmnet} enables to choose the parameter $\lambda$ through cross validation. 
+The library \textit{glmnet} can be used in order to create ridge, lasso and elastic net models. In particular, the function \textit{cv.glmnet} enables to choose the parameter $\lambda$ through cross validation. A seed is set simply to make the results reproducible.
 
 \begin{verbatim}
-x <- model.matrix(log(PRI) ~ log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL) + MAR + EU, DP)[,-1]
+x <- model.matrix(log(PRI) ~ log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL)
+ + MAR + EU, DP)[,-1]
 y <- DP$PRI
 set.seed(35)
 ridge <- cv.glmnet(x[train,], log(y[train]), alpha=0, standardize=T)
@@ -1343,6 +1411,59 @@ Now that information regarding the $\lambda$ value which enables to achieve best
 ridge.pred <- predict(ridge, s=bestlam, newx=x[test,])
 mean(abs(exp(ridge.pred) - y[test]))
 \end{verbatim}
+
+For the visualization of \textit{Figure 2.6} the output of the following code is used:
+
+\begin{verbatim}
+mat <- as.matrix(ridge$glmnet.fit$beta)
+forplot <- data.frame(t(rbind(mat, ridge$glmnet.fit$lambda)))
+\end{verbatim}
+
+If L1 is to be used instead of L2 penalty the functions to be used do not really change: the only major difference is in the $\alpha$ value to be set inside the \textit{cv.glmnet} function. 
+
+\begin{verbatim}
+lasso.mod <- glmnet(x[train,], log(y[train]), alpha=1)
+set.seed(35)
+cv.out <- cv.glmnet(x[train,], sqrt(y[train]), alpha=1)
+bestlam <- cv.out$lambda.min
+pred <- predict(lasso.mod, s=bestlam, newx=x[test,])
+C <- as.vector(coef(cv.out, bestlam))
+length(C[C != 0])
+mat <- as.matrix(cv.out$glmnet.fit$beta)
+forplot <- data.frame(t(rbind(mat, cv.out$glmnet.fit$lambda)))
+\end{verbatim}
+
+To include interaction terms it is only necessary to create a \textit{regsubsets} object that builds models not only looking at the distinct variables but also takes in the multiplied terms.
+
+\begin{verbatim}
+tLM <- regsubsets(log(PRI) ~ (log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL)
+ + MAR)^2 + EU, DP[train,], nvmax = 30, really.big = T)
+test.mat <- model.matrix(log(PRI) ~ (log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL)
+ + MAR)^2 + EU, data=DP[test,])
+val.errors <- rep(NA, 30)
+for (i in 1:30){
+  coefi <- coef(tLM, id=i)
+  pred <- test.mat[,names(coefi)] \%*\% coefi
+  val.errors[i] <- mean(abs(DP$PRI[test] - exp(pred)))
+}
+\end{verbatim}
+
+Until now predictor variables have only entered the linear model linearly but it may actually be that using some kind of polynomials rather than the linear term does improve performance. To build models which include polynomial terms and then compare their performance through subset selection the function \textit{regsubsets} is again used.
+
+\begin{verbatim}
+tLM <- regsubsets(log(PRI) ~ poly(log(GAS),2) + poly(DEP,2) + poly(log(CON),2)
+ + poly(REN,2) + poly(log(GDP),2) + poly(log(OIL),2) + poly(MAR,2) + EU, DP[train,],
+ nvmax = 18)
+test.mat <- model.matrix(log(PRI) ~ poly(log(GAS),2) + poly(DEP,2) + poly(log(CON),2)
+ + poly(REN,2) + poly(log(GDP),2) + poly(log(OIL),2) + poly(MAR,2) + EU, data=DP[test,])
+val.errors <- rep(NA, 17)
+for (i in 1:17){
+  coefi <- coef(tLM, id=i)
+  pred <- test.mat[,names(coefi)] \%*\% coefi
+  val.errors[i] <- mean(abs(DP$PRI[test] - exp(pred)))
+}
+\end{verbatim}
+
 
 \bibliography{references}{}
 \bibliographystyle{plain}

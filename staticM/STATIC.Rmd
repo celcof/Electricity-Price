@@ -236,13 +236,12 @@ Coefficients.
 predict(ridge, type="coefficients", s=bestlam)
 mat <- as.matrix(ridge$glmnet.fit$beta)
 forplot <- data.frame(t(rbind(mat, ridge$glmnet.fit$lambda)))
-write.csv(forplot, "risf.csv")
 ```
 
 Time for lasso.
 
 ```{r}
-lasso.mod <- glmnet(x[train,], log(y[train]), alpha=1, weights=W)
+lasso.mod <- glmnet(x[train,], log(y[train]), alpha=1)
 plot(lasso.mod)
 ```
 
@@ -250,8 +249,9 @@ Let us look for the best value of the parameter lambda (shrinkage).
 
 ```{r}
 set.seed(35)
-cv.out <- cv.glmnet(x[train,], sqrt(y[train]), alpha=1, weights=W)
+cv.out <- cv.glmnet(x[train,], sqrt(y[train]), alpha=1)
 bestlam <- cv.out$lambda.min
+bestlam
 pred <- predict(lasso.mod, s=bestlam, newx=x[test,])
 mean(abs(exp(pred) - y[test]))
 ```
@@ -261,6 +261,9 @@ How many features is the model including?
 ```{r, warning=F}
 C <- as.vector(coef(cv.out, bestlam))
 length(C[C != 0])
+mat <- as.matrix(cv.out$glmnet.fit$beta)
+forplot <- data.frame(t(rbind(mat, cv.out$glmnet.fit$lambda)))
+write.csv(forplot, "ria.csv")
 ```
 
 All features are kept in the model.
