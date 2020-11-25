@@ -1136,11 +1136,144 @@ x&&&&&&1&1.96\\
 \end{table}
 \bigskip
 
+\section{Dynamic European Models}
+
+The results discussed in the previous section are based on static models; however, the electricity price is likely to exhibit a certain degree of path-dependency, implying that the dynamic nature of this variable should be accounted for in the model. Thus, it would be interesting to re-estimate the model in a \textbf{dynamic}-panel framework. The options at this point are two: either a lagged predictor variable, which accounts for the previous record for the same country, is created, as it is done by \cite{hyland2016restructuring}, or a different outcome variable is used, changing the scope of the regression from predicting the final price of electricity to predicting the temporal difference in price from one semester to the following. To allow for this latter idea each of the predictor variables are to be changed obtaining each observation of the data set as the difference between that variable value in that semester and the variable value in the previous semester. To put it in mathematical terms: $$ \scalebox{1.25}{$y_{t_j-t_{j-1}} = \beta_0 + \beta_1 x_{1_{t_j - t_{j-1}}} + \beta_2 x_{2_{t_j - t_{j-1}}} + ...$}$$ The process to achieve this in R is left for the appendix. In any case most of the variables and time range used are the same as for the Static models, with the exception of course that the data set is slightly shorter (it starts from the second semester of 2000 and not from the first one). The only variable from the static models which is not going to be used is OIL, because not enough data is available to have good approximations of reality in a dynamic sense. Differently with respect to the previous section, EMI is instead going to appear in all the dynamic models. The problem with using the emission intensity in the static setting is in the fact that it is does not provide any meaningful information: for instance an EMI observation equal to 101 indicates a country that is getting worse in the context of its emissions per capita. If however no information is used to characterize that country with respect to others, i.e. in this context, the absence of a country identifier, makes that information quite unuseful when used in its absolute term. In this dynamic context, instead, if the difference from one term to the next one is -1, in the case of one percent decrease in emission intensity, or 1, one percent increase in emission intensity, that information can be used to infer the direction and magnitude of the change in price.\\
+
+Of course changing the nature of the outcome variable in this way is going to significantly decrease the Mean Absolute Error of the regression: on average, the difference from one period to the other is going to be a positive number very close to zero. So the aim shifts to creating a model that is able to predict the direction and the magnitude of the change as accurately as possible.
+
+\bigskip
+\begin{figure}[H]
+\begin{center}
+\captionsetup{justification=centering}
+\includegraphics[width=0.8\textwidth]{Images/prihi.png}
+\caption{Distribution of the outcome variable, PRI.}
+\end{center}
+\end{figure}
+\bigskip
+
+The first thing to be noticed is that the distribution shows long tails: most of the observations fall within a very narrow range around zero but there is also a minority number of records falling outside this span. This may later result as a problem, since normality of the outcome variable is to be assumed. In particular, one may wonder where and when the price results in a 7 cent oscillation.\\
+
+The anomaly in the data is found in the fact that from the second semester of 2002 to the first one of 2003 the price of electricity in Norway falls by 7 cents which are then regained in the second semester of 2003. This weird behavior seems more of a recording mistake rather than a real price fluctuation experienced by the households, given that there is no hint in the data for explaining this and no sign in the literature that such an important price oscillation was effectively present. Thus, the best way out of this simply results in excluding those variables from the data set.
+
+\subsection{Linear Model}
+
+As it was done for the static model, the first model to be tested is linear, with multiple predictor variables. However, while in the previous section all the values showed a positive sign, in this dynamic model it will happen quite often to incur in negative observations, both for the outcome and the predictor variables. This is not a problem in the context of the linear regression, but it does not allow to apply the  simple logarithmic transformation on any of these variables. In some cases, as for the outcome PRI, some slightly more complicated transformations could be applied as for instance $log(PRI+1)$. But it would not really be worth it to go in this direction, given that there would be some significant loss in interpretability. As the linear regression name recalls, the relationship between the predictors and the outcome variable is assumed to be linear. To check whether this assumption is met, the fitted values vs residuals plot of \textit{Figure 2.9} comes in handy.\\
+
+One note: this time the model is built directly on the training set, which is composed by observations prior to year 2015, leaving subsequent years observations to validate the results.
+
+\bigskip
+\begin{figure}[H]
+\begin{center}
+\captionsetup{justification=centering}
+\includegraphics[width=0.8\textwidth]{Images/dynres.png}
+\caption{Residuals vs Fitted plot, dynamic model.}
+\end{center}
+\end{figure}
+\bigskip
+
+Apart for some observations on the margins, no distinct pattern is recognizable in the most data-dense part of the plot, hinting that the relationship between the predictors and the outcome variable can be safely assumed as linear. Also, it is to be noticed how the largest residual absolute value turns out to be lower than 2 cents: keeping the 7 cents change in price would have likely messed up the regression. \textit{Figure 2.10} displays how the residuals of the regression are distributed.
+
+\bigskip
+\begin{figure}[H]
+\begin{center}
+\captionsetup{justification=centering}
+\includegraphics[width=0.8\textwidth]{Images/disres.png}
+\caption{Residuals vs Fitted plot, dynamic model.}
+\end{center}
+\end{figure}
+\bigskip
+
+Most of the residuals fall very close to zero: 708 observations out of 800 result in less than one cent of error. The distribution shows some long tails both on the left and right side. However, given the high number of observations, this should not constitute a problem. The \textit{Variance Inflation Factor} can instead be used to check whether there is collinearity among the regression variables, as summarized by \textit{Table 2.15}. 
+
+\bigskip
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\rowcolor{maroon} \multicolumn{4}{|c|}{Variance Inflation Factor}\\
+\hline
+&GVIF&Df&$GVIF^{\frac{1}{2*Df}}$\\
+\hline
+GAS&1.1&1&1\\
+DEP&1.1&1&1.1\\
+CON&1&1&1\\
+EMI&1.2&1&1.1\\
+MAR&1&1&1\\
+REN&1.1&1&1.1\\
+GDP&1.1&1&1.1\\
+EU&1&2&1\\
+\hline
+\end{tabular}
+\caption{VIF test.}
+\end{center}
+\end{table}
+\bigskip
+
+The GVIF and adjusted GVIF values are both very low, indicating that there is no hidden source of collinearity: the variables work independently from each other.\\
+
+\textit{Figure 2.11} plots the Squared Root of the Absolute values of the residuals against the fitted values: the objective is to detect heteroscedasticity.
+
+\bigskip
+\begin{figure}[H]
+\begin{center}
+\captionsetup{justification=centering}
+\includegraphics[width=0.8\textwidth]{Images/hetero.png}
+\caption{Scale-Location plot.}
+\end{center}
+\end{figure}
+\bigskip
+
+When the change in price is significant, both in the positive and in the negative direction, the model is not really good in calling the right prediction. When instead the price in change is smaller, the residuals are on average small as well. This means that the model is likely to be quite conservative. Since to different values of fit correspond different residual values, the heteroscedasticity hypothesis is not to be rejected. This is an indication of the fact that the linear model with ordinary least squares may not be the best choice in the dynamic setting. \textit{Table 2.16} provides a summary of the linear regression in order to understand the impact of the predictor variables on the outcome. If the coefficient is positive, an increase in the predictor variable is going to result in an increase in the price; if instead the coefficient is negative, an increase in the predictor variable is going to result in a decrease in the price. The significance column is instead used to discriminate between variables whose coefficient is different from zero at the 5\% significance level and variables that whose coefficient those not.
+
+\bigskip
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\rowcolor{lightgray} \multicolumn{3}{|c|}{Dynamic Linear Model}\\
+\hline
+&Coef Sign&Significance\\
+\hline
+GAS&+&***\\
+DEP&+&\\
+CON&-&\\
+EMI&+&\\
+MAR&+&\\
+REN&-&\\
+GDP&+&**\\
+EFTA&-&\\
+EU&+&\\
+\hline
+\multicolumn{2}{l}{\scriptsize{$^{***}p<0.001$; $^{**}p<0.01$; $^{*}p<0.05$}}
+\end{tabular}
+\caption{Coefficients and Significance.}
+\end{center}
+\end{table}
+\bigskip
+
+Differently to the static case, only two variables are significant in the dynamic setting: GDP and GAS. The change in the electricity price from one term to the other is unlikely to be explained by changes in the market concentration, use of renewables or consumption patterns. It seems that the number of variables included in the model is too large, so the focus should go on a smaller subset. However, when tested on the validation set, the models with less variables turn out performing a little bit worse with respect to the models with variables chosen through subset selection. 
+
+\bigskip
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\rowcolor{maroon} \multicolumn{4}{|c|}{Mean Absolute Error, in Euro Cents}\\
+\hline
+Linear Model&0.4867&With SubSel&0.5123\\
+\hline
+\end{tabular}
+\caption{Comparison of performance between Linear Model with and without Subset Selection.}
+\end{center}
+\end{table}
+\bigskip
+
+The model is wrong for less than half a cent when the model is tested on new data: this may seem as a good result, especially if compared to the accuracy of the static models. Yet, the reader should keep in mind that the outcome variable has changed with respect to the previous setting. When it is the whole electricity price to be predicted there is relatively high variability (the standard deviation is but now 0.79)
 \chapter{Conclusions}
 
 \begin{appendices}
 \chapter*{Data Cleaning}
-\section*{Static}
 The library \textit{Eurostat} is used to get the tables from the \textbf{R} interface, in particular the \textit{get\_eurostat} function. For instance, to obtain the price of electricity for years after 2007 the code is:
 
 \begin{verbatim}
@@ -1149,7 +1282,7 @@ X <- X[X$consom == "4161903" & X$tax == "X_TAX" & X$currency == "EUR", c(6:8)]
 X <- X[!(X$geo == "EA" | X$geo == "EU27_2020" | X$geo == "EU28"),]
 \end{verbatim}
 
-\noindent To widen the data set, a series of merge functions is prompted. For instance, to add information regarding dependency from imports:
+To widen the data set, a series of merge functions is prompted. For instance, to add information regarding dependency from imports:
 
 \begin{verbatim}
 I <- get_eurostat("nrg_ind_id", time_format = "num")
@@ -1159,7 +1292,7 @@ names(I)[3] <- "DEP"
 X <- merge(X, I, by=c("time", "geo"), all.x=TRUE)
 \end{verbatim}
 
-\noindent As mentioned when introducing the renewable energy share variable, the major problem is in the transition from \textit{Eurostat} to \textit{World Bank} data for information prior to 2004. In this case the library \textit{wbstats} is used, and in particular the function \textit{wb}. There are small differences in the names assigned to the countries: in \textit{Eurostat} Greece is \textbf{EL} while in the \textit{World Bank} it is \textbf{GR}, United Kingdom is \textbf{UK} while in \textit{World Bank} it is \textbf{GB}. Data integration between the two data sources is carried out using the following code:
+As mentioned when introducing the renewable energy share variable, the major problem is in the transition from \textit{Eurostat} to \textit{World Bank} data for information prior to 2004. In this case the library \textit{wbstats} is used, and in particular the function \textit{wb}. There are small differences in the names assigned to the countries: in \textit{Eurostat} Greece is \textbf{EL} while in the \textit{World Bank} it is \textbf{GR}, United Kingdom is \textbf{UK} while in \textit{World Bank} it is \textbf{GB}. Data integration between the two data sources is carried out using the following code:
 
 \begin{verbatim}
 J <- wb(indicator = "EG.FEC.RNEW.ZS", startdate = 2000, 
@@ -1178,7 +1311,7 @@ U <- rbind(U, J)
 X <- merge(X, U, by=c("time", "geo"), all.x=TRUE)
 \end{verbatim}
 
-\noindent For a discrete number of countries, information regarding \textit{market concentration} is sometimes missing. In the case of Bulgaria, for instance, all the values prior to 2013 are not available; those NAs are substituted with the first available year (2013).
+For a discrete number of countries, information regarding \textit{market concentration} is sometimes missing. In the case of Bulgaria, for instance, all the values prior to 2013 are not available; those NAs are substituted with the first available year (2013).
 
 \begin{verbatim}
 X[X$geo == "BG" & X$time \%in\% c(2000:2012), "MAR"] 
@@ -1201,7 +1334,7 @@ for (i in 1:nrow(X)) {
 }
 \end{verbatim}
 
-\noindent \textit{Eurostat}, at the time of the writing, has not yet published data regarding emission intensity for years 2019 and 2020. Since these values are likely to have changed in the last years, the assumption is that the direction of the change follows the trend of the difference from 2017 to 2018, with some inertia (equal to 0.33). The achieve this on \textbf{R}:
+\textit{Eurostat}, at the time of the writing, has not yet published data regarding emission intensity for years 2019 and 2020. Since these values are likely to have changed in the last years, the assumption is that the direction of the change follows the trend of the difference from 2017 to 2018, with some inertia (equal to 0.33). The achieve this on \textbf{R}:
 
 \begin{verbatim}
 for (country in levels(X$geo)){
@@ -1215,7 +1348,7 @@ for (country in levels(X$geo)){
 }
 \end{verbatim}
 
-\noindent Price of natural gas tends to increase over time. For this reason, when substituting Not Availables for the Gas variable when it is missing, both the history of the price for that country and the average of countries in that year is taken into account. For countries that never disclose information regarding the natural gas price, averages from neighboring or similar countries is used. In the case of the missing value for Malta, for instance, an average of the information from Italy and Greece is used.
+Price of natural gas tends to increase over time. For this reason, when substituting Not Availables for the Gas variable when it is missing, both the history of the price for that country and the average of countries in that year is taken into account. For countries that never disclose information regarding the natural gas price, averages from neighboring or similar countries is used. In the case of the missing value for Malta, for instance, an average of the information from Italy and Greece is used.
 
 \begin{verbatim}
 for (i in 1:nrow(X)) {
@@ -1235,7 +1368,7 @@ for (i in 1:nrow(X)) {
 }
 \end{verbatim}
 
-\noindent For all other Not Availables referring to non mid-term records, for variables such as Dependence, Consumption, Inflation and Emission Intensity, both the average from the year and the average from the country is taken into consideration, using a weighted mean. This schema is implemented so that if information regarding previous years is missing, the NA can still be replaced with a reasonable value. To bring an example, the code for substituting Dependence missing values is reported below.
+For all other Not Availables referring to non mid-term records, for variables such as Dependence, Consumption, Inflation and Emission Intensity, both the average from the year and the average from the country is taken into consideration, using a weighted mean. This schema is implemented so that if information regarding previous years is missing, the NA can still be replaced with a reasonable value. To bring an example, the code for substituting Dependence missing values is reported below.
 
 \begin{verbatim}
 for (i in 1:nrow(X)) {
@@ -1247,7 +1380,7 @@ for (i in 1:nrow(X)) {
   }
 \end{verbatim}
 
-\noindent For Gross Domestic Product missing values an additional intake of care is needed, since geographically close regions may present completely different wealth levels. In the case no historic value is found, countries that are expected to have a similar GDP are used as a benchmark. The problem with the above-mentioned technique is in the fact that using the average from historic values is likely to under-estimate the real GDP value, since for most years the economy tends to grow rather than shrink. For this reason the mean is positively adjusted by multiplying it by 1.02 (the European economy in recent years has been growing by about 2 percentage point per year on average).
+For Gross Domestic Product missing values an additional intake of care is needed, since geographically close regions may present completely different wealth levels. In the case no historic value is found, countries that are expected to have a similar GDP are used as a benchmark. The problem with the above-mentioned technique is in the fact that using the average from historic values is likely to under-estimate the real GDP value, since for most years the economy tends to grow rather than shrink. For this reason the mean is positively adjusted by multiplying it by 1.02 (the European economy in recent years has been growing by about 2 percentage point per year on average).
 
 \begin{verbatim}
 historic1 <- c()
@@ -1266,7 +1399,7 @@ for (i in 1:nrow(X)) {
   }
 \end{verbatim}
 
-\noindent The remaining missing values all refer to mid-year records. When both the following semester value and the previous semester value are present, a simple average is computed.
+The remaining missing values all refer to mid-year records. When both the following semester value and the previous semester value are present, a simple average is computed.
 
 \begin{verbatim}
 for (i in 1:nrow(X)) {
@@ -1281,24 +1414,45 @@ for (i in 1:nrow(X)) {
 }
 \end{verbatim}
 
+
 \section*{Membership to EU}
 
-To understand whether the membership to the European Union corresponds to a higher electricity price, left constant all other model parameters, it is necessary to first introduce some membership dummy variables. The \textbf{EA} parameter becomes one when the country belongs to the EU Economic Area, where Euro is used as a currency; for all other member countries the identifier is simply \textbf{EU}. Among the non-member countries, the ones which agreed to join the European Free Trade Association are identified as \textbf{EFTA}.
+To understand whether the membership to the European Union corresponds to a higher electricity price, left constant all other model parameters, it is necessary to first introduce some membership dummy variables. The \textbf{EA} parameter becomes one when the country belongs to the EU Economic Area, where Euro is used as a currency; for all other member countries the identifier is simply \textbf{EU}. Among the non-member countries, the ones that agreed to join the European Free Trade Association are identified as \textbf{EFTA}.
 
 \begin{verbatim}
 for (row in 1:nrow(DP)) {
-  if (as.character(DP[row, "geo"]) \%in\% c("BG", "RO", "CZ", "HU", "HR",
+  if (as.character(DP[row, "geo"]) %in% c("BG", "RO", "CZ", "HU", "HR",
 	 "SE", "DK", "PL", "UK")) {
     DP$EU[row] <- "EU"
 }
-  else if (as.character(DP[row, "geo"]) \%in\% c("NO", "IS", "LI")) {
+  else if (as.character(DP[row, "geo"]) %in% c("NO", "IS", "LI")) {
     DP$EU[row] <- "EFTA"
   }
-  else if (as.character(DP[row, "geo"]) \%in\% c("BE", "EL", "LT", "PT", "ES", "LU", "FR",
+  else if (as.character(DP[row, "geo"]) %in% c("BE", "EL", "LT", "PT", "ES", "LU", "FR",
 	 "SI", "MT", "SK", "DE", "IT", "NL", "FI", "EE", "CY", "AT", "IE", "LV")){
     DP$EU[row] <- "EA"
     }
 }
+\end{verbatim}
+
+
+\section*{Going Dynamic}
+
+To make the new data set dynamic the idea is to subtract from one observation the value from the same country previous semester. To do so a dictionary is built through the function \textit{hash}, a copy of the original data set is stored and then a for loop is triggered. Through this for loop, values inside the newly created data set are updated with the correct difference term by using the dictionary.
+
+\begin{verbatim}
+d <- hash()
+toRemove <- c()
+U <- X
+X$geo <- as.character(X$geo)
+for (i in 1:nrow(X)) {
+  country <- X[i, "geo"]
+  if (X[i, "geo"] %in% c(keys(d))) {
+    U[i,c(-1,-2)] <- X[i,c(-1,-2)] - d[[country]]
+  } else {toRemove <- c(toRemove, i)}
+  d[[country]] <- c(X[i,c(-1,-2)])
+}
+X <- U[-toRemove,]
 \end{verbatim}
 
 \chapter*{Models}
@@ -1463,6 +1617,7 @@ for (i in 1:17){
   val.errors[i] <- mean(abs(DP$PRI[test] - exp(pred)))
 }
 \end{verbatim}
+
 
 
 \bibliography{references}{}

@@ -263,7 +263,6 @@ C <- as.vector(coef(cv.out, bestlam))
 length(C[C != 0])
 mat <- as.matrix(cv.out$glmnet.fit$beta)
 forplot <- data.frame(t(rbind(mat, cv.out$glmnet.fit$lambda)))
-write.csv(forplot, "ria.csv")
 ```
 
 All features are kept in the model.
@@ -282,7 +281,7 @@ rm(LMeR)
 
 W <- 1/sqrt(DP$varFunc[train])
 
-tLM <- regsubsets(log(PRI) ~ (log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL) + MAR)^2 + EU, DP[train,], nvmax = 30, really.big = T, weights=W)
+tLM <- regsubsets(log(PRI) ~ (log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL) + MAR)^2 + EU, DP[train,], nvmax = 30, really.big = T)
 
 test.mat <- model.matrix(log(PRI) ~ (log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL) + MAR)^2 + EU, data=DP[test,])
 
@@ -293,8 +292,8 @@ for (i in 1:30){
   val.errors[i] <- mean(abs(DP$PRI[test] - exp(pred)))
 }
 which.min(val.errors)
-val.errors[which.min(val.errors)]
-coef(tLM, which.min(val.errors))
+val.errors
+coef(tLM, 1)
 ```
 
 Model selection with interactions kept from previous model and also adding polynomials.
@@ -309,7 +308,7 @@ rm(LMeR)
 
 W <- 1/sqrt(DP$varFunc[train])
 
-tLM <- regsubsets(log(PRI) ~ poly(log(GAS),2) + poly(DEP,2) + poly(log(CON),2) + poly(REN,2) + poly(log(GDP),2) + poly(log(OIL),2) + poly(MAR,2) + EU, DP[train,], nvmax = 18, weights=W)
+tLM <- regsubsets(log(PRI) ~ poly(log(GAS),2) + poly(DEP,2) + poly(log(CON),2) + poly(REN,2) + poly(log(GDP),2) + poly(log(OIL),2) + poly(MAR,2) + EU, DP[train,], nvmax = 18)
 
 test.mat <- model.matrix(log(PRI) ~ poly(log(GAS),2) + poly(DEP,2) + poly(log(CON),2) + poly(REN,2) + poly(log(GDP),2) + poly(log(OIL),2) + poly(MAR,2) + EU, data=DP[test,])
 
@@ -319,9 +318,9 @@ for (i in 1:17){
   pred <- test.mat[,names(coefi)] %*% coefi
   val.errors[i] <- mean(abs(DP$PRI[test] - exp(pred)))
 }
-which.min(val.errors)
+val.errors
 val.errors[which.min(val.errors)]
-coef(tLM, which.min(val.errors))
+coef(tLM, 3)
 ```
 
 In this case, we fail in improving our model, probably because there are too many parameters.

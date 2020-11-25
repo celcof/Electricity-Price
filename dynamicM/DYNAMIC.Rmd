@@ -31,6 +31,7 @@ C <- read.csv("DAT.csv")
 First thing: we notice that the dependent variable shows long tails, although this should not result as a big issue.
 
 ```{r}
+C$PRI = C$PRI * 100
 ggdensity(C$PRI, main = "Density function PRI")
 qqnorm(C$PRI)
 qqline(C$PRI)
@@ -82,27 +83,35 @@ C$EU <- as.factor(C$EU)
 Linear Model.
 
 ```{r}
-LM <- lm(PRI ~ GAS + DEP + CON + EMI + MAR + REN + GDP + OIL + EU, C, subset=train)
+LM <- lm(PRI ~ GAS + DEP + CON + EMI + MAR + REN + GDP + EU, C, subset=train)
 
-summary(LM)
+plot(LM)
 ```
 
 Situation does not look that bad, if we look at the plots for normality of errors and linearity assumption.
 
 To be checked:
-- no perfect multicollinearity
+- no perfect multi collinearity
 
 ```{r}
 library(corrplot)
 corrplot(cor(C[, 3:11]))
+vif(LM)
+```
+
+Performance on the validation set. 
+
+```{r}
+pred <- predict(LM, C[test,])
+mean(abs(C$PRI[test] - pred))
 ```
 
 Not all the features shall be significant: try to use only smaller subsets of the data.
 
 ```{R}
 library(leaps)
-nVar <- 7
-LM2 <- regsubsets(PRI ~ DEP + CON + GDP + OIL + REN + EMI + MAR + EU, C, nvmax = nVar)
+nVar <- 6
+LM2 <- regsubsets(PRI ~ DEP + CON + GDP + REN + EMI + MAR + EU, C, nvmax = nVar)
 which.max(summary(LM2)$adjr2)
 which.min(summary(LM2)$bic)
 which.min(summary(LM2)$cp)
@@ -117,8 +126,8 @@ coef(LM2, 2)
 To better compare accuracies of models we are going to use Mean Absolute Error (for interpretability reasons). Since our dependent variable is measured on a square root scale we have to have to square prediction vectors.
 
 ```{R}
-tLM <- regsubsets(PRI ~ DEP + CON + GDP + OIL + REN + EMI + MAR + EU, C, subset=train, nvmax = nVar)
-test.mat <- model.matrix(PRI ~ DEP + CON + GDP + OIL + REN + EMI + MAR + EU, data=C[test,])
+tLM <- regsubsets(PRI ~ DEP + CON + GDP + REN + EMI + MAR + EU, C, subset=train, nvmax = nVar)
+test.mat <- model.matrix(PRI ~ DEP + CON + GDP + REN + EMI + MAR + EU, data=C[test,])
 val.errors <- rep(NA, nVar)
 for (i in 1:nVar){
   coefi <- coef(tLM, id=i)
@@ -133,7 +142,7 @@ coef(tLM, which.min(val.errors))
 Now, time for ridge regression.
 
 ```{r}
-x <- model.matrix(PRI ~ DEP + CON + GDP + OIL + REN + EMI + MAR + EU, C)[,-1]
+x <- model.matrix(PRI ~ DEP + CON + GDP + REN + EMI + MAR + EU, C)[,-1]
 y <- C$PRI
 set.seed(35)
 ridge <- cv.glmnet(x[train,], y[train], alpha=0, standardize=T)
@@ -189,12 +198,12 @@ What if instead we wanted to guess, rather than the amount of change, at least t
 C$increase <- ifelse(C$PRI > 0, "Up", "Down")
 C$increase <- as.factor(C$increase)
 
-lR <- glm(increase ~ DEP + CON + GDP + OIL + REN + EMI + MAR + EU, C, family=binomial, subset=train)
+lR <- glm(increase ~ DEP + CON + GDP + REN + EMI + MAR + EU, C, family=binomial, subset=train)
 pred <- predict(lR, C[test,], type="response")
 glm.pred=rep("Down",434)
 glm.pred[pred >.5]="Up"
 table(prediction=glm.pred , groundtruth=C$increase[test])
-mean(glm.pred == C$increase[test])
+mean(glm.pred == C$increase[test], na.rm=TRUE)
 ```
 
 The algorithm is not really able to discriminate among observations with increasing and decreasing prices, since only 55% of the direction predictions are correct. In particular, the model overselects the upward increases and underselects the decreases in prices. This is a further indication that it is quite difficult to infer the trend in the price from the variables at hand.
