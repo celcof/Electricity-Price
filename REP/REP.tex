@@ -567,9 +567,9 @@ Slovakia & 64.4 & 63.7 \\
 
 \chapter{Methodology}
 
-Many authors have tried to measure the effect of market liberalization and green energy investment, starting from \cite{moreno2012electricity}, in which the analysis  is performed on European Union member countries markets'. \cite{nagayama2009electric} takes a broader perspective, looking at more countries but with older data. The cause-effect analysis is carried out in these studies with an econometric approach, without splitting the data in different subsets for training and validating the results, fact that represents one of the main novelties of the method implemented here.\\
+Many authors have tried to measure the effect of market liberalization and green energy investment, starting from \cite{moreno2012electricity}, in which the analysis  is performed on European Union member countries markets'. The authors from \cite{nagayama2009electric} take a broader perspective, looking at more countries but with older data. The cause-effect analysis is carried out in these studies with an econometric approach, without splitting the data in different subsets for training and validating the results, fact that represents one of the main novelties of the method implemented here.\\
 
-\noindent The main focus is on predicting how prices for electricity are going to evolve in the future, and not merely on understanding the causal relationship. In this sense, while the European Union is the main market on which the analysis is based, also \textit{World Bank} data is used as a source of information for countries all over the world. This section is structured as follows: first, models are built on top of \textit{Eurostat} data sets, and then to benchmark those findings, the most global patterns are investigated.
+The main focus is on predicting how prices for electricity are going to evolve in the future, and not merely on understanding the causal relationship. In this sense, while the European Union is the main market on which the analysis is based, also \textit{World Bank} data is used as a source of information for countries all over the world. This section is structured as follows: first, models are built on top of \textit{Eurostat} data sets, and then to benchmark those findings, the most global patterns are investigated.
 
 \section{Static European Models}
 \subsection{Variables}
@@ -598,7 +598,7 @@ Electricity, as discussed in the introduction, is not only produced by burning c
 
 \noindent Many European countries do not really have the capacity to produce enough electricity in order to be self-sufficient. The \textbf{dependency} indicator shows the share of total energy needs of a country met by imports from other countries. It is calculated from energy balances as net imports divided by the gross available energy. The formula for computing the dependence is: $$ \scalebox{2} {$\frac{(imports – exports)}{gross\;available\;energy}$}.$$ A negative value indicates a net exporter: a country that exports more fuels than it consumes. In the context of the data set at hand this happens only for \textit{Norway}. Values higher than 100 generally refer to the build of stocks (increase of fule in stocks), yet might be also a result of statistical discrepancies in raw data. This information is available from \textit{Eurostat} and recorded once a year. This variable is going to be shortened as \textbf{DEP} in the models discussed later.\\
 
-\noindent In the last 20 years the major change in the way electricity is sold is the \textbf{liberalization} forced to member countries by the European Union authorities. The only data regarding the structure of the markets member countries disclosed by \textit{Eurostat} indicates the market share of the largest electricity generator. This information is disclosed annually, and in the following models it is going to appear as \textbf{MAR}, for short. As also discussed in the Introduction, to rely merely on the share of the largest generator may not be enough for having a solid idea of the structure of the market may be sometimes not adequate. The best indicator for market concentration is the HHI (Herfindahl-Hirschman Index), and it is computed by adding the square root of the percentage market share of each individual firm in the industry.\\
+\noindent In the last 20 years the major change in the way electricity is sold is the \textbf{liberalization} forced to member countries by the European Union authorities. The only data regarding the structure of the markets member countries disclosed by \textit{Eurostat} indicates the market share of the largest electricity generator. This information is disclosed annually, and in the following models it is going to appear as \textbf{MAR}, for short. As also discussed in the Introduction, to rely merely on the share of the largest generator may not be enough for having a solid idea of the structure of the market may be sometimes not adequate. The best indicator for market concentration is the HHI (Herfindahl-Hirschman Index) \cite{viscusi2018economics}, and it is computed by adding the square root of the percentage market share of each individual firm in the industry.\\
 
 \noindent The electricity price is also, and maybe most importantly, dependent on how wealthy that single country is. \textit{Eurostat} provides the value of the \textbf{real gross domestic product} per capita, with data being published every quarter of year. ``Real" in this context means deflated, so leaving prices unchanged. This is key: while the gross domestic product tends to increase every year (given that the country is an in inflation regime), the real GDP might be decreasing if, at those prices level, on average the citizens have a lower purchasing power. The reader could wonder why to exclude the average increase in prices from the consideration, although there is a clear correlation between price increase and electricity price: the higher the increase in prices the higher the expected increase in the electricity bill. The answer lies in the fact that the \textbf{inflation} variable \textit{hides} the electricity price change variable itself: the average increase in prices is computed on a basket of goods electricity is part of, so it would be too easy to actually use this variable in the models. The outcome variable exogeneity assumption would not be met. In the following models, the real Gross Domestic Product per capita variable is going to be called \textbf{GDP}, for short.
 
@@ -990,15 +990,15 @@ At this point, simple and weighted linear regressions are recomputed on the smal
 \hline
 \rowcolor{maroon} \multicolumn{4}{|c|}{Mean Absolute Error}\\
 \hline
-OLS&0.0181&WLS&0.189\\
+OLS&1.81&WLS&1.89\\
 \hline
 \end{tabular}
-\caption{Comparison of performance between OLS and WLS.}
+\caption{Comparison of performance between OLS and WLS, measured in Euro cents.}
 \end{center}
 \end{table}
 \bigskip
 
-Ordinary Least Squares seems to outperform Weighted Least Squares when testing the models on the validation set. Adjusted $R^2$, BIC and Cp metrics suggested to keep all the variables in the models, or in the worst case drop DEP. Now it could be interesting to check whether also Mean Absolute Error result proves to go in this direction. \textit{Table 2.11} summarizes information regarding the best model for $N$=1,...,10 where $N$ is the number of variables in the model. Resulting Mean Absolute Error, measured in US dollar cents, is reported in the final column. Models are obtained through Ordinary Least Squares.
+Ordinary Least Squares seems to outperform Weighted Least Squares when testing the models on the validation set. Adjusted $R^2$, BIC and Cp metrics suggested to keep all the variables in the models, or in the worst case drop DEP. Now it could be interesting to check whether also Mean Absolute Error result proves to go in this direction. \textit{Table 2.11} summarizes information regarding the best model for $N$=1,...,10 where $N$ is the number of variables in the model. Resulting Mean Absolute Error, measured in Euro cents, is reported in the final column. Models are obtained through Ordinary Least Squares.
 
 \bigskip
 \begin{table}[H]
@@ -1056,7 +1056,7 @@ Interestingly enough, the model which results as the best performing on the vali
 
 \subsection{Ridge Regression}
 
-Rather than completely excluding some variables it could be beneficial to simply underestimate the coefficients of the model output by the linear regression. The linear model could be wrong in assigning high coefficients to variables that are not that important, rather than being wrong in including them in the model. To shrink the coefficients one idea is to use \text{Ridge} regression: the resulting model is similar to least squares, except the coefficients are determined by minimizing a slightly different quantity, which includes a \textit{shrinkage} penalty $\lambda$. The use of the penalty has the effect of shrinking the estimates towards zero. As $\lambda$ approaches infinity, the impact of the shrinkage penalty grows, making the coefficient estimates converge to zero. \cite{james2013introduction} This property of ridge regression is showed in \textit{Figure 2.6}, in which a new model for the electricity price prediction is built.
+Rather than completely excluding some predictor variables it could be beneficial to simply use smaller coefficients with respect to the ones of the linear regression model. The linear model could be wrong in assigning high coefficients to variables that are not that important, rather than being wrong in including them in the model. To shrink the coefficients one idea is to use \text{Ridge} regression: the resulting model is similar to least squares, except the coefficients are determined by minimizing a slightly different quantity, which includes a \textit{shrinkage} penalty $\lambda$. The use of the penalty has the effect of shrinking the estimates towards zero. As $\lambda$ approaches infinity, the impact of the shrinkage penalty grows, making the coefficient estimates converge to zero. \cite{james2013introduction} This property of ridge regression is showed in \textit{Figure 2.6}, in which a new model for the electricity price prediction is built.
 
 \bigskip
 \begin{figure}[H]
@@ -1224,7 +1224,7 @@ The GVIF and adjusted GVIF values are both very low, indicating that there is no
 \end{figure}
 \bigskip
 
-When the change in price is significant, both in the positive and in the negative direction, the model is not really good in calling the right prediction. When instead the price in change is smaller, the residuals are on average small as well. This means that the model is likely to be quite conservative. Since to different values of fit correspond different residual values, the heteroscedasticity hypothesis is not to be rejected. This is an indication of the fact that the linear model with ordinary least squares may not be the best choice in the dynamic setting. \textit{Table 2.16} provides a summary of the linear regression in order to understand the impact of the predictor variables on the outcome. If the coefficient is positive, an increase in the predictor variable is going to result in an increase in the price; if instead the coefficient is negative, an increase in the predictor variable is going to result in a decrease in the price. The significance column is instead used to discriminate between variables whose coefficient is different from zero at the 5\% significance level and variables that whose coefficient those not.
+When the change in price is significant, both in the positive and in the negative direction, the model is not really good in calling the right prediction. When instead the price in change is smaller, the residuals are on average small as well. This means that the model is likely to be quite conservative. Since to different values of fit correspond different residual values, the heteroscedasticity hypothesis is not to be rejected. This is an indication of the fact that the linear model with ordinary least squares may not be the best choice in the dynamic setting. \textit{Table 2.16} provides a summary of the linear regression in order to understand the impact of the predictor variables on the outcome. If the coefficient is positive, an increase in the predictor variable is going to result in an increase in the price; if instead the coefficient is negative, an increase in the predictor variable is going to result in a decrease in the price. The significance column is instead used to discriminate between variables whose coefficient is different from zero at the 95\% significance level and variables that whose coefficient those not.
 
 \bigskip
 \begin{table}[H]
@@ -1269,7 +1269,87 @@ Linear Model&0.4867&With SubSel&0.5123\\
 \end{table}
 \bigskip
 
-The model is wrong for less than half a cent when the model is tested on new data: this may seem as a good result, especially if compared to the accuracy of the static models. Yet, the reader should keep in mind that the outcome variable has changed with respect to the previous setting. When it is the whole electricity price to be predicted there is relatively high variability (the standard deviation is but now 0.79)
+The model is wrong by less than half a cent when the model is tested on new data: this may seem as a good result, especially if compared to the accuracy of the static models. Yet, the reader should keep in mind that the outcome variable has changed with respect to the previous setting. When it is the whole electricity price to be predicted there is relatively high variability (the standard deviation of the outcome is of about 3.3 cents), while when it is only the change from one term to the other to be predicted there is low variability (the standard deviation of the outcome is of about 0.8 cents). Thus, in proportion, in the dynamic setting, a lower level of variability is captured.
+
+\subsection{Regression Trees}
+
+Since the linear regression models seem to not be really well-performing on this data, another option is to use regression trees. The idea behind this technique is to divide the predictor space into distinct regions $R_1, R_2, ..., R_J$. These regions have the shape of high-dimensional boxes. For each observation that falls into the region $R_j$, the same prediction, i.e. the average of the response values for the training observations in $R_j$, is output. In the case of the electricity price regression, the predictor space is created on the basis of the splits displayed of \textit{Figure 2.12}. The information used to build this tree is not the complete set: only data from years prior to 2013 are used, while the rest is left to do some parameter tuning.
+ 
+\bigskip
+\begin{figure}[H]
+\begin{center}
+\captionsetup{justification=centering}
+\includegraphics[width=0.8\textwidth]{Images/plot.png}
+\caption{Regression Tree.}
+\end{center}
+\end{figure}
+\bigskip
+
+The most discriminant splits have to do with the price of natural gas: if it has gone down, then it is likely that the price of electricity will go down as well and conversely, if the former has increased, the latter will also increase. This tree excludes the possibility that, if there's been an decrease in the gas price greater than 1.2 cents, the direction of the change in electricity price is going to be positive. To further establish the magnitudes of price changes, one other predictor comes in play in particular: the real Gross Domestic Product per capita. Especially in cases of significant economy expansions (\textit{GDP} increase greater than 1175 euros), the electricity price increase is going to be particularly sizable. The two final variables that come in play are \textit{MAR} and \textit{DEP}, while there is no indication that the effect of changes in the share of renewable energy produced or in the consumption patterns do have any effect on the regression of the outcome variable.\\
+
+The one displayed in \textit{Figure 2.12} is a complete tree, but the risk with trees is to overfit. In order to avoid this, information that was not used to build the tree (data from 2012 to second half of 2014) is employed to compute error and decide whether to reduce the number of splits in the tree or not. The total deviance of each tree in the cost-complexity pruning sequence is used as the metric to choose how many nodes to exclude. \textit{Figure 2.13} displays performance on the data left for parameter tuning. The lower the deviance, the more effective the model.
+
+\bigskip
+\begin{figure}[H]
+\begin{center}
+\captionsetup{justification=centering}
+\includegraphics[width=0.8\textwidth]{Images/tre.png}
+\caption{Tree Size and Relative Performance.}
+\end{center}
+\end{figure}
+\bigskip
+
+It seems that the complete 5-nodes model is not the best performing of the batch at all, as the deviance is lower when the number of splits is three. \textit{Figure 2.14} shows the nodes and the shape of the tree that has been pruned.
+
+\bigskip
+\begin{figure}[H]
+\begin{center}
+\captionsetup{justification=centering}
+\includegraphics[width=0.8\textwidth]{Images/trep.png}
+\caption{Tree after validation.}
+\end{center}
+\end{figure}
+\bigskip
+
+The only relevant variable that has been kept in the model is the natural gas price: when the price for this good increase, the price of electricity goes up as well. There are instead two options when the price of natural gas has decreased since the last term: if the fall has been sizable (higher than 1 cent), then the outcome value is going to be negative almost by half a cent , otherwise the electricity price increase will correspond to 0.1 cents. \textit{DEP}, \textit{MAR} and surprisingly also \textit{GDP} are excluded because their presence in the model is the result of overfitting.\\
+
+It is now clear which the best performing tree is, but no indication yet regarding the performance on the validation set, which includes data from later years. \textit{Table 2.18} summarizes performance of the regression tree in terms of Mean Absolute Error, as previously done for the other models.
+
+\bigskip
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\rowcolor{maroon} \multicolumn{4}{|c|}{Mean Absolute Error, in Euro Cents}\\
+\hline
+Tree&0.564&Pruned Tree&0.511\\
+\hline
+\end{tabular}
+\caption{Comparison of performance between Trees before and after Pruning.}
+\end{center}
+\end{table}
+\bigskip
+
+The error is lower after pruning is performed with respect to the case the large model is left intact. However, overall performance does not correspond to a real step forward with respect to linear models, as it is often the case. Trees are however very simple and easy to interpret.
+
+\subsection{Direction of Change Prediction}
+
+The magnitude of change from one term to the other seems to be more the result of chance, rather than something that can easily be predicted. If however the problem is simplified to the prediction of only the direction of the change, the result may be more promising. The outcome variable this time is going to be the tally ``up"/``down", in relation to the change in price. The algorithm run is a generalized linear model where the outcome is binomial.\\
+
+Also in this case it is found that the most important predictor to explain the behavior of the outcome is \textit{GAS}, while the other variables seem to not have a significant effect. The model shows performance superior to a random classifier, having the former an accuracy equivalent to 0.601 with respect to 0.5 of the latter. However, this does not come as a big improvement: the figure below on the left displays the Receiver Operative Characteristic curve for the problem at hand, while the random classifier performance (on the specificity-sensitivity basis) instead is showed on the right.
+
+\bigskip
+\begin{figure}[H]
+\begin{center}
+\captionsetup{justification=centering}
+\includegraphics[width=0.8\textwidth]{Images/ROc.png}
+\caption{ROC curves.}
+\end{center}
+\end{figure}
+\bigskip
+
+The fact that the difference between the two plots is not so striking indicates that the classifier's ability to discriminate is not strong. The take-home message from the analysis of dynamic models is that most of the variability is likely to be explained by non-systematic factors, although the natural gas price fluctuations resemble the movements in the electricity price.
+
 \chapter{Conclusions}
 
 \begin{appendices}
@@ -1314,7 +1394,7 @@ X <- merge(X, U, by=c("time", "geo"), all.x=TRUE)
 For a discrete number of countries, information regarding \textit{market concentration} is sometimes missing. In the case of Bulgaria, for instance, all the values prior to 2013 are not available; those NAs are substituted with the first available year (2013).
 
 \begin{verbatim}
-X[X$geo == "BG" & X$time \%in\% c(2000:2012), "MAR"] 
+X[X$geo == "BG" & X$time %in% c(2000:2012), "MAR"] 
 	<- X[X$geo == "BG" & X$time == 2013, "MAR"]
 \end{verbatim}
 
@@ -1323,7 +1403,7 @@ While for Bulgaria it was use possible to simply copy and paste the information 
 \begin{verbatim}
 for (i in 1:nrow(X)) {
   year <- X$time[i]
-  if (X$geo[i] == "NL" & year\%\%1==0){
+  if (X$geo[i] == "NL" & year%%1==0){
     DEvalue <- X[X$geo == "DE" & X$time == year, "MAR"]
     BEvalue <- X[X$geo == "BE" & X$time == year, "MAR"]
     LUvalue <- X[X$geo == "LU" & X$time == year, "MAR"]
@@ -1618,7 +1698,56 @@ for (i in 1:17){
 }
 \end{verbatim}
 
+\section*{Dynamic}
 
+The steps for building linear models and for applying subset selection on the variables are similar to the ones already described in the past section, for the static setting. What is new is the inclusion of regression trees and logistic regression. The library \textit{tree} is used for this purpose. The training set is further divided into to smaller sets, one of which is used to tune the node quantity parameter, which controls for overfitting.
+
+\begin{verbatim}
+treeset <- C[train,]
+val <- (treeset$time >= 2012)
+traini <- !(val)
+tre <- tree(PRI ~ GAS + DEP + CON + EMI + MAR + REN + GDP + EU, treeset, subset=traini)
+plot(tre)
+text(tre,cex=0.85,digits=3)
+\end{verbatim}
+
+Some information data is left to decide whether to prune the tree in order to improve performance. The function \textit{prune.tree} does the job.
+
+\begin{verbatim}
+valset <- C[val,]
+my.tree <- prune.tree(tre,newdata=valset)
+\end{verbatim}
+
+To choose the final tree model among the many, the deviance is used.
+
+\begin{verbatim}
+opt.trees <- which(my.tree$dev == min(my.tree$dev))
+best.leaves <- min(my.tree$size[opt.trees])
+my.tree.pruned <- prune.tree(tre,best=best.leaves)
+\end{verbatim}
+
+Function \textit{glm} is used to build generalized linear models of the binomial family. If the probability computed by the model is greater than 0.5 the model is going to output a positive prediction (which in this case is going to correspond to a ``up" prediction. The confusion matrix of the classification problem can be obtained using the \textit{table} command. 
+
+\begin{verbatim}
+C$increase <- ifelse(C$PRI > 0, "Up", "Down")
+C$increase <- as.factor(C$increase)
+lR <- glm(increase ~ GAS + DEP + CON + GDP + REN + EMI + MAR + EU, C, family=binomial,
+ subset=train)
+pred <- predict(lR, C, type="response")
+glm.pred=rep("Down",434)
+glm.pred[pred[test] >.5]="Up"
+table(prediction=glm.pred , groundtruth=C$increase[test])
+mean(glm.pred == C$increase[test], na.rm=TRUE)
+\end{verbatim}
+
+The Receiver Operating Characteristic curve is used to compare performances when the 0.5 probability threshold is moved. To compute the \textit{ROC} curve the library \textit{pROC} is used.
+
+\begin{verbatim}
+C$prob <- pred
+library(pROC)
+ROC <- roc(increase ~ prob, C[test,])
+plot(ROC)
+\end{verbatim}
 
 \bibliography{references}{}
 \bibliographystyle{plain}

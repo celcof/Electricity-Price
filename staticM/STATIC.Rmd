@@ -338,4 +338,3 @@ bestlam <- cv.out$lambda.min
 pred <- predict(lasso.mod, s=bestlam, newx=x[test,])
 mean(abs(exp(pred) - y[test]))
 ```
-

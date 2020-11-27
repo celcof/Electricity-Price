@@ -31,7 +31,6 @@ C <- read.csv("DAT.csv")
 First thing: we notice that the dependent variable shows long tails, although this should not result as a big issue.
 
 ```{r}
-C$PRI = C$PRI * 100
 ggdensity(C$PRI, main = "Density function PRI")
 qqnorm(C$PRI)
 qqline(C$PRI)
@@ -207,3 +206,33 @@ mean(glm.pred == C$increase[test], na.rm=TRUE)
 ```
 
 The algorithm is not really able to discriminate among observations with increasing and decreasing prices, since only 55% of the direction predictions are correct. In particular, the model overselects the upward increases and underselects the decreases in prices. This is a further indication that it is quite difficult to infer the trend in the price from the variables at hand.
+
+Regression trees.
+
+```{r}
+C$PRI <- C$PRI*100
+```
+
+Data prior to 2014 is used for training.
+
+```{r}
+library(tree)
+val <- (C$time[train] >= 2012)
+traini <- !(val)
+tre <- tree(PRI ~ GAS + DEP + CON + EMI + MAR + REN + GDP + EU, C, subset=traini)
+plot(tre)
+text(tre,cex=1,digits=3)
+```
+
+From 2014 on -> test data to decide where to prune.
+
+```{r}
+my.tree = prune.tree(tre)
+plot(my.tree)
+```
+
+```{r}
+opt.trees = which(my.tree$dev == min(my.tree$dev))
+best.leaves = min(my.tree$size[opt.trees])
+my.tree.pruned = prune.tree(tre,best=best.leaves)
+```
