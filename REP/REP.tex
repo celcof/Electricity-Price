@@ -576,7 +576,7 @@ The main focus is on predicting how prices for electricity are going to evolve i
 
 The variables in consideration for the European market models seek to resemble the factors listed in the introduction. The response variable, electricity price itself, is expressed in \textit{Euros} and involves households who consume between 2 500 and 5 000 kWh. This means that the focus is on a certain category of consumers: families and not industries. For a panel data analysis on non-household consumers please instead refer to \cite{del2019industrial}.  The price used in the models as response variable does not include taxes. Most remarkably, electricity prices information is recorded twice a year, so in the models year variability is accounted. The time range chosen for the analysis is the last 20 years, from 2000 to the first semester of 2020. This makes the data at hand and the consequent results extremely up-to-date. Minor adjustments had to be carried out because of inconsistencies in the way of recording information between years prior to 2007 and years that follow. The electricity price is going to serve as the outcome variable in the later discussion, and referred as \textbf{PRI}, for short.\\
 
-The two main bills households receive contemplate electric power and \textbf{natural gas}, for cooking, heating, lighting and using domestic appliances inside the building. The two goods are strictly related, because electric power can be produced from gas, and because electricity can represent a substitute of gas (e.g.\ for households that use induction cooktops). Data is taken from \textit{Eurostat} and is also in this case bi-annual and measured in \textit{Euros}. Taxes and levies are not considered: the price is the sum of the raw material value and the cost of transportation and distribution. \textit{Figure 18} shows the distribution of the gas price, with the median being around 10 - 11 euros per mega joule. In the later model discussion this variables is going to be named \textbf{GAS}, for short.
+The two main bills households receive contemplate electric power and \textbf{natural gas}, for cooking, heating, lighting and using domestic appliances inside the building. The two goods are strictly related, because electric power can be produced from gas, and because electricity can represent a substitute of gas (e.g.\ for households that use induction cooktops). Data is taken from \textit{Eurostat} and is also in this case bi-annual and measured in \textit{Euros}. Taxes and levies are not considered: the price is the sum of the raw material value and the cost of transportation and distribution. \textit{Figure 2.1} shows the distribution of the gas price, with the median being around 10 - 11 euros per mega joule. In the later model discussion this variables is going to be named \textbf{GAS}, for short.
 
 \bigskip
 \begin{figure}[H]
@@ -588,7 +588,7 @@ The two main bills households receive contemplate electric power and \textbf{nat
 \end{figure}
 \bigskip
 
-The idea is to use the price of the resources from which electricity is produced to have an idea of what the price of the good could be. The choice of having the natural gas price as a variable in the data set goes in this sense. It would be reasonable to actually do the same for \textbf{oil}, but \textit{Eurostat} does not disclose any information regard this good price. Options could be either to use the US dollar price per barrel, which is the same for all countries or the pump price for gasoline. The choice falls on the latter, being considered as a good proxy for the price of oil in the country. The data is available from the World Bank, and observations are recorded once every two years. In the later model it is going to be referred as \textbf{OIL}, for short.\\
+The idea is to use the price of the resources from which electricity is produced to have an idea of what the price of the good could be. The choice of having the natural gas price as a variable in the data set goes in this sense. It would be reasonable to actually do the same for oil, but \textit{Eurostat} does not disclose any information regard this good price. Options could be either to use the US dollar price per barrel or the pump price for gasoline. The choice falls on the latter, being considered as a good proxy for the price of oil in the country. The data is available from the World Bank, and observations are recorded once every two years. In the later models it is going to be referred as \textbf{OIL}, for short.\\
 
 Electricity, as discussed in the introduction, is not only produced by burning coal, oil or natural gas, but also by using \textbf{renewable resources}. The share of electricity produced using sustainable practices on the total of electricity produced by each single country is also included in the data set, and named as \textbf{REN}, for short. This information is recorded once a year and available from \textit{Eurostat}. However, some years the information is incomplete, specifically those before 2004, so those missing records are topped up with data from \textit{World Bank}. The sets from the two different sources describe the same information, e.g. for data regarding 2004, numbers are almost equivalent: however, just pasting data could be dangerous so normalization of the world bank information is carried out by multiplying each country value for 2000-2003 by a factor that makes records for 2004 match for both sources. \\
 
@@ -1332,7 +1332,7 @@ Tree&0.564&Pruned Tree&0.511\\
 
 The error is lower after pruning is performed with respect to the case the large model is left intact. However, overall performance does not correspond to a real step forward with respect to linear models, as it is often the case. Trees are however very simple and easy to interpret.
 
-\subsection{Direction of Change Prediction}
+\subsection{Direction of Change}
 
 The magnitude of change from one term to the other seems to be more the result of chance, rather than something that can easily be predicted. If however the problem is simplified to the prediction of only the direction of the change, the result may be more promising. The outcome variable this time is going to be the tally ``up"/``down", in relation to the change in price. The algorithm run is a generalized linear model where the outcome is binomial.\\
 
@@ -1349,6 +1349,162 @@ Also in this case it is found that the most important predictor to explain the b
 \bigskip
 
 The fact that the difference between the two plots is not so striking indicates that the classifier's ability to discriminate is not strong. The take-home message from the analysis of dynamic models is that most of the variability is likely to be explained by non-systematic factors, although the natural gas price fluctuations resemble the movements in the electricity price.
+
+\section{Global Models}
+
+For the time being, the idea has been to focus on data from European countries, and this was the case for various reasons. The EU provides accurate and reliable information with a good frequency. Plus, for various aspects it is a common market so there are many similarities in the structure of their electricity systems. The reader may however wonder whether the findings that were discussed so far are only valid for European countries or  Excluding the rest of the world, however, may be a source of bias of the interest is in looking at global interactions between variables. The role of this section is exactly the one of providing a benchmark to European models to check whether previous findings are globally valid.
+
+\subsection{Variables}
+
+Data for the global analysis is taken from \textit{World Bank} instead of \textit{Eurostat}. The type of regressor variables that are used aim to resemble as much as possible the ones used for the previous regression problem. However, differences are unavoidable so variables for this new set of models have to be briefly presented.
+
+\begin{itemize}
+\item The outcome variable is, of course, the electricity price (\textbf{PRI}), which this time is measured in U.S. cents per kWh (so not in Euros as before). For the records, a monthly electricity consumption is assumed, for which a bill for the equivalent of a warehouse is computed in the largest business city for the month of March. 
+\item The net of energy imports as percentage of energy use (\textbf{DEP}).
+\item The Emission Intensity (\textbf{EMI}) variable is measured quite in a different way with respect to before. It is now the kg equivalent of CO2 emitted per 2010 US dollar of GDP.
+\item The electric power consumption (\textbf{CON}) is measured as kWh per capita.
+\item \textbf{GDP} per capita is again assessed with Purchasing Power Parity, which is a measurement of prices in different countries that uses the uses baskets of good as benchmark for the evaluating purchasing power. The principle is the same of the real GDP used by \textit{Eurostat}.
+\item Pump price for gasoline, used a proxy for oil price (\textbf{OILp}), same variable as for the European discussion.
+\item Electricity production from renewable sources (\textbf{REN}), excluding hydroelectric (as percentage of total).
+\item Electricity production from oil sources as percentage of total, (\textbf{OILs}), is a variable which was not available from Eurostat, which only disclosed information regarding share of energy produced from renewable sources.
+\item Another information data not available before that can be useful: electricity production from coal sources as percentage of total \textbf{(COA}).
+\end{itemize}
+
+The handling of information and creation of the data set is left to the appendix. One other important difference with respect to the European models is that information for the price of electricity is only available from 2015 on, so this data set is going to be wider (a very large number of countries is included) but shorter (time range only $5$ years). Since included information is also sourced from very small countries, there may be some inconsistencies: Mauritius is an island nation with a very low wealth level which is also an energy exporter (negative dependency value), but in spite of this electricity is extremely expensive, as displayed in \textit{Table 2.19}. 
+
+\bigskip
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\rowcolor{maroon} \multicolumn{6}{|c|}{Data from Solomon Islands}\\
+\hline
+Year&PRI&DEP&GDP&Region&Income\\
+\hline
+2015&98.7&-17.4&2236&East Asia \& Pacific&Lower middle income\\
+2016&99.9&-17.4&2272&East Asia \& Pacific&Lower middle income\\
+2017&96&-17.4&2338&East Asia \& Pacific&Lower middle income\\
+2018&67.9&-17.4&2421&East Asia \& Pacific&Lower middle income\\
+2019&67.4&-17.4&2466&East Asia \& Pacific&Lower middle income\\
+\hline
+\end{tabular}
+\caption{Data from Solomon Islands.}
+\end{center}
+\end{table}
+\bigskip
+
+From 2015 to 2017 one kWh was costing almost 1\$, which is an extremely high price: the effect of Mauritius observations would be very high on the model. Since the purpose of this section is to build a model that works well for most countries in the world, and it is not really of interest to accurately fit the information from a 1 million people nation, Solomon Islands observations are simply excluded from the model.
+
+\subsection{Random Effects}
+
+The aim is to build a model for the prediction of the electricity price that is the as global as possible, i.e. behaving well not for single countries or continents, but with observation of any provenance. From here the idea of using random effects, as if geographical information was not really of interest in this case. \textit{Table 2.20} provides a summary of the random effect model. Variables enter the model linearly, without logarithmic transformations.
+
+\bigskip
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\rowcolor{lightgray} \multicolumn{4}{|c|}{Coefficients}\\
+\hline
+&Estimate&Std. Error&p\\
+\hline
+(Intercept)&1.39&1.49&***\\
+EMI&-5.17&1&***\\
+DEP&0.00&0.00&\\
+CON&-0.00&0.00&\\
+COA&0.07&0.01&***\\
+REN&0.13&0.03&***\\
+GDP&0.00&0.00&***\\
+OILp&4.89&1.12&***\\
+OILs&0.11&0.02&***\\
+\hline
+\multicolumn{2}{l}{\scriptsize{$^{***}p<0.001$; $^{**}p<0.01$; $^{*}p<0.05$}}
+\end{tabular}
+\end{center}
+\end{table}
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\rowcolor{maroon} \multicolumn{4}{|c|}{Global Performance}\\
+\hline
+R-Squared&0.2431&Adj R-Squared&0.2362\\
+\hline
+\end{tabular}
+\caption{Fixed Effects Model summary.}
+\end{center}
+\end{table}
+\bigskip
+
+Interestingly all three \textit{REN}, \textit{COA}, and \textit{OILs} have a positive coefficient. Although they describe opposite ways of producing energy, ranging from the most sustainable, \textit{REN}, to the most polluting, \textit{COA}, the greater the value for each variable, the greater the electricity is expected to be. Since the shares of energy produced obviously sum up to 100, this may indicate that using ways to produce electricity alternative to these (e.g. generation through gas or nuclear energy) is likely to have a negative effect on the electricity price. Or, simply, that the random effects model is not the best option for performing this type of analysis.
+
+\subsection{Linear Model}
+
+As the case was for the previous models, using random effects may result in a model showing little variance but too much bias. Instead, including all the country identifiers would give the opposite result. A good compromise is to use the region, which is already present in the data set and can provide some information about which parts of the world tend to have higher electricity prices with respect to others. One decision that has to be taken when building the linear model with geographical identifier is whether to use the non-percentage variables in their logarithmic form or not. If from one side a small portion of model interpretability is lost, the gain is in the reduced influence of outliers or high-leverage points. \textit{Figure 2.16} shows the difference in the residual distribution between models without (the one up) and with (the one below) logarithmic transformations. It is possible to evaluate how the second is more symmetrical, even though still a little bit skewed.
+
+\bigskip
+\begin{figure}[H]
+\begin{center}
+\captionsetup{justification=centering}
+\includegraphics[width=0.8\textwidth]{Images/residualz.png}
+\includegraphics[width=0.8\textwidth]{Images/resdislog.png}
+\caption{Residual distributions for models without and with logarithmic transformation applied on non-percentage variables.}
+\end{center}
+\end{figure}
+\bigskip
+
+When the logarithmic transformation is applied, also the other assumptions beside residuals' normality, as for instance homoscedasticity seem to be respected, so the model of this type is preferred. The presence of world region dummy variables allows the model to have different intercepts depending on the country in consideration. \textit{Table 2.17} displays a summary of the model with region identifier. The model is trained not on all the available observations but only on years prior to 2019, whereas last year information is left for validating the results.\\
+
+All region dummy variables' coefficients are negative, meaning that the base case (East Asia and Pacific) is the area in which this good is the most expensive. Conversely, the price is the lowest, on average, in Middle East and North Africa (shortened \textbf{MENA}), in Europe and Central Asia (\textbf{ECA}). There is not enough information to call that the intercept for North America (\textbf{NA}) price, is significantly different from the one of the base case. For Sub-Saharan Africa (\textbf{SSA}), South Asia (\textbf{SA}) and Latin America and Caribbean (\textbf{LAC}), the intercept is lower with respect to the base case.
+
+\bigskip
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\rowcolor{lightgray} \multicolumn{4}{|c|}{Coefficients}\\
+\hline
+&Estimate&Std. Error&p\\
+\hline
+(Intercept)&17.1&1.65&***\\
+EMI&-3.7&1.04&***\\
+DEP&0.01&0.00&*\\
+CON&-0.00&0.00&\\
+COA&0.04&0.01&**\\
+REN&0.12&0.03&***\\
+GDP&0.00&0.00&***\\
+OILp&6.8&1.12&***\\
+OILs&0.1&0.02&***\\
+ECA&-9.45&0.97&***\\
+LAC&-3.47&1.11&***\\
+MENA&-8.02&1.26&***\\
+NA&-2.94&2.75&\\
+SA&-5.59&1.51&***\\
+SSA&-6.5&1.07&***\\
+\hline
+\multicolumn{2}{l}{\scriptsize{$^{***}p<0.001$; $^{**}p<0.01$; $^{*}p<0.05$}}\\
+\end{tabular}
+\end{center}
+\end{table}
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\rowcolor{maroon} \multicolumn{4}{|c|}{Global Performance}\\
+\hline
+MAE&4.959&Adj R-Squared&0.3286\\
+\hline
+\end{tabular}
+\caption{Fixed Effects Model summary.}
+\end{center}
+\end{table}
+\bigskip
+
+The total variance captured by the model is about 30\%, more than with the random effects model but still quite low. However, the wide heterogeneity of the data at hand has to be considered. Interestingly, the variables \textit{OILs}, \textit{COA} and \textit{REN} still have a positive coefficient. The error on the validation set is once again measured in Mean Absolute Error (with the outcome variable re-converted with an exponential transformation) and is slightly lower than 5 dollar cents. The mean value for \textit{PRI} is 17.44 cents.
+
+\subsection{Regularization}
+
+The risk of leaning on linear regression is that the model fits the training data too closely, so not only the systematic component of the variance, but also unsystematic one is fit. To avoid this type of behavior, overfitting, instead of minimizing simple ordinary least squares, penalties are included in order to shrink the coefficients.
 
 \chapter{Conclusions}
 
@@ -1494,7 +1650,6 @@ for (i in 1:nrow(X)) {
 }
 \end{verbatim}
 
-
 \section*{Membership to EU}
 
 To understand whether the membership to the European Union corresponds to a higher electricity price, left constant all other model parameters, it is necessary to first introduce some membership dummy variables. The \textbf{EA} parameter becomes one when the country belongs to the EU Economic Area, where Euro is used as a currency; for all other member countries the identifier is simply \textbf{EU}. Among the non-member countries, the ones that agreed to join the European Free Trade Association are identified as \textbf{EFTA}.
@@ -1515,7 +1670,6 @@ for (row in 1:nrow(DP)) {
 }
 \end{verbatim}
 
-
 \section*{Going Dynamic}
 
 To make the new data set dynamic the idea is to subtract from one observation the value from the same country previous semester. To do so a dictionary is built through the function \textit{hash}, a copy of the original data set is stored and then a for loop is triggered. Through this for loop, values inside the newly created data set are updated with the correct difference term by using the dictionary.
@@ -1533,6 +1687,74 @@ for (i in 1:nrow(X)) {
   d[[country]] <- c(X[i,c(-1,-2)])
 }
 X <- U[-toRemove,]
+\end{verbatim}
+
+\section*{Global Data}
+
+Previous data were mostly obtained through \textit{Eurostat}, which however provides information only for European countries. To build a more global data set, the \textit{World Bank} is used as a provider. R library to retrieve information is \textit{WDI}. Cities and regions are removed from the data, which includes only national information.
+
+\begin{verbatim}
+W <- WDI(indicator = c("IC.ELC.PRI.KH.DB1619", "EG.IMP.CONS.ZS", "EN.ATM.CO2E.KD.GD",
+"EG.USE.ELEC.KH.PC", "NY.GDP.PCAP.PP.CD", "EP.PMP.SGAS.CD", "EG.ELC.PETR.ZS",
+"EG.ELC.RNWX.ZS", "EG.ELC.COAL.ZS"), start = 2014, end = 2019, extra = TRUE) 
+names(W) <- c("iso2c", "country", "year", "PRI", "DEP", "EMI","CON", "GDP", "OILp",
+ "OILs", "REN", "COA", "iso3c", "region", "capital", "longitude", "latitude", "income",
+"lending")
+W <- W[W$income != "Aggregates",]
+W <- W[!is.na(W$income),]
+\end{verbatim}
+
+The novelty with this type of data retriever is that it includes information regarding the region and the income level. This can be very useful when filling Not Availables. If NA is found substitute with latest value from same country or if that is not available with the average from countries of the region in consideration. The same process is carried out to fill NAs for \textit{OIL}, \textit{REN} and \textit{COA} columns.
+
+\begin{verbatim}
+for (row in 1:nrow(W)) {
+  area = W$region[row]
+  if (W$year[row] == 2014 & is.na(W$DEP[row])) {
+    W$DEP[row] <- mean(W[W$region == area,"DEP"],na.rm=T)
+  }
+}
+
+for (row in 1:nrow(W)) {
+  country = W$country[row]
+  if (is.na(W$DEP[row])) {
+    if (is.na(W[W$country == country & W$year == 2015,"DEP"])) {
+      W$DEP[row] <- W[W$country == country & W$year == 2014,"DEP"]
+    }
+    else {
+      W$DEP[row] <- W[W$country == country & W$year == 2015,"DEP"]
+    }
+  }
+} 
+\end{verbatim}
+
+A similar process with respect to the one described above is carried out for filling consumption and oil NAs. The only difference is that countries with the same wealth level are used instead of countries from the same region.
+
+\begin{verbatim}
+for (row in 1:nrow(W)) {
+  area = W$income[row]
+  if (W$year[row] == 2014 & is.na(W$CON[row])) {
+    W$CON[row] <- mean(W[W$income == area,"CON"],na.rm=T)
+  }
+}
+
+for (row in 1:nrow(W)) {
+  country = W$country[row]
+  if (is.na(W$CON[row])) {
+    if (is.na(W[W$country == country & W$year == 2015,"CON"])) {
+    W$CON[row] <- W[W$country == country & W$year == 2014,"CON"]
+    }
+    else {
+      W$CON[row] <- W[W$country == country & W$year == 2015,"CON"]
+    }
+  }
+}
+\end{verbatim}
+
+Rows in which either \textit{PRI} or \textit{GDP} information is missing, are simply excluded from the data set.
+
+\begin{verbatim}
+W <- W[!is.na(W$PRI),]
+W <- W[!is.na(W$GDP),]
 \end{verbatim}
 
 \chapter*{Models}
