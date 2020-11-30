@@ -14,7 +14,12 @@ library(leaps)
 D <- read.csv("DAT.csv")
 ```
 
-Simple linear model with country label.
+Simple linear model with random effects.
+
+```{r}
+train <- (D$year < 2019)
+test <- (!train)
+```
 
 ```{r}
 LM <- lm(PRI ~ EMI + DEP + CON + COA + REN + GDP + OILp + OILs, D)
@@ -25,6 +30,8 @@ Points 714,716 and 718 correspond to records belonging to Solomon Islands. While
 
 ```{r}
 D <- D[-c(714,715,716,717,718),]
+train <- (D$year < 2019)
+test <- (!train)
 LM <- lm(PRI ~ EMI + DEP + CON + COA + REN + GDP + OILp + OILs, D)
 ```
 
@@ -59,31 +66,24 @@ library(olsrr)
 ols_plot_resid_hist(LMc)
 ```
 
-There is a sort of right-tail in our case. However, this behaviour was somehow predictable, since residuals are expected to be positive rather than negative (the average price is quite low, there are countries which spend a lot more than what they'd be supposed to but none that pay a lot less than they'd be supposed to).
+There is a sort of right-tail in our case. However, this behavior was somehow predictable, since residuals are expected to be positive rather than negative (the average price is quite low, there are countries which spend a lot more than what they'd be supposed to but none that pay a lot less than they'd be supposed to).
 
 ```{r}
-LMc <- lm(log(PRI) ~ EMI + DEP + log(CON) + COA + REN + log(GDP) + OILp + OILs + region, D)
+LMc <- lm(log(PRI) ~ EMI + DEP + log(CON) + COA + REN + log(GDP) + log(OILp) + OILs + region, D, subset=train)
 ols_plot_resid_hist(LMc)
 ```
 
 After using logarithmic transformation on the dependent and few independent variables situation improves.
 
 ```{r}
-plot(LMc, 3)
-```
-
-Heteroskedasticity is not a problem.
-
-```{r}
-train <- (D$year < 2019)
-test <- (!train)
+summary(LMc)
 ```
 
 Let us check performance on the validation set, which includes observations before 2015.
 
 ```{r}
 D$region <- as.factor(D$region)
-LMc <- lm(log(PRI) ~ EMI + DEP + log(CON) + COA + REN + log(GDP) + OILp + OILs + region, D, subset=train)
+LMc <- lm(log(PRI) ~ EMI + DEP + log(CON) + COA + REN + log(GDP) + log(OILp) + OILs + region, D, subset=train)
 pred <- predict(LMc, D[test,])
 mean(abs(D$PRI[test] - exp(pred)))
 ```
@@ -125,12 +125,11 @@ Let us look for the best value of the parameter lambda (shrinkage).
 
 ```{r}
 set.seed(10)
-cv.out <- cv.glmnet(x[train,], sqrt(y[train]), alpha=1)
+cv.out <- cv.glmnet(x[train,], log(y[train]), alpha=1)
 bestlam <- cv.out$lambda.min
 pred <- predict(lasso.mod, s=bestlam, newx=x[test,])
 mean(abs(exp(pred) - y[test]))
 ```
-
 About the same result as with standard linear model.
 
 The elastic net is a regularized regression method that linearly combines the L1 and L2 penalties of the lasso and ridge methods. The idea is to select the best alpha value through cross validation.
@@ -142,10 +141,17 @@ Elastic <- train(
   trControl = trainControl("cv", number = 10),
   tuneLength = 10
 )
+```
 
+```{r}
 print(Elastic$bestTune)
 pred <- predict(Elastic$finalModel, s=Elastic$bestTune$lambda, newx=x[test,])
 mean(abs(exp(pred) - y[test]))
+```
+
+```{r}
+mat <- as.matrix(lasso.mod$beta)
+forplot <- data.frame(t(rbind(mat, lasso.mod$lambda)))
 ```
 
 When tested on the validation set, the elastic net with alpha equal to 0.1 and a very small lambda value does not improve on the result of lasso.

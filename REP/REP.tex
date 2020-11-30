@@ -1504,8 +1504,19 @@ The total variance captured by the model is about 30\%, more than with the rando
 
 \subsection{Regularization}
 
-The risk of leaning on linear regression is that the model fits the training data too closely, so not only the systematic component of the variance, but also unsystematic one is fit. To avoid this type of behavior, overfitting, instead of minimizing simple ordinary least squares, penalties are included in order to shrink the coefficients.
+The risk of leaning on linear regression is that the model fits the training data too closely, so not only the systematic component of the variance, but also unsystematic one is fit. To avoid this type of behavior, overfitting, instead of minimizing simple ordinary least squares, penalties are included in order to shrink the coefficients. In the static setting, the choice was between two alternative methods of regularization, Ridge regularization and Lasso, where the difference is in the form of the penalty term. In Ridge regression, the quantity to be minimized is: $$L_{ridge}(\hat{\beta}) = \sum\limits_{i=1}^{n}(y_i-x'_i\hat{\beta})^2 + \lambda\sum\limits_{j=1}^{m}\hat{\beta_j}^2$$, where the $\lambda$ term is the most important parameter that decides for the amount of shrinkage of the coefficients. Inside the penalty term of the Lasso regression, instead of a square operation, the absolute value of the $\beta_j$ is considered. $$L_{lasso}(\hat{\beta}) = \sum\limits_{i=1}^{n}(y_i-x'_i\hat{\beta})^2 + \lambda\sum\limits_{j=1}^{m}|\hat{\beta_j}|$$ To understand whether it is better to use ridge or lasso penalties, the best solution is to look at performance on validation set. However, it is also possible that an hybrid approach between the two results in best accuracy. This is the idea of elastic net: introducing a parameter $\alpha$ that controls for how much of each regularization to use. $$L_{elas}(\hat{\beta}) = \sum\limits_{i=1}^{n}(y_i-x'_i\hat{\beta})^2 + \lambda(\frac{1-\alpha}{2}\sum\limits_{j=1}^{m}\hat{\beta_j}^2 + \alpha\sum\limits_{j=1}^{m}|\hat{\beta_j}|)$$ The higher the $\alpha$, the closer to lasso penalization, the lower the $\alpha$, the closer to ridge regression. Best possible value has to be found not only for $\lambda$ but also for $\alpha$. To tune those parameters, cross validation is used. In the case of the electricity price regression, the value for the $\alpha$ parameter that results as best performing is 0.1, very close to straight ridge regression. \textit{Figure 2.17} displays how the coefficients shrink in the regularization process with $\alpha$ equal to 0.1.
 
+\bigskip
+\begin{figure}[H]
+\begin{center}
+\captionsetup{justification=centering}
+\includegraphics[width=0.8\textwidth]{Images/elastic.png}
+\caption{Coefficient Estimates for the Elastic Net regression.}
+\end{center}
+\end{figure}
+\bigskip
+
+Despite the fact that this type of regularization is closer to $L_2$, so Ridge, than $L_1$, so Lasso, for an high enough $\lambda$ value, all coefficients shrink to zero. The corresponding $\lambda$ value, in the case of the electricity price regression is close to zero (==0.00278), and as a matter of performance there is not a great improvement with respect to the linear regression with Ordinary Least Squares (Mean Absolute Error is 4.962 cents).
 \chapter{Conclusions}
 
 \begin{appendices}
