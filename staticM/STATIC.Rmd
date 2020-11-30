@@ -12,6 +12,7 @@ library(ggpubr)
 library(car)
 library(eurostat)
 library(HDCI)
+library(plm)
 library(caret)
 library(scales)
 library(glmnet)
@@ -30,12 +31,16 @@ Simple linear model with country label.
 
 ```{r}
 LMc <- lm(log(PRI) ~ geo + log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL) + MAR, D)
-coef(LMc)[42:length(coef(LMc))]
+summary(LMc)
 ```
 
 ```{R}
 LM <- lm(log(PRI) ~ log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL) + MAR, D)
 summary(LM)
+```
+
+```{R}
+anova(LMc,LM)
 ```
 
 In the case of a random effects model, we find that, interestingly REN is strongly significant and has a negative effect on the price. Instead, when we deal with a fixed effects model, the effect is not significant but with a positive coefficient. This may result from the fact that countries with high share of renewable energy have a lower dummy.
@@ -110,7 +115,7 @@ vif(LMeP)
 Variance Inflator Formula also ok.
 
 ```{r}
-plot(LMeP,1)
+bptest(LMeP)
 ```
 
 The lower the fitted value, the higher the variance in the residual: we detect a certain amount of heteroskedasticity, confirmed by the value of the bptest.
@@ -151,21 +156,20 @@ coef(LMgls)
 Subset selection. We want to maximize adjusted R squared and minimize cp and bic.
 
 ```{R}
-library(leaps)
-LM3 <- regsubsets(log(PRI) ~ log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL) + MAR + EU, DP, nvmax = 12)
+LM3 <- leaps::regsubsets(log(PRI) ~ log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL) + MAR + EU, DP, nvmax = 12)
 which.max(summary(LM3)$adjr2)
 which.min(summary(LM3)$bic)
 which.min(summary(LM3)$cp)
 ```
 
-Optimal values for adjusted R squared and cp are obtained with 32 values while 27 variables are enough for bic. MAR, NUC and OIL are dropped. Rather than using proxies for test error, let us directly compute this error through validation set approach.
+Optimal values for adjusted R squared and cp are obtained with 10 variables while 9 are sufficient when looking at bic. Rather than using proxies for test error, an option is to compute this error through validation set approach.
 
 ```{R}
 train <- (DP$time < 2015)
 test <- (!train)
 ```
 
-Simple linear regression on train now. To compare accuracies of models we are going to use Mean Absolute Error (for interpretability reasons). Since our dependent variable is measured on a log scale we have to have to exponentiate prediction vectors. 
+Simple linear regression on training set now. To compare accuracies of models we are going to use Mean Absolute Error (for interpretability reasons). Since our dependent variable is measured on a log scale we have to have to exponentiate prediction vectors. 
 
 ```{r}
 LMeP <- lm(log(PRI) ~ log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL) + MAR + EU, DP, subset=train)
@@ -186,11 +190,12 @@ mean(abs(DP$PRI[test] - exp(pred)))
 rm(LMeR)
 ```
 
-Performance better with weighted regression, confirming our hypothesis that ordinary least squares in this context may not be optimal. 
+Simple linear regression slightly outperforms weighted linear regression.
 
 We can now now check that the best model is the one including all variables.
 
 ```{R}
+library(leaps)
 W <- 1/sqrt(DP$varFunc[train])
 tLM <- regsubsets(log(PRI) ~ log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL) + MAR + EU, DP[train,], weights=W, nvmax = 11)
 test.mat <- model.matrix(log(PRI) ~ log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL) + MAR + EU, data=DP[test,])
@@ -205,14 +210,17 @@ val.errors[which.min(val.errors)]
 coef(tLM, which.min(val.errors))
 ```
 
+Surprisingly enough, the model with only two variables, GAS and GDP, outperforms the others.
+
 Now, time for ridge regression.
 
 ```{r}
 x <- model.matrix(log(PRI) ~ log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL) + MAR + EU, DP)[,-1]
 y <- DP$PRI
 set.seed(35)
-ridge <- cv.glmnet(x[train,], log(y[train]), alpha=0, weights=W, standardize=T)
+ridge <- cv.glmnet(x[train,], log(y[train]), alpha=0, standardize=T)
 bestlam <- min(ridge$lambda)
+bestlam
 ```
 
 What is the test average difference between the prediction and the actual price of electricity?
@@ -226,12 +234,14 @@ Coefficients.
 
 ```{r}
 predict(ridge, type="coefficients", s=bestlam)
+mat <- as.matrix(ridge$glmnet.fit$beta)
+forplot <- data.frame(t(rbind(mat, ridge$glmnet.fit$lambda)))
 ```
 
 Time for lasso.
 
 ```{r}
-lasso.mod <- glmnet(x[train,], log(y[train]), alpha=1, weights=W)
+lasso.mod <- glmnet(x[train,], log(y[train]), alpha=1)
 plot(lasso.mod)
 ```
 
@@ -239,8 +249,9 @@ Let us look for the best value of the parameter lambda (shrinkage).
 
 ```{r}
 set.seed(35)
-cv.out <- cv.glmnet(x[train,], sqrt(y[train]), alpha=1, weights=W)
+cv.out <- cv.glmnet(x[train,], sqrt(y[train]), alpha=1)
 bestlam <- cv.out$lambda.min
+bestlam
 pred <- predict(lasso.mod, s=bestlam, newx=x[test,])
 mean(abs(exp(pred) - y[test]))
 ```
@@ -250,6 +261,8 @@ How many features is the model including?
 ```{r, warning=F}
 C <- as.vector(coef(cv.out, bestlam))
 length(C[C != 0])
+mat <- as.matrix(cv.out$glmnet.fit$beta)
+forplot <- data.frame(t(rbind(mat, cv.out$glmnet.fit$lambda)))
 ```
 
 All features are kept in the model.
@@ -268,7 +281,7 @@ rm(LMeR)
 
 W <- 1/sqrt(DP$varFunc[train])
 
-tLM <- regsubsets(log(PRI) ~ (log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL) + MAR)^2 + EU, DP[train,], nvmax = 30, really.big = T, weights=W)
+tLM <- regsubsets(log(PRI) ~ (log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL) + MAR)^2 + EU, DP[train,], nvmax = 30, really.big = T)
 
 test.mat <- model.matrix(log(PRI) ~ (log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL) + MAR)^2 + EU, data=DP[test,])
 
@@ -279,8 +292,8 @@ for (i in 1:30){
   val.errors[i] <- mean(abs(DP$PRI[test] - exp(pred)))
 }
 which.min(val.errors)
-val.errors[which.min(val.errors)]
-coef(tLM, which.min(val.errors))
+val.errors
+coef(tLM, 1)
 ```
 
 Model selection with interactions kept from previous model and also adding polynomials.
@@ -295,7 +308,7 @@ rm(LMeR)
 
 W <- 1/sqrt(DP$varFunc[train])
 
-tLM <- regsubsets(log(PRI) ~ poly(log(GAS),2) + poly(DEP,2) + poly(log(CON),2) + poly(REN,2) + poly(log(GDP),2) + poly(log(OIL),2) + poly(MAR,2) + EU, DP[train,], nvmax = 18, weights=W)
+tLM <- regsubsets(log(PRI) ~ poly(log(GAS),2) + poly(DEP,2) + poly(log(CON),2) + poly(REN,2) + poly(log(GDP),2) + poly(log(OIL),2) + poly(MAR,2) + EU, DP[train,], nvmax = 18)
 
 test.mat <- model.matrix(log(PRI) ~ poly(log(GAS),2) + poly(DEP,2) + poly(log(CON),2) + poly(REN,2) + poly(log(GDP),2) + poly(log(OIL),2) + poly(MAR,2) + EU, data=DP[test,])
 
@@ -305,9 +318,9 @@ for (i in 1:17){
   pred <- test.mat[,names(coefi)] %*% coefi
   val.errors[i] <- mean(abs(DP$PRI[test] - exp(pred)))
 }
-which.min(val.errors)
+val.errors
 val.errors[which.min(val.errors)]
-coef(tLM, which.min(val.errors))
+coef(tLM, 3)
 ```
 
 In this case, we fail in improving our model, probably because there are too many parameters.
@@ -325,4 +338,3 @@ bestlam <- cv.out$lambda.min
 pred <- predict(lasso.mod, s=bestlam, newx=x[test,])
 mean(abs(exp(pred) - y[test]))
 ```
-
