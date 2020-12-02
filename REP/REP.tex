@@ -618,7 +618,7 @@ The two main bills households receive contemplate electric power and \textbf{nat
 \end{figure}
 \bigskip
 
-The idea is to use the price of the resources from which electricity is produced to have an idea of what the price of the good could be. The choice of having the natural gas price as a variable in the data set goes in this sense. It would be reasonable to actually do the same for oil, but \textit{Eurostat} does not disclose any information regard this good price. Options could be either to use the US dollar price per barrel or the pump price for gasoline. The choice falls on the latter, being considered as a good proxy for the price of oil in the country. The data is available from the World Bank, and observations are recorded once every two years. In the later models it is going to be referred as \textbf{OIL}, for short.\\
+The idea is to use the price of the resources from which electricity is produced to have an idea of what the price of the good could be. The choice of having the natural gas price as a variable in the data set goes in this sense. It would be reasonable to actually do the same for oil, but \textit{Eurostat} does not disclose any information regard this good price. Options could be either to use the US dollar price per barrel or the pump price for gasoline. The choice falls on the latter, being considered as a good proxy for the price of oil in the country. The data is available from the World Bank, and these information is disclosed once every two years. In the later models it is going to be referred as \textbf{OIL}, for short.\\
 
 Electricity, as discussed in the introduction, is not only produced by burning coal, oil or natural gas, but also by using \textbf{renewable resources}. The share of electricity produced using sustainable practices on the total of electricity produced by each single country is also included in the data set, and named as \textbf{REN}, for short. This information is recorded once a year and available from \textit{Eurostat}. However, some years the information is incomplete, specifically those before 2004, so those missing records are topped up with data from \textit{World Bank}. The sets from the two different sources describe the same information, e.g. for data regarding 2004, numbers are almost equivalent: however, just pasting data could be dangerous so normalization of the world bank information is carried out by multiplying each country value for 2000-2003 by a factor that makes records for 2004 match for both sources. \\
 
@@ -626,11 +626,11 @@ Another variable that takes in consideration the level of sustainability of the 
 
 It is also important to consider the supply side in this context: how much each country is consuming in terms of energy. \textit{Eurostat} provides information regarding the quantity of oil equivalent (in kilograms), and this data is recorded annually. This indicator measures how much energy every citizen consumes at home excluding energy used for transportation. Since the indicator refers to final energy \textbf{consumption}, only energy used by end consumers is considered. The related consumption of the energy sector itself is excluded. This variable is going to be shortened as \textbf{CON} in the following model discussion.\\
 
-Many European countries do not really have the capacity to produce enough electricity in order to be self-sufficient. The \textbf{dependency} indicator shows the share of total energy needs of a country met by imports from other countries. It is calculated from energy balances as net imports divided by the gross available energy. The formula for computing the dependence is: $$ \scalebox{1.5} {$\frac{(imports – exports)}{gross\;available\;energy}$}.$$ A negative value indicates a net exporter: a country that exports more fuels than it consumes. In the context of the data set at hand this happens only for \textit{Norway}. Values higher than 100 generally refer to the build of stocks (increase of fuel in stock), yet might be also a result of statistical discrepancies in raw data. This information is available from \textit{Eurostat} and recorded once a year. This variable is going to be shortened as \textbf{DEP} in the models discussed later.\\
+Many European countries do not really have the capacity to produce enough electricity in order to be self-sufficient. The \textbf{dependence} indicator shows the share of total energy needs of a country met by imports from other countries. It is calculated from energy balances as net imports divided by the gross available energy. The formula for computing the dependence is: $$\frac{(imports – exports)}{gross\;available\;energy}$$ A negative value indicates a net exporter: a country that exports more fuels than it consumes. In the context of the data set at hand this happens only for \textit{Norway}. Values higher than 100 generally refer to the accumulation of stocks (increase of fuel in stock), yet might be also a result of statistical discrepancies in raw data. This information is available from \textit{Eurostat} and recorded once a year. This variable is going to be shortened as \textbf{DEP} in the models discussed later.\\
 
 In the last 20 years the major change in the way electricity is sold is the \textbf{liberalization} forced to member countries by the European Union authorities. The only data regarding the structure of the markets member countries disclosed by \textit{Eurostat} indicates the market share of the largest electricity generator. This information is disclosed annually, and in the following models it is going to appear as \textbf{MAR}, for short. As also discussed in the Introduction, to rely merely on the share of the largest generator may not be enough for having a solid idea of the structure of the market may be sometimes not adequate. The best indicator for market concentration is the HHI (Herfindahl-Hirschman Index)~\cite{viscusi2018economics}, and it is computed by adding the square root of the percentage market share of each individual firm in the industry.\\
 
-The electricity price is also, and maybe most importantly, dependent on how wealthy that single country is. \textit{Eurostat} provides the value of the \textbf{real gross domestic product} per capita, with data being published every quarter of year. ``Real" in this context means deflated, so leaving prices unchanged. This is key: while the gross domestic product tends to increase every year (given that the country is an in inflation regime), the real GDP might be decreasing if, at those prices level, on average the citizens have a lower purchasing power. The reader could wonder why to exclude the average increase in prices from the consideration, although there is a clear correlation between price increase and electricity price: the higher the increase in prices the higher the expected increase in the electricity bill. The answer lies in the fact that the \textbf{inflation} variable \textit{hides} the electricity price change variable itself: the average increase in prices is computed on a basket of goods electricity is part of, so it would be too easy to actually use this variable in the models. The outcome variable exogeneity assumption would not be met. In the following models, the real Gross Domestic Product per capita variable is going to be called \textbf{GDP}, for short.
+The electricity price is also, and maybe most importantly, dependent on how wealthy that particular country is. \textit{Eurostat} provides the value of the \textbf{real gross domestic product} per capita, with data being published every quarter of year. ``Real" in this context means deflated, so leaving prices unchanged. This is key: while the gross domestic product tends to increase every year (given that the country is an in inflation regime), the real GDP might be decreasing if, at those prices level, on average the citizens have a lower purchasing power. The reader could wonder why to exclude the average increase in prices from the consideration, although there is a clear correlation between price increase and electricity price: the higher the increase in prices the higher the expected increase in the electricity bill. The answer lies in the fact that the \textbf{inflation} variable \textit{hides} the electricity price change variable itself: the average increase in prices is computed on a basket of goods electricity is part of, so it would be too easy to actually use this variable in the models. The outcome variable exogeneity assumption would not be met. In the following models, the real Gross Domestic Product per capita variable is going to be called \textbf{GDP}, for short.
 
 \subsection{Features}
 
@@ -655,7 +655,7 @@ As discussed in the previous subsection, most information data are not disclosed
 
 \subsection{Random Effects}
 
-Statistical models always describe variation in observed variables in terms of systematic and unsystematic components. In econometrics, a random-effects model is a statistical model in which some of the parameters (effects) that define systematic components of the model exhibit some form of random variation.~\cite{salkind2010encyclopedia} In the context of the problem at hand, which is the electricity price prediction, the parameters (effects) that shall be taken as random factors are the country identifiers. For the time being, the assumption is that, given certain values for market concentration, share of renewable energy produced and so on, no country is different than any other. This is not such an unlikely supposition: after all, the countries in the analysis all belong to the European continent. The summary of the random effects model is displayed below, in \textit{Table ~\ref{Tab:re}}.
+Statistical models always describe variation in observed variables in terms of systematic and unsystematic components. In econometrics, a random-effects model is a statistical model in which some of the parameters (effects) that define systematic components of the model exhibit some form of random variation.~\cite{salkind2010encyclopedia} In the context of the problem at hand, which is the electricity price prediction, the parameters (effects) that shall be taken as random factors are the country identifiers. For the time being, the assumption is that, given certain values for market concentration, share of renewable energy produced and so on, no country is different from any other. This is not such an unlikely hypothesis: after all, the countries in the analysis all belong to the European continent. The summary of the random effects model is displayed below, in \textit{Table ~\ref{Tab:re}}.
 
 \bigskip
 \begin{table}[htb]
@@ -697,7 +697,7 @@ The model at hand captures 60\% of the variability of the data points. All varia
 
 \subsection{Fixed Effects}
 
-The Random Effect model, as discussed before, does not consider geographic information: the effect of country variables is assumed to be accidental. It is now time to check whether that assumption is fair or not. The Fixed Effects model implemented in this section considers all the variables already considered in the Random Effects model but also includes the geographical identifier. An Analysis of Variance test is a way to find out if an experiment results are significant. In this case the null hypothesis is that there is no difference in significance between a model with the geographic identifier and one without, the alternative hypothesis is that there is a difference in significance. \textit{Table ~\ref{Tab:12}} displays the R output when the \textit{anova} function is called on the two models.
+The Random Effects model, as discussed before, does not consider geographic information: the effect of country variables is assumed to be accidental. It is now time to check whether that assumption is fair or not. The Fixed Effects model implemented in this section considers all the variables already considered in the Random Effects model but also includes the geographical identifier. An Analysis of Variance test is a way to find out if an experiment results are significant. In this case the null hypothesis is that there is no difference in significance between a model with the geographic identifier and one without, the alternative hypothesis is that there is a difference in significance. \textit{Table ~\ref{Tab:12}} displays the R output when the \textit{anova} function is called on the two models.
 
 \bigskip
 \begin{table}[htb]
@@ -796,11 +796,11 @@ R-Squared&0.8458&Adj R-Squared&0.8399\\
 \end{table}
 \bigskip
 
-\textit{Model 2} captures around 85\% of the variability of the data points. The coefficients for the geographical identifier dummy variables provide an indication whether the single countries pay more than they should given their wealth, market concentration, consumption levels and so on. To provide an example, Belgian households pay for electricity bills an amount which is significantly higher than what would be expected, while the opposite happens for Serbia.\\
+The \textit{FE Model} captures around 85\% of the variability of the data points. The coefficients for the geographical identifier dummy variables provide an indication whether the single countries pay more than they should given their wealth, market concentration, consumption levels and so on. To provide an example, Belgian households pay for electricity bills an amount which is significantly higher than what would be expected, while the opposite happens for Serbia.\\
 
-It is interesting to notice how the coefficients of some of the variables of the \textit{RE model} change when moving to \textit{FE model}. For instance, the already discussed Renewable Energy Share this time shows a negative coefficient, even though it is not significant at the 5\% confidence level. This means that, opposite to what said before, a higher share of energy produced sustainably leads to a decrease in the price of electricity, every else left equal. The reason for this discrepancy is that countries with a high share of renewable energy production are going to have a lower geographical dummy variable (e.g. Denmark and Norway coefficient is -0.11, Sweden coefficient is -0.1).\\
+It is interesting to notice how the coefficients of some of the variables of the \textit{RE model} change when moving to \textit{FE model}. For instance, the already discussed Renewable Energy Share this time shows a negative coefficient, even though it is not significant at the 5\% confidence level. This means that, opposite to what said before, a higher share of energy produced sustainably leads to a decrease in the price of electricity, every else left equal. The reason for this discrepancy is that countries with a high share of renewable energy production do have a lower geographical dummy variable (e.g. Denmark and Norway coefficient is -0.11, Sweden coefficient is -0.1).\\
 
-Creating a dummy variable for each one of the countries in the data set, fixing the geographical effects, reduces the degrees of freedom which are available, and it is also too aggressive in simplifying the regression problem at hand. For instance the \textit{FE model} suggests that Northern Europe households pay less than they should for their electricity, but any information regarding the why this is the case is not available. Is it because, as was suggested in the \textit{RE model}, the \textbf{REN} variable is higher, is it because these countries are closer to Russia, which is a strong Natural Gas provider or because of something else? Hard to say at this point.\\
+Creating a 0-1 dummy variable for each one of the countries in the data set, fixing the geographical effects, reduces the degrees of freedom which are available, and it is also too aggressive in simplifying the regression problem at hand. For instance the \textit{FE model} suggests that Northern Europe households pay less than they should for their electricity, but any information regarding the why this is the case is not available. Is it because, as was suggested in the \textit{RE model}, the \textbf{REN} variable is higher, is it because these countries are closer to Russia, which is a strong Natural Gas provider or because of something else? Hard to say at this point.\\
 
 An alternative solution, rather than relying on so many geographical identifiers or to none of them, would be to include information regarding the membership to the European Union. Countries which use the Euro as their currency belong to the Economic Area group (\textbf{EA} dummy), other member states are referred to as \textbf{EU} countries (examples are Sweden, Denmark, which use their currency). Among the non EU-member states, an \textbf{EFTA} (European Free Trade Association) dummy variable is introduced to refer to countries as Norway that still have access to the common market. The set of commands to obtain the expanded data set with the dummy variables is displaced in the appendix. \textit{Table ~\ref{Tab:m3}} summarizes the \textit{EU model} summary.
 
@@ -844,7 +844,7 @@ R-Squared&0.6272&Adj R-Squared&0.6242\\
 \end{table}
 \bigskip
 
-\textit{Table ~\cite{Tab:m3}} summarizes coefficients and performance of the \textit{EU model}, which includes the European membership identifier among its variables. Countries which have some kind of bond with the European Union, both members and free trade associates, result having a higher intercept in the regression problem: their citizens are expected to pay a higher price for electricity with respect to citizens from outside countries.
+\textit{Table ~\ref{Tab:m3}} summarizes coefficients and performance of the \textit{EU model}, which includes the European membership identifier among its variables. Countries which have some kind of bond with the European Union, both members and free trade associates, result having a higher intercept in the regression problem: their citizens are expected to pay a higher price for electricity with respect to citizens from outside countries.
 
 \subsection{Checking Assumptions}
 
@@ -874,9 +874,9 @@ Since no distinct pattern is recognizable, the relationship between the predicto
 \end{figure}
 \bigskip
 
-Residuals show a distribution which is slightly skewed to the left: it happens more often that the simple linear model that has been built underestimates the real value with respect to a no residual situation. However, also given the large number of data points, this small deviation from perfect normality is not too alarming. One note: to the outcome variable at hand the logarithmic transformation has been applied, so a 0.1 residual does not correspond to a 10 cents of a dollar estimation error.\\
+Residuals show a distribution which is slightly skewed to the left: it happens more often that the simple linear model that has been built underestimates the real value with respect to a no residual situation. However, also given the large number of data points, this small deviation from perfect normality is not too alarming. One note: as already discussed, to the outcome variable at hand the logarithmic transformation has been applied, so a 0.1 residual does not correspond to a 10 cents of a dollar estimation error.\\
 
-Another problem that can pop up in regression models is the collinearity or the multi-collinearity of the predictor variables. In the presence of collinearity, the solution of the regression model becomes unstable. This hurdle can be assessed by computing a score called the variance inflation factor (or \textbf{VIF}), which measures how much the variance of a regression coefficient is inflated due to multi-collinearity in the model. \textbf{Table ~\ref{Tab:vif}} displays the result of running VIF on the variables from Model 3.
+Another problem that can pop up in regression models is the collinearity or the multi-collinearity of the predictor variables. In the presence of collinearity, the solution of the regression model becomes unstable. This hurdle can be assessed by computing a score called the variance inflation factor (or \textbf{VIF}), which measures how much the variance of a regression coefficient is inflated due to multi-collinearity in the model. \textbf{Table ~\ref{Tab:vif}} displays the result of running VIF on the variables from \textit{EU model}.
 
 \bigskip
 \begin{table}[htb]
@@ -918,7 +918,7 @@ Since GVIF and adjusted GVIF values are rather low, well under the critical 10 t
 \end{figure}
 \bigskip
 
-Equally spread points and consequent horizontal line of fit is a good indication of homoscedasticity: in this case, hard to give a definite answer. On the left-hand side of the plot, so when the fitted values are particularly small, the residuals tend to be greater. To investigate further, one idea is to run the \textbf{Breusch-Pagan} test, which fits a linear regression model to the previous residuals and rejects if too much of the variance is explained by the additional explanatory variables. \textit{Table ~\ref{Tab:bpt}} provides a summary.
+Equally spread points and consequent horizontal line of fit is a good indication of homoscedasticity: in this case, hard to give a definite answer. On the left-hand side of the plot, so when the fitted values are particularly small, the residuals tend to be greater. To investigate further, one idea is to run the \textbf{Breusch-Pagan} test, which fits a linear regression model to the previous residuals and rejects the homoscedasticity hypothesis if a sizable portion of the variance is captured by the additional explanatory variables. \textit{Table ~\ref{Tab:bpt}} provides a summary.
 
 \bigskip
 \begin{table}[htb]
@@ -937,7 +937,7 @@ BP&df&p-value\\
 \end{table}
 \bigskip
 
-The test detects heteroscedasticity. This means that the least squares estimator is still a linear and unbiased estimator, but it may no longer be the best. That is, there is another estimator with a smaller variance. In order to correct for heteroscedasticity, a \textbf{Box Cox} transformation is applied on the dependent variable, electricity price. A transformation of this type makes a non-normal dependent variable into a normal shape. \cite{box1964analysis} Code for applying Box-Cox transformation on the dependent variable is left in the appendix: in any case, as displayed in \textit{Table ~\ref{Tab:bpc}}, the overall situation improves but the BP test still detects heteroscedasticity.
+The test detects heteroscedasticity. This means that the least squares estimator is still linear and unbiased, but it may no longer be the best. That is, there is another estimator with a smaller variance. In order to correct for heteroscedasticity, a \textbf{Box Cox} transformation is applied on the dependent variable, electricity price. A transformation of this type makes a non-normal dependent variable into a normal shape. \cite{box1964analysis} Code for applying Box-Cox transformation on the dependent variable is left to the appendix: in any case, as displayed in \textit{Table ~\ref{Tab:bpc}}, the overall situation improves but the \textit{BP test} still detects heteroscedasticity.
 
 \bigskip
 \begin{table}[htb]
@@ -958,7 +958,7 @@ BP&df&p-value\\
 
 \subsection{Weighted Least Squares}
 
-Another option to better deal with non-constant variance is to deviate from ordinary least squares to use weighted least squares model. Weighted least squares corrects homoscedasticity by weighting each observation by the reciprocal of its estimated variance. Observations with small estimated variances are weighted higher than observations with large estimated variances. The precise steps are reported in the appendix, but the idea is to store the residuals from the \textit{EU model} and then run a regression on the residuals themselves. The weights for the final model are then obtained by taking the reciprocal of the square root of the exponential of the fitted values from this intermediate model. Since the weights are inversely proportional to the error variance, they reflect the information in that observation. So, an observation with small error variance has a large weight since it contains relatively more information than an observation with large error variance.\textit{Table ~\ref{Tab:wls}} compares the resulting coefficients from the \textit{EU model}, with Ordinary Least Squares, and the linear model with weighted regression.
+Another option to better deal with non-constant variance is to deviate from ordinary least squares to use weighted least squares model. Weighted least squares corrects homoscedasticity by weighting each observation by the reciprocal of its estimated variance. Observations with small estimated variances are weighted higher than observations with large estimated variances. The precise steps are reported in the appendix, but the idea is to store the residuals from the \textit{EU model} and then run a regression on the residuals themselves. The weights for the final model are then obtained by taking the reciprocal of the square root of the exponential of the fitted values from this intermediate model: $$ W = \frac{1}{\sqrt{e^{\hat{y}}}}$$ Weights are inversely proportional to the error variance. An observation with small error variance has a large weight since it contains relatively more information than an observation with large error variance.\textit{Table ~\ref{Tab:wls}} compares the resulting coefficients from the \textit{EU model}, with Ordinary Least Squares, and the linear model with weighted regression.
 
 \bigskip
 \begin{table}[htb]
@@ -988,15 +988,13 @@ EU&0.2&0.2\\
 \end{table}
 \bigskip
 
-There are no major differences between the two models but the one built through Weighted Least Squares is supposed to be more robust. The interpretation of the resulting coefficients and standard errors remains the same as before.
-
-It is important to note that the fact that some heteroscedasticity is detected while not using weights should not be too worrisome: most real world data is in fact heteroscedastic. If the sample size is large enough, however, the variance of the least squares estimator is supposed to be sufficiently small to get precise estimates. That is why from the following section, the use of the weights inside models is going to be carried out only sporadically.
+There are no major differences between the two models but the one built through Weighted Least Squares is supposed to be more robust. The interpretation of the resulting coefficients and standard errors remains the same as before. The fact that some heteroscedasticity is detected while not using weights is important to be noted because the estimators may not be optimal but it should not be too worrisome: most real world data is in fact heteroscedastic. If the sample size is large enough, however, the variance of the least squares estimator is supposed to be sufficiently small to get precise estimates. That is why from the following section, the use of the weights inside models is going to be carried out only sporadically.
 
 \subsection{Subset Selection}
 
 To have an idea of the goodness of models there are several options: one could look at the \textit{Adjusted $R^{2}$} values, as previously done in the chapter, or at some alternative accuracy metrics, as \textit{AIC}, \textit{BIC} or \textit{CP}. R squared is the proportion of variation in the outcome that is explained by the predictor variables: sadly, any variable which is added to the model is going to increase this accuracy metric, which is hence usually adjusted by the number of variables $n$. Akaike's Information Criteria (shortened AIC), Bayesian Information Criteria (shortened BIC) and Cp's basic idea is instead to penalize the inclusion of additional variables to the model. The lower the levels for these metrics, the better the model.
 
-The take-home message is that having a very large model including variables which are not really significant can decrease the likelihood of the final predictions produced being reliable. The next step is to assess whether the model with all the variables from the \textit{EU model} is supposed to be the best or it is better to focus on a subset of those predictors. \textit{Table ~\ref{Tab:acc}} displays the performance of the different models while one variable at a time is excluded from the model. For the steps to obtain such a table for subset selection, please refer to the appendix.
+The take-home message is that having a very large model including variables which are not really significant can decrease the likelihood of the final predictions produced being reliable. The next step is to assess whether the model with all the variables from the \textit{EU model} is supposed to be the best or it is better to focus on a subset of those predictors. \textit{Table ~\ref{Tab:acc}} displays the performance of the different models while one variable at a time is excluded from the model.
 
 \bigskip
 \begin{table}[htb]
@@ -1025,11 +1023,11 @@ log(GAS)&1&0.4&-647&753\\
 \end{table}
 \bigskip
 
-The first variables to be excluded from the model are Dependence on Imports and Market Concentration, followed by the geographical dummy variables. Contrarily, log(GDP) does not appear in the table which means that it is the last variable to be left. To decide which the best model is one has to look at the accuracy metrics: adjusted $R^2$ and Cp would suggest to opt for the model including all the variables, while BIC suggests to exclude DEP.
+The first variables to be excluded are Dependence on Imports and Market Concentration, followed by the geographical dummy variables. Contrarily, log(GDP) does not appear in the table which means that it is the last variable to be left. To decide which the best model is one has to look at the accuracy metrics: adjusted $R^2$ and Cp would suggest to opt for the model including all the variables, while BIC suggests to exclude DEP.
 
 The problem with the accuracy metrics described above is that they are computed on the same data set that is used for training the model. When there is enough information availability an option is to use a a part of the data to actually measure performance only. For instance, to understand which one of two models is the most reliable it is only necessary to compare the performance of the two models on the real-world data that is left for validation. In the case of the electricity data set at disposal, the idea is to split information on a temporal basis: the training set includes data prior to 2015, validation set includes the most recent information.
 
-At this point, simple and weighted linear regressions are recomputed on the smaller size training set. Performance of this two models on the validation set is reported in \textit{Table ~\ref{Tab:mae}}. The accuracy metric used is the \textit{Mean Absolute Error}, which is computed as the arithmetic average of the absolute errors.
+At this point, simple and weighted linear regressions are recomputed on the smaller size training set. Performance of these two models on the validation set is reported in \textit{Table ~\ref{Tab:mae}}. The accuracy metric used is the \textit{Mean Absolute Error}, which is computed as the arithmetic average of the absolute errors.
 
 \bigskip
 \begin{table}[htb]
@@ -1047,7 +1045,7 @@ OLS&1.81&WLS&1.89\\
 \end{table}
 \bigskip
 
-Ordinary Least Squares seems to outperform Weighted Least Squares when testing the models on the validation set. Adjusted $R^2$, BIC and Cp metrics suggested to keep all the variables in the models, or in the worst case drop DEP. Now it could be interesting to check whether also Mean Absolute Error result proves to go in this direction. \textit{Table ~\ref{maeols}} summarizes information regarding the best model for $N$=1,...,10 where $N$ is the number of variables in the model. Resulting Mean Absolute Error, measured in Euro cents, is reported in the final column. Models are obtained through Ordinary Least Squares.
+Ordinary Least Squares seems to outperform Weighted Least Squares when testing the models on the validation set. Adjusted $R^2$, BIC and Cp metrics suggested to keep all the variables in the models, or in the worst case drop DEP. Now it could be interesting to check whether also Mean Absolute Error result proves to go in this direction. \textit{Table ~\ref{Tab:maeols}} summarizes information regarding the best model for $N$=1,...,10 where $N$ is the number of variables in the model. Resulting Mean Absolute Error, measured in Euro cents, is reported in the final column. Models are obtained through Ordinary Least Squares.
 
 \bigskip
 \begin{table}[htb]
@@ -1075,7 +1073,7 @@ x&&&&x&&&&&&2&2.03\\
 \end{table}
 \bigskip
 
-As expected, the best performing model is the one built including all the variables of the data set. As discussed earlier, however, Ordinary Least Squares may be not the only option. It may result interesting to see what happens when the data points effect on the model is weighted through our weights $W$. \textit{Table ~\ref{Tab:mwls}}
+As expected, the best performing model is the one built including all the variables of the data set. As discussed earlier, however, Ordinary Least Squares may not be the only option. \textit{Table ~\ref{Tab:mwls}} summarizes what happens when the data points effect on the model is weighted by $W$. 
 
 \bigskip
 \begin{table}[htb]
@@ -1103,7 +1101,7 @@ x&&&x&x&x&&&&&4&1.95\\
 \end{table}
 \bigskip
 
-Interestingly enough, the model which results as the best performing on the validation set is not the one including all the variables but the one which includes only two, Gas price and Real GDP per person. This outcome seems to oppose the idea that using all the variables is the best available option. \textit{WLS} with two variables is also able to outperform the best \textit{OLS} model by more than half a cent. All the code for measuring performance for Ordinary Least Squares, Weighted Least Squares and Exhaustive Subset Selection is left for the appendix.
+Interestingly enough, the model which occurs to be the best performing on the validation set is not the one including all the variables but the one which includes only two, Gas price and Real GDP per person. This outcome seems to oppose the idea that using all the variables is the best available option. \textit{WLS} with two variables is also able to outperform the best \textit{OLS} model by more than half a cent. All the code for measuring performance for Ordinary Least Squares, Weighted Least Squares and Exhaustive Subset Selection is left for the appendix.
 
 \subsection{Ridge Regression}
 
@@ -1124,7 +1122,7 @@ The next step is now to decide where to draw the vertical line on the graph to s
 
 \subsection{Lasso}
 
-One drawback of ridge regression models is that even variables that do not present any significance in the problem context do have a non-zero estimate. Ridge regression includes all predictors in the final model, since increasing the value of $\lambda$ will tend to reduce the coefficient estimates, but will result in no variable exclusion. If however the shrinkage penalty formulation is slightly changed, some of the coefficient shall be forced to be exactly equal to zero when when the tuning parameter $\lambda$ is sufficiently large. This type of regularization and it can be considered as a sort of blend between ridge regularization, because the coefficient estimates are shrunk towards zero, and subset selection, because some of the coefficient estimates are effectively turned to zero. As it was the case for ridge regression, the choice of the $\lambda$ value is critical: cross validation on the training set, once again, is going to be used to settle for a specific value of this parameter. \textit{Figure ~\ref{fig:lasso}} displays how the coefficient estimates shrink to zero while the value of $\lambda$ is increased.
+One drawback of ridge regression models is that even variables that are not significant do have a non-zero estimate. Ridge regression includes all predictors in the final model, since increasing the value of $\lambda$ will tend to reduce the coefficient estimates, but will result in no variable exclusion. If however the shrinkage penalty formulation is slightly changed, some of the coefficients shall be forced to be exactly equal to zero when the tuning parameter $\lambda$ is sufficiently large. This type of regularization can be considered as a sort of blend between ridge regularization, because the coefficient estimates are shrunk towards zero, and subset selection, because some of the coefficient estimates are effectively turned to zero. As it was the case for ridge regression, the choice of the $\lambda$ value is critical: cross validation on the training set, once again, is going to be used to settle for a specific value of this parameter. \textit{Figure ~\ref{fig:lasso}} displays how the coefficient estimates shrink to zero while the value of $\lambda$ is increased.
 
 \bigskip
 \begin{figure}[htb]
@@ -1137,11 +1135,11 @@ One drawback of ridge regression models is that even variables that do not prese
 \end{figure}
 \bigskip
 
-The way the coefficients shrink to zero is less regular with respect to what happens for ridge regression. Gas and Oil, Gdp variables are the last ones to get to zero, a further hint that they are the most significant variables at disposal. Once again, the $\lambda$ value that results as the best performing through cross validation is low, $5*10^{-5}$, so this lasso regression is quite close to linear model regression without regularization. Also the mean absolute error on the training set does not get decrease: 1.81 dollar cents. Lasso and Ridge regularization techniques respectively use so-called L1 and L2 penalties. One can go from one system to the other simply trying the model and looking at the one that performs best, but another possibility is to linearly combine the two systems, with the so-called Elastic Net regression. In this case cross validation is not only used to choose $\lambda$ but also to settle for the best $\alpha$, a parameter that allows to determine the weight of L1 with respect to the L2 penalty to be applied to the model. In this section Elastic Net is not going to be used simply because the results with these regularization techniques is rather unsatisfactory.
+The way the coefficients shrink to zero is less regular with respect to what happens for ridge regression. \textit{GAS}, \textit{OIL} and \textit{GDP} coefficients are the last ones to get to zero, a further hint that they are the most significant variables at disposal. Once again, the $\lambda$ value that results as the best performing through cross validation is low, $5*10^{-5}$, so this lasso regression is quite close to linear model regression without regularization. Also the mean absolute error on the training set does not get decrease: 1.81 cents. Lasso and Ridge regularization techniques respectively use so-called $L_1$ and $L_2$ penalties. One can go from one system to the other simply trying the model and looking at the one that performs best, but another possibility is to linearly combine the two systems, with the so-called \textit{Elastic Net} regression. In this case cross validation is not only used to choose $\lambda$ but also to settle for the best $\alpha$, a parameter that allows to determine the weight of $L_1$ with respect to the $L_2$ penalty to be applied to the model. In this section Elastic Net is not going to be used simply because the results with these regularization techniques is rather unsatisfactory.
 
 \subsection{Interactions and Polynomials}
 
-For the time being one assumption was made: that the predictor variables have a linear interaction with the outcome variable. This idea is partially supported by regression plots, but some meaningful interactions may have been excluded from the model. For instance, it may be that gas price and share of renewable energy are not that significant when considered alone but the interaction, so the first multiplier by the latter, is. A situation of high gas price and simultaneous high share of renewable of energy produced may hide some meaning that only the interaction term would bring to the surface. In the case of the electricity price regression, this is exactly what happens, and the coefficient of this GAS:REN interaction term is negative, meaning that the higher its value, the lower the final electricity price. To determine which the most significant interaction terms are Subset Selection is again used, with the accuracy metric being the Mean Absolute Error on the validation set. \textit{Table ~\ref{Tab:int}} displays the coefficients and corresponding errors for the models with the lowest number of variables (which are also the best performing ones). Please note that some of the variables are still taken in their logged form.
+Until now one assumption was made: that the predictor variables have a linear interaction with the outcome variable. This idea is partially supported by regression plots, but some meaningful interactions may have been excluded from the model. For instance, it may be that gas price and share of renewable energy are not that significant when considered alone but the interaction, so the first multiplier by the latter, is. A situation of high gas price and simultaneous high share of renewable of energy produced may hide some meaning that only the interaction term would bring to the surface. In the case of the electricity price regression, this is exactly what happens, and the coefficient of this GAS:REN interaction term is negative, meaning that the higher its value, the lower the final electricity price. To determine which the most significant interaction terms are Subset Selection is again used, with the accuracy metric being the Mean Absolute Error on the validation set. \textit{Table ~\ref{Tab:int}} displays the coefficients and corresponding errors for the models with the lowest number of variables (which are also the best performing ones). Please note that some of the variables are still taken in their logged form.
 
 \bigskip
 \begin{table}[htb]
@@ -1166,7 +1164,7 @@ x&&x&&x&&&3&2.1\\
 
 Allowing the models to include interactions results in a wide use of those terms, that are often preferred to the single predictor values that were used in the \textit{EU model}. In particular, when only two variables are included as predictors, and these two variables are the interaction terms \textit{log(GAS):REN} and \textit{log(GAS):log(GDP)}, the result in performance is remarkable.\\
 
-Looking at interaction terms is one option, but another assumption that it could be interesting to relax is that the predictor variables should enter the regression model only linearly. There may some variables, as it is the case for Dependence on Imports, which are meaningful not in their linear term, but rather in their second order polynomial. \textit{Table ~\ref{Tab:poly}} illustrates which are the variables used in the models which perform best on the validation set. Only one polynomial term, DEP squared, is included, but does not seem to improve performance since the model with the lowest mean absolute error is a simple linear regression with GDP as predictor.
+Looking at interaction terms is one option, but another assumption that it could be interesting to relax is that the predictor variables enter the regression model only linearly. There may some variables, as it is the case for Dependence on Imports, which are meaningful not in their linear term, but rather in their second order polynomial. \textit{Table ~\ref{Tab:poly}} illustrates which are the variables used in the models which perform best on the validation set. Only one polynomial term, $DEP^2$, is included, but this does not seem to improve performance since the model with the lowest mean absolute error is a simple linear regression with GDP as predictor.
 
 \bigskip
 \begin{table}[htb]
@@ -1193,7 +1191,7 @@ x&&&&&&1&1.96\\
 
 \section{Dynamic European Models}
 
-The results discussed in the previous section are based on static models; however, the electricity price is likely to exhibit a certain degree of path-dependency, implying that the dynamic nature of this variable should be accounted for in the model. Thus, it would be interesting to re-estimate the model in a \textbf{dynamic}-panel framework. The options at this point are two: either a lagged predictor variable, which accounts for the previous record for the same country, is created, as it is done by ~\cite{hyland2016restructuring}, or a different outcome variable is used, changing the scope of the regression from predicting the final price of electricity to predicting the temporal difference in price from one semester to the following. To allow for this latter idea each of the predictor variables are to be changed obtaining each observation of the data set as the difference between that variable value in that semester and the variable value in the previous semester. To put it in mathematical terms: $$ \scalebox{1.25}{$y_{t_j-t_{j-1}} = \beta_0 + \beta_1 x_{1_{t_j - t_{j-1}}} + \beta_2 x_{2_{t_j - t_{j-1}}} + ...$}$$ The process to achieve this in R is left for the appendix. In any case most of the variables and time range used are the same as for the Static models, with the exception of course that the data set is slightly shorter (it starts from the second semester of 2000 and not from the first one). The only variable from the static models which is not going to be used is OIL, because not enough data is available to have good approximations of reality in a dynamic sense. Differently with respect to the previous section, EMI is instead going to appear in all the dynamic models. The problem with using the emission intensity in the static setting is in the fact that it is does not provide any meaningful information: for instance an EMI observation equal to 101 indicates a country that is getting worse in the context of its emissions per capita. If however no information is used to characterize that country with respect to others, i.e. in this context, the absence of a country identifier, makes that information quite useless when used in its absolute term. In this dynamic context, instead, if the difference from one term to the next one is -1, in the case of one percent decrease in emission intensity, or 1, one percent increase in emission intensity, that information can be used to infer the direction and magnitude of the change in price.\\
+The results discussed in the previous section are based on static models; however, the electricity price is likely to exhibit a certain degree of path-dependency, implying that the dynamic nature of this variable should be accounted for in the model. Thus, it would be interesting to re-estimate the model in a \textbf{dynamic}-panel framework. The options at this point are two: either a lagged predictor variable, which accounts for the previous record for the same country, is created, as it is done by ~\cite{hyland2016restructuring}, or a different outcome variable is used, changing the scope of the regression from predicting the final price of electricity to predicting the temporal difference in price from one semester to the following. To allow for this latter idea each of the predictor variables are to be changed obtaining each observation of the data set as the difference between that variable value in that semester and the variable value in the previous semester. To put it in mathematical terms: $$ \scalebox{1.25}{$y_{t_j-t_{j-1}} = \beta_0 + \beta_1 x_{1_{t_j - t_{j-1}}} + \beta_2 x_{2_{t_j - t_{j-1}}} + ...$}$$ The process to achieve this in R is left for the appendix. In any case most of the variables and time range used are the same as for the Static models, with the exception of course that the data set is slightly shorter (it starts from the second semester of 2000 and not from the first one). The only variable from the static models which is not going to be used is \textit{OIL}, because not enough data is available to have good approximations of reality in a dynamic sense. Differently with respect to the previous section, \textit{EMI} is instead going to appear in all the dynamic models. The problem with using the emission intensity in the static setting is in the fact that it is does not provide any meaningful information: for instance an \textit{EMI} observation equal to 101 indicates a country that is getting worse in the context of its emissions per capita. If however no information is used to characterize that country with respect to others, i.e.\ in this context, the absence of a country identifier, makes that information quite useless when used in its absolute term. In this dynamic context, instead, if the difference from one term to the next one is -1, in the case of one percent decrease in emission intensity, or 1, one percent increase in emission intensity, that information can be used to infer the direction and magnitude of the change in price.\\
 
 Of course changing the nature of the outcome variable in this way is going to significantly decrease the Mean Absolute Error of the regression: on average, the difference from one period to the other is going to be a positive number very close to zero. So the aim shifts to creating a model that is able to predict the direction and the magnitude of the change as accurately as possible. \textit{Figure \ref{fig:pri}} provides an histogram of the outcome variable distribution.
 
@@ -1208,13 +1206,13 @@ Of course changing the nature of the outcome variable in this way is going to si
 \end{figure}
 \bigskip
 
-The first thing to be noticed is that the distribution shows long tails: most of the observations fall within a very narrow range around zero but there is also a minority number of records falling outside this span. This may later result as a problem, since normality of the outcome variable is to be assumed. In particular, one may wonder where and when the price results in a 7 cent oscillation.\\
+The first thing to be noticed is that the distribution shows long tails: most of the observations fall within a very narrow range around zero but there is also a minority number of records falling outside this span. One may wonder where and when the price results in a 7 cent oscillation.\\
 
-The anomaly in the data is found in the fact that from the second semester of 2002 to the first one of 2003 the price of electricity in Norway falls by 7 cents which are then regained in the second semester of 2003. This weird behavior seems more of a recording mistake rather than a real price fluctuation experienced by the households, given that there is no hint in the data for explaining this and no sign in the literature that such an important price oscillation was effectively present. Thus, the best way out of this simply results in excluding those variables from the data set.
+The anomaly in the data is found in the fact that from the second semester of 2002 to the first one of 2003 the price of electricity in Norway falls by 7 cents which are then regained in the second semester of 2003. This weird behavior seems more of a recording mistake rather than a real price fluctuation experienced by the households, given that there is no explanation in the data looking at the other predictors and no sign in the literature that such an important price oscillation actually took place. Thus, the best way out of this simply results in excluding those variables from the data set.
 
 \subsection{Linear Model}
 
-As it was done for the static model, the first model to be tested is linear, with multiple predictor variables. However, while in the previous section all the values showed a positive sign, in this dynamic model it will happen quite often to incur in negative observations, both for the outcome and the predictor variables. This is not a problem in the context of the linear regression, but it does not allow to apply the  simple logarithmic transformation on any of these variables. In some cases, as for the outcome PRI, some slightly more complicated transformations could be applied as for instance $log(PRI+1)$. But it would not really be worth it to go in this direction, given that there would be some significant loss in interpretability. As the linear regression name recalls, the relationship between the predictors and the outcome variable is assumed to be linear. To check whether this assumption is met, the fitted values vs residuals plot of \textit{Figure ~\ref{fig:dyn}} comes in handy.\\
+As it was done in the static setting, the first model to be tested is linear, with multiple predictor variables. However, while in the previous section all the values showed a positive sign, in this dynamic model it will happen quite often to incur in negative observations, both for the outcome and the predictor variables. This is not a problem in the context of the linear regression, but it does not allow to apply the  simple logarithmic transformation on any of these variables. In some cases, as for the outcome PRI, some slightly more complicated transformations could be applied as for instance $log(PRI+1)$. But it would not really be worth it to go in this direction, given that there would be some significant loss in interpretability. As the linear regression name recalls, the relationship between the predictors and the outcome variable is assumed to be linear. To check whether this assumption is met, the fitted values vs residuals plot of \textit{Figure ~\ref{fig:dyn}} comes in handy.\\
 
 One note: this time the model is built directly on the training set, which is composed by observations prior to year 2015, leaving subsequent years observations to validate the results.
 
@@ -1229,7 +1227,7 @@ One note: this time the model is built directly on the training set, which is co
 \end{figure}
 \bigskip
 
-Apart for some observations on the margins, no distinct pattern is recognizable in the most data-dense part of the plot, hinting that the relationship between the predictors and the outcome variable can be safely assumed as linear. Also, it is to be noticed how the largest residual absolute value turns out to be lower than 2 cents: keeping the 7 cents change in price would have likely messed up the regression. \textit{Figure ~\ref{fig:dyno}} displays how the residuals of the regression are distributed.
+Apart for some observations on the margins, no distinct pattern is discernible in the most data-dense part of the plot, hinting that the relationship between the predictors and the outcome variable can be safely assumed as linear. Also, it is to be noticed how the largest residual absolute value turns out to be lower than 2 cents: keeping the 7 cents change in price would have likely messed up the regression. \textit{Figure ~\ref{fig:dyno}} displays how the residuals of the regression are distributed.
 
 \bigskip
 \begin{figure}[htb]
@@ -1284,7 +1282,7 @@ The GVIF and adjusted GVIF values are both very low, indicating that there is no
 \end{figure}
 \bigskip
 
-When the change in price is significant, both in the positive and in the negative direction, the model is not really good in calling the right prediction. When instead the price in change is smaller, the residuals are on average small as well. This means that the model is likely to be quite conservative. Since to different values of fit correspond different residual values, the heteroscedasticity hypothesis is not to be rejected. This is an indication of the fact that the linear model with ordinary least squares may not be the best choice in the dynamic setting. \textit{Table ~\ref{Tab:dlm}} provides a summary of the linear regression in order to understand the impact of the predictor variables on the outcome. If the coefficient is positive, an increase in the predictor variable is going to result in an increase in the price; if instead the coefficient is negative, an increase in the predictor variable is going to result in a decrease in the price. The significance column is instead used to discriminate between variables whose coefficient is different from zero at the 95\% significance level and variables that whose coefficient those not.
+When the change in price is significant, both in the positive and in the negative direction, the model is not really good in calling the right prediction. When instead the price in change smaller, the residuals are on average small as well. This means that the model is likely to be quite conservative and that the heteroscedasticity hypothesis is not to be rejected. This is an indication of the fact that the linear model with ordinary least squares may not be the best choice in the dynamic setting. \textit{Table ~\ref{Tab:dlm}} provides a summary of the linear regression in order to understand the impact of the predictor variables on the outcome. If the coefficient is positive, an increase in the predictor variable is going to result in an increase in the price; if instead the coefficient is negative, an increase in the predictor variable is going to result in a decrease in the price. The significance column is instead used to discriminate between variables whose coefficient is different from zero at the 95\% significance level and variables whose coefficient does not.
 
 \bigskip
 \begin{table}[htb]
@@ -1313,7 +1311,7 @@ EU&+&\\
 \end{table}
 \bigskip
 
-Differently to the static case, only two variables are significant in the dynamic setting: GDP and GAS. The change in the electricity price from one term to the other is unlikely to be explained by changes in the market concentration, use of renewable sources or consumption patterns. It seems that the number of variables included in the model is too large, so the focus should go on a smaller subset. However, when tested on the validation set, the models with less variables turn out performing a little bit worse with respect to the models with variables chosen through subset selection, as showed in \textit{Table ~\ref{Tab:euro}}. 
+Differently to the static case, only two variables are significant in the dynamic setting: GDP and GAS. The change in the electricity price from one term to the other is unlikely to be explained by changes in the market concentration, use of renewable sources or consumption patterns. It seems that the number of variables included in the model is too large, so the focus should go on a smaller subset. However, when tested on the validation set, the models with less variables turn out performing a little bit worse with respect to models with less variables, as showed in \textit{Table ~\ref{Tab:euro}}. 
 
 \bigskip
 \begin{table}[htb]
@@ -1331,11 +1329,11 @@ Linear Model&0.4867&With SubSel&0.5123\\
 \end{table}
 \bigskip
 
-The model is wrong by less than half a cent when the model is tested on new data: this may seem as a good result, especially if compared to the accuracy of the static models. Yet, the reader should keep in mind that the outcome variable has changed with respect to the previous setting. When it is the whole electricity price to be predicted there is relatively high variability (the standard deviation of the outcome is of about 3.3 cents), while when it is only the change from one term to the other to be predicted there is low variability (the standard deviation of the outcome is of about 0.8 cents). Thus, in proportion, in the dynamic setting, a lower level of variability is captured.
+The model is wrong by less than half a cent when the prediction power of the model is tested on new data: this may seem as a good result, especially if compared to the accuracy of the static models. Yet, the reader should keep in mind that the outcome variable has changed with respect to the previous setting. When it is the whole electricity price to be predicted there is relatively high variability (the standard deviation of the outcome is of about 3.3 cents), while when it is only the change from one term to the other to be predicted there is low variability (the standard deviation of the outcome is of about 0.8 cents). Thus, in proportion, in the dynamic setting, a lower level of variability is captured.
 
 \subsection{Regression Trees}
 
-Since the linear regression models seem to not be really well-performing on this data, another option is to use regression trees. The idea behind this technique is to divide the predictor space into distinct regions $R_1, R_2, ..., R_J$. These regions have the shape of high-dimensional boxes. For each observation that falls into the region $R_j$, the same prediction, i.e. the average of the response values for the training observations in $R_j$, is output. In the case of the electricity price regression, the predictor space is created on the basis of the splits displayed of \textit{Figure ~\ref{fig:plot}}. The information used to build this tree is not the complete set: only data from years prior to 2013 are used, while the rest is left to do some parameter tuning.
+Since the linear regression models seems to not be really well-performing on this data, another option is to use regression trees. The idea behind this technique is to divide the predictor space into distinct regions $R_1, R_2, ..., R_J$. These regions have the shape of high-dimensional boxes. For each observation that falls into the region $R_j$, the same prediction, i.e. the average of the response values for the training observations in $R_j$, is output. In the case of the electricity price regression, the predictor space is created on the basis of the splits displayed of \textit{Figure ~\ref{fig:plot}}. The information used to build this tree is not the complete set: only data from years prior to 2013 are used, while the rest is left to perform some parameter tuning.
  
 \bigskip
 \begin{figure}[htb]
@@ -1348,9 +1346,9 @@ Since the linear regression models seem to not be really well-performing on this
 \end{figure}
 \bigskip
 
-The most discriminant splits have to do with the price of natural gas: if it has gone down, then it is likely that the price of electricity will go down as well and conversely, if the former has increased, the latter will also increase. This tree excludes the possibility that, if there's been an decrease in the gas price greater than 1.2 cents, the direction of the change in electricity price is going to be positive. To further establish the magnitudes of price changes, one other predictor comes in play in particular: the real Gross Domestic Product per capita. Especially in cases of significant economy expansions (\textit{GDP} increase greater than 1175 euros), the electricity price increase is going to be particularly sizable. The two final variables that come in play are \textit{MAR} and \textit{DEP}, while there is no indication that the effect of changes in the share of renewable energy produced or in the consumption patterns do have any effect on the regression of the outcome variable.\\
+The most discriminant splits have to do with the price of natural gas: if it goes down, then it is likely that the price of electricity will go down as well and conversely, if the former increases, the latter will also increase. This tree excludes the possibility that, if there's been a decrease in the gas price greater than 1.2 cents, the direction of the change in electricity price is going to be positive. To more precisely forecast the magnitudes of price changes, one other predictor comes in play in particular: the real Gross Domestic Product per capita. Especially in cases of significant economy expansions (\textit{GDP} increase greater than 1,175 euros), the electricity price increase is going to be particularly sizable. The two final variables that come in play are \textit{MAR} and \textit{DEP}, while there is no indication that the effect of changes in the share of renewable energy produced or in the consumption patterns do have any effect on the regression of the outcome variable.\\
 
-The one displayed in \textit{Figure ~\ref{fig:plot}} is a complete tree, but the risk with trees is to overfit. In order to avoid this, information that was not used to build the tree (data from 2012 to second half of 2014) is employed to compute error and decide whether to reduce the number of splits in the tree or not. The total deviance of each tree in the cost-complexity pruning sequence is used as the metric to choose how many nodes to exclude. \textit{Figure ~\ref{fig:tre}} displays performance on the data left for parameter tuning. The lower the deviance, the more effective the model.
+The one displayed in \textit{Figure ~\ref{fig:plot}} is a complete tree, but the risk with trees is to overfit. In order to avoid this, information not used to build the tree (data from 2012 to second half of 2014) is employed to compute the error and decide whether to reduce the number of splits in the tree or not. The total deviance of each tree in the cost-complexity pruning sequence is used as the metric to choose how many nodes to exclude. \textit{Figure ~\ref{fig:tre}} displays performance on the data left for parameter tuning. The lower the deviance, the more effective the model.
 
 \bigskip
 \begin{figure}[htb]
@@ -1363,7 +1361,7 @@ The one displayed in \textit{Figure ~\ref{fig:plot}} is a complete tree, but the
 \end{figure}
 \bigskip
 
-It seems that the complete 5-nodes model is not the best performing of the batch at all, as the deviance is lower when the number of splits is three. \textit{Figure ~\ref{fig:trep}} shows the nodes and the shape of the tree that has been pruned.
+It seems that the complete 10-nodes model is not the best performing of the batch at all, as the deviance is lower when the number of splits is three. \textit{Figure ~\ref{fig:trep}} shows the nodes and the shape of the tree that has been pruned.
 
 \bigskip
 \begin{figure}[htb]
@@ -1396,11 +1394,11 @@ Tree&0.564&Pruned Tree&0.511\\
 \end{table}
 \bigskip
 
-The error is lower after pruning is performed with respect to the case the large model is left intact. However, overall performance does not correspond to a real step forward with respect to linear models, as it is often the case. Trees are however very simple and easy to interpret.
+The error is lower after pruning is performed with respect to the case the large tree is left intact. However, overall performance does not correspond to a real step forward with respect to linear models.
 
 \subsection{Direction of Change}
 
-The magnitude of change from one term to the other seems to be more the result of chance, rather than something that can easily be predicted. If however the problem is simplified to the prediction of only the direction of the change, the result may be more promising. The outcome variable this time is going to be the tally ``up"/``down", in relation to the change in price. The algorithm run is a generalized linear model where the outcome is binomial.\\
+The magnitude of change from one term to the other seems to be more the result of chance, rather than something that can easily be predicted. If however the problem is simplified to the prediction of only the direction of the change, the hope is that the result may be more promising. The outcome variable this time is going to be the tally ``up"/``down", in relation to the change in price. The algorithm run is a generalized linear model where the outcome is binomial.\\
 
 Also in this case it is found that the most important predictor to explain the behavior of the outcome is \textit{GAS}, while the other variables seem to not have a significant effect. The model shows performance superior to a random classifier, having the former an accuracy equivalent to 0.601 with respect to 0.5 of the latter. However, this does not come as a big improvement: \textit{Figure ~\ref{fig:roc}} on the left displays the Receiver Operative Characteristic curve for the problem at hand, while the random classifier performance (on the specificity-sensitivity basis) instead is showed on the right.
 
@@ -1419,25 +1417,25 @@ The fact that the difference between the two plots is not so striking indicates 
 
 \section{Global Models}
 
-For the time being, the idea has been to focus on data from European countries, and this was the case for various reasons. The EU provides accurate and reliable information with a good frequency. Plus, for various aspects it is a common market so there are many similarities in the structure of their electricity systems. The reader may however wonder whether the findings that were discussed so far are only valid for European countries or  Excluding the rest of the world, however, may be a source of bias of the interest is in looking at global interactions between variables. The role of this section is exactly the one of providing a benchmark to European models to check whether previous findings are globally valid.
+For the time being, the idea has been to focus on data from European countries, and this was the case for various reasons. The EU provides accurate and reliable information with good frequency. Plus, for various aspects it is a common market so there are many similarities in the structure of their electricity systems. The reader may however wonder whether the findings that were discussed so far are only valid for European countries: excluding the rest of the world may be a source of bias if the interest is in looking at global interactions between variables. The role of this section is exactly the one of providing a benchmark to European models to check whether previous findings are globally valid.
 
 \subsection{Variables}
 
-Data for the global analysis is taken from \textit{World Bank} instead of \textit{Eurostat}. The type of regressor variables that are used aim to resemble as much as possible the ones used for the previous regression problem. However, differences are unavoidable so variables for this new set of models have to be briefly presented.
+Data for the global analysis is taken from \textit{World Bank} instead of \textit{Eurostat}. The type of regressor variables that are used aim to resemble as much as possible the ones from the previous regression problems. However, differences are unavoidable so variables will hereby be presented:
 
 \begin{itemize}
 \item The outcome variable is, of course, the electricity price (\textbf{PRI}), which this time is measured in U.S. cents per kWh (so not in Euros as before). For the records, a monthly electricity consumption is assumed, for which a bill for the equivalent of a warehouse is computed in the largest business city for the month of March. 
 \item The net of energy imports as percentage of energy use (\textbf{DEP}).
 \item The Emission Intensity (\textbf{EMI}) variable is measured quite in a different way with respect to before. It is now the kg equivalent of CO2 emitted per 2010 US dollar of GDP.
 \item The electric power consumption (\textbf{CON}) is measured as kWh per capita.
-\item \textbf{GDP} per capita is again assessed with Purchasing Power Parity, which is a measurement of prices in different countries that uses the uses baskets of good as benchmark for the evaluating purchasing power. The principle is the same of the real GDP used by \textit{Eurostat}.
+\item \textbf{GDP} per capita is again assessed with Purchasing Power Parity, which is a measurement of prices in different countries that uses the uses baskets of good as benchmark for evaluating purchasing power. The principle is the same of the real GDP used by \textit{Eurostat}.
 \item Pump price for gasoline, used a proxy for oil price (\textbf{OILp}), same variable as for the European discussion.
 \item Electricity production from renewable sources (\textbf{REN}), excluding hydroelectric (as percentage of total).
 \item Electricity production from oil sources as percentage of total, (\textbf{OILs}), is a variable which was not available from Eurostat, which only disclosed information regarding share of energy produced from renewable sources.
 \item Another information data not available before that can be useful: electricity production from coal sources as percentage of total \textbf{(COA}).
 \end{itemize}
 
-The handling of information and creation of the data set is left to the appendix. One other important difference with respect to the European models is that information for the price of electricity is only available from 2015 on, so this data set is going to be wider (a very large number of countries is included) but shorter (time range only $5$ years). Since included information is also sourced from very small countries, there may be some inconsistencies: Mauritius is an island nation with a very low wealth level which is also an energy exporter (negative dependency value), but in spite of this electricity is extremely expensive, as displayed in \textit{Table \ref{Tab:solomon}}. 
+The handling of information and creation of the data set is left to the appendix. One other important difference with respect to the European setting is that information for the price of electricity is only available from 2015 on, so this data set is going to be wider (a very large number of countries is included) but shorter (time range only $5$ years). Since included information is also sourced from very small countries, there may be some inconsistencies: Mauritius is an island nation with a very low wealth level which is also an energy exporter (negative dependency value), but in spite of this electricity is extremely expensive, as displayed in \textit{Table \ref{Tab:solomon}}. 
 
 \bigskip
 \begin{table}[htb]
@@ -1465,7 +1463,7 @@ From 2015 to 2017 one kWh was costing almost 1\$, which is an extremely high pri
 
 \subsection{Random Effects}
 
-The aim is to build a model for the prediction of the electricity price that is the as global as possible, i.e. behaving well not for single countries or continents, but with observation of any provenance. From here the idea of using random effects, as if geographical information was not really of interest in this case. \textit{Table \ref{Tab:fx}} provides a summary of the random effect model. Variables enter the model linearly, without logarithmic transformations.
+The aim is to build a model for the prediction of the electricity price that is as global as possible, i.e.\ behaving well not for single countries or continents, but with observation with any provenance. From here the idea of using random effects, as if geographical information was not really of interest in this case. \textit{Table \ref{Tab:fx}} provides a summary of the random effect model. Variables enter the model linearly, without logarithmic transformations.
 
 \bigskip
 \begin{table}[htb]
@@ -1575,7 +1573,7 @@ The total variance captured by the model is about 30\%, more than with the rando
 
 \subsection{Regularization}
 
-The risk of leaning on linear regression is that the model fits the training data too closely, so not only the systematic component of the variance, but also unsystematic one is fit. To avoid this type of behavior, overfitting, instead of minimizing simple ordinary least squares, penalties are included in order to shrink the coefficients. In the static setting, the choice was between two alternative methods of regularization, Ridge regularization and Lasso, where the difference is in the form of the penalty term. In Ridge regression, the quantity to be minimized is: $$L_{ridge}(\hat{\beta}) = \sum\limits_{i=1}^{n}(y_i-x'_i\hat{\beta})^2 + \lambda\sum\limits_{j=1}^{m}\hat{\beta_j}^2$$, where the $\lambda$ term is the most important parameter that decides for the amount of shrinkage of the coefficients. Inside the penalty term of the Lasso regression, instead of a square operation, the absolute value of the $\beta_j$ is considered. $$L_{lasso}(\hat{\beta}) = \sum\limits_{i=1}^{n}(y_i-x'_i\hat{\beta})^2 + \lambda\sum\limits_{j=1}^{m}|\hat{\beta_j}|$$ To understand whether it is better to use ridge or lasso penalties, the best solution is to look at performance on validation set. However, it is also possible that an hybrid approach between the two results in best accuracy. This is the idea of elastic net: introducing a parameter $\alpha$ that controls for how much of each regularization to use. $$L_{elas}(\hat{\beta}) = \sum\limits_{i=1}^{n}(y_i-x'_i\hat{\beta})^2 + \lambda(\frac{1-\alpha}{2}\sum\limits_{j=1}^{m}\hat{\beta_j}^2 + \alpha\sum\limits_{j=1}^{m}|\hat{\beta_j}|)$$ The higher the $\alpha$, the closer to lasso penalization, the lower the $\alpha$, the closer to ridge regression. Best possible value has to be found not only for $\lambda$ but also for $\alpha$. To tune those parameters, cross validation is used. In the case of the electricity price regression, the value for the $\alpha$ parameter that results as best performing is 0.1, very close to straight ridge regression. \textit{Figure \ref{fig:elastic}} displays how the coefficients shrink in the regularization process with $\alpha$ equal to 0.1.
+The risk of leaning on linear regression is that the model fits the training data too closely, so not only the systematic component of the variance, but also unsystematic one is fit. To avoid this behavior, called overfitting, instead of minimizing simple ordinary least squares, penalties are included in order to shrink the coefficients. In the static setting, the choice was between two alternative methods of regularization, Ridge regularization and Lasso, where the difference is in the form of the penalty term. In Ridge regression, the quantity to be minimized is: $$L_{ridge}(\hat{\beta}) = \sum\limits_{i=1}^{n}(y_i-x'_i\hat{\beta})^2 + \lambda\sum\limits_{j=1}^{m}\hat{\beta_j}^2,$$ where the $\lambda$ term is the most important parameter that decides for the amount of shrinkage of the coefficients. Inside the penalty term of the Lasso regression, instead of a square operation, the absolute value of the $\beta_j$ is considered. $$L_{lasso}(\hat{\beta}) = \sum\limits_{i=1}^{n}(y_i-x'_i\hat{\beta})^2 + \lambda\sum\limits_{j=1}^{m}|\hat{\beta_j}|$$ To understand whether it is better to use ridge or lasso penalties, the best solution is to look at performance on validation set. However, it is also possible that an hybrid approach between the two results in best accuracy. This is the idea of elastic net: introducing a parameter $\alpha$ that controls for how much of each regularization to use. $$L_{elas}(\hat{\beta}) = \sum\limits_{i=1}^{n}(y_i-x'_i\hat{\beta})^2 + \lambda(\frac{1-\alpha}{2}\sum\limits_{j=1}^{m}\hat{\beta_j}^2 + \alpha\sum\limits_{j=1}^{m}|\hat{\beta_j}|)$$ The higher the $\alpha$, the closer to lasso penalization, the lower the $\alpha$, the closer to ridge regression. Best possible value has to be found not only for $\lambda$ but also for $\alpha$. To tune those parameters, cross validation is used. In the case of the electricity price regression, the value for the $\alpha$ parameter that results as best performing is 0.1, very close to straight ridge regression. \textit{Figure \ref{fig:elastic}} displays how the coefficients shrink in the regularization process with $\alpha$ equal to 0.1.
 
 \bigskip
 \begin{figure}[htb]
@@ -1588,19 +1586,19 @@ The risk of leaning on linear regression is that the model fits the training dat
 \end{figure}
 \bigskip
 
-Despite the fact that this type of regularization is closer to $L_2$, so Ridge, than $L_1$, so Lasso, for an high enough $\lambda$ value, all coefficients shrink to zero. The corresponding $\lambda$ value, in the case of the electricity price regression is close to zero (==0.00278), and as a matter of performance there is not a great improvement with respect to the linear regression with Ordinary Least Squares (Mean Absolute Error is 4.962 cents).
+Despite the fact that this type of regularization is closer to $L_1$, so Lasso, than $L_2$, so Ridge, for an high enough $\lambda$ value, all coefficients shrink to zero. The corresponding $\lambda$ value, in the case of the electricity price regression is close to zero (==0.00278), and as a matter of performance there is not a great improvement with respect to the linear regression with Ordinary Least Squares (Mean Absolute Error is 4.962 cents).
 
 \subsection{Interactions}
 
-Similarly to what happens for the static European setting, increasing the number of predictors is more fruitful rather than decreasing it through regularization. Both adding polynomials and adding interactions strategies are tested and the latter action is associated to a better performance on the validation set. The number of parameters increases to 30 plus the intercept, 21 of which are interactions. The corresponding Mean Absolute Error is 4.522 cents. The fact that the relationship between the predictors and the outcome is best described through such a convoluted model may be a sign that the validation set is not adequately large and there may be some overfitting. Since electricity price information is only collected from 2015, in the future it will be possible to have a clearer picture of the effect of each of the variables, and of the significance of the contributions.
+Similarly to what happens for the static European setting, increasing the number of predictors is more fruitful rather than decreasing it through regularization. Both adding polynomials and adding interactions strategies are tested and the latter action is associated to a better performance on the validation set. The number of parameters increases to 30 plus the intercept, 21 of which are interactions. The corresponding Mean Absolute Error is 4.522 cents. The fact that the relationship between the predictors and the outcome is best described through such a complex model may be a sign that the validation set is not adequately large and there may be some overfitting. Since electricity price information is only collected from 2015, in the future it will be possible to have a clearer picture of the effect of each of the variables, and of the significance of the contributions.
 
 \chapter{Conclusions}
 
 The purpose of this study is to find the right formula for predicting magnitude and direction of fluctuations in the price of electricity for household use. While traditional approaches focus on determining the effect of specific variables, most notably of market liberalization and investment on renewable sources for its generation, the focus here shifts to prediction accuracy. For this purpose, the econometric approach which is typical in this field is replaced with a Machine Learning attitude. The novelty with respect to previous approaches is also in the quantity of countries which are included in the study and in the time range, factors which try to make the results as much comprehensive as possible.
 
-Different families of models are used in order to predict the electricity price and its change over time. The analysis starts with a focus on Europe: algorithms for trying to infer the amount paid by households in their bills given national data are developed. The result is that, among the information at disposal, the Gross Domestic Product and the natural gas price data are the most meaningful, and both these variables are positively related with the outcome. The best performing model is a multiple linear regression in which the two predictor variables are interactions between \textit{GAS}, \textit{GDP} and \textit{REN}. On average, the predictions of this model are wrong for about 1.7 euro cents, whereas the mean and standard deviation of the distribution are 10.7 and 3.4 cents, respectively.
+Different families of models are used in order to predict the electricity price and its change over time. The analysis starts with a focus on Europe: algorithms for trying to infer the amount paid by households in their bills given national data are developed. The result is that, among the information at disposal, the Gross Domestic Product and the natural gas price data are the most meaningful, and both these variables are positively related with the outcome. The best performing model is a multiple linear regression in which the predictor variables are interactions between \textit{GAS}, \textit{GDP} and \textit{REN}. On average, the predictions of this model are wrong for about 1.7 euro cents, whereas the mean and standard deviation of the distribution are 10.7 and 3.4 cents, respectively.
 
-The focus then shifts to foreseeing the magnitude of price change from one term to the other, given the fluctuations in the predictor space. European households experience changes in the bill amounts and a common question is what those price changes are due to. This is a more difficult problem with respect to predicting the electricity price from scratch, although the mean absolute error is, of course smaller. Once again, the most meaningful information is related to \textit{GAS} and \textit{GDP}: the Mean Absolute Error of the multiple regression model is 0.48 cents, but the distribution of the outcome variable in this case has mean 0.11 and standard deviation 0.79.
+The focus then shifts to foreseeing the magnitude of price change from one term to the other, given the fluctuations in the predictor space. European households experience changes in the bill amounts and a common question is what those price changes are due to. This is a more difficult problem with respect to predicting the electricity price from scratch, although the mean absolute error is of course smaller. Once again, the most meaningful information is related to \textit{GAS} and \textit{GDP}: the Mean Absolute Error of the multiple regression model is 0.48 cents, but the distribution of the outcome variable in this case has mean 0.11 and standard deviation 0.79.
 
 Finally, to benchmark the findings, the last section is left to the discussion of a more general problem, the one of predicting the electricity price not only in Europe but in any world country. In this case, the natural gas price information is not available and this results in a decrease in the prediction precision. The best performing model is a multiple regression model including several interaction terms. Complexity wins over rigidity in this setting. The Mean Absolute Error is 4.5, while the outcome distribution has a mean of 17.4 and a standard deviation of 9.8 cents.
 
@@ -1658,7 +1656,7 @@ X[X$geo == "BG" & X$time %in% c(2000:2012), "MAR"]
 	<- X[X$geo == "BG" & X$time == 2013, "MAR"]
 \end{verbatim}
 
-While for Bulgaria it was use possible to simply copy and paste the information from following years, the Netherlands have never disclosed any information regarding market concentration. In this case data is substituted with averages from countries with similar market structure, as Belgium, Germany, Luxembourg and Denmark.
+While for Bulgaria it was use possible to simply copy and paste the information from following years, the Netherlands never disclosed any information regarding market concentration. In this case data is substituted with averages from countries with similar market structure, as Belgium, Germany, Luxembourg and Denmark.
 
 \begin{verbatim}
 for (i in 1:nrow(X)) {
@@ -1688,7 +1686,7 @@ for (country in levels(X$geo)){
 }
 \end{verbatim}
 
-Price of natural gas tends to increase over time. For this reason, when substituting Not Availables for the Gas variable when it is missing, both the history of the price for that country and the average of countries in that year is taken into account. For countries that never disclose information regarding the natural gas price, averages from neighboring or similar countries is used. In the case of the missing value for Malta, for instance, an average of the information from Italy and Greece is used.
+Price of natural gas tends to increase over time. For this reason, when substituting Not Availables for the Gas variable when it is missing, both the history of the price for that country and the average of countries in that year is taken into account. For countries that never disclosed information regarding the natural gas price, averages from neighboring or similar countries is used. In the case of the missing value for Malta, for instance, an average of the information from Italy and Greece is used.
 
 \begin{verbatim}
 for (i in 1:nrow(X)) {
@@ -1714,7 +1712,7 @@ For all other Not Availables referring to non mid-term records, for variables su
 for (i in 1:nrow(X)) {
   year <- X$time[i]
   country <- X$geo[i]
-  if ((is.na(X[i, "DEP"]) & year\%\%1==0)) {
+  if ((is.na(X[i, "DEP"]) & year%%1==0)) {
       X[i, "DEP"] <- weighted.mean(c(mean(X[X$geo==country,"DEP"],na.rm=T),
 	mean(X[X$time==year,"DEP"],na.rm=T)),c(0.0005,0.9995),na.rm=T)
   }
@@ -1733,7 +1731,7 @@ for (i in 1:nrow(X)) {
     value3 <- X[X$geo == "RS" & X$time == year, "GDP"]
     value4 <- X[X$geo == "BG" & X$time == year, "GDP"]
     outside <- mean(c(value1, value2, value3, value4),na.rm=T)
-    value <- weighted.mean(c(outside,1.01*mean(historic1)),w=c(0.0005,0.9995),na.rm=T)
+    value <- weighted.mean(c(outside,1.02*mean(historic1)),w=c(0.0005,0.9995),na.rm=T)
     historic1 <- c(historic1, value)
     X[i,"GDP"] <- value
   }
@@ -1745,7 +1743,7 @@ The remaining missing values all refer to mid-year records. When both the follow
 for (i in 1:nrow(X)) {
   year <- X$time[i]
   country <- X$geo[i]
-  if (year \%\% 1 != 0)
+  if (year %% 1 != 0)
     for (col in c("DEP", "CON", "EMI", "MAR", "REN", "OIL")) {
       prev <- X[X$time==(year-0.5) & X$geo==country, col]
       after <- X[X$time==(year+0.5) & X$geo==country, col]
@@ -1776,7 +1774,7 @@ for (row in 1:nrow(DP)) {
 
 \section*{Going Dynamic}
 
-To make the new data set dynamic the idea is to subtract from one observation the value from the same country previous semester. To do so a dictionary is built through the function \textit{hash}, a copy of the original data set is stored and then a for loop is triggered. Through this for loop, values inside the newly created data set are updated with the correct difference term by using the dictionary.
+To make the new data set dynamic the idea is to subtract from one observation the value from the same country in the previous semester. To do so a dictionary is built through the function \textit{hash}, a copy of the original data set is stored and then a for loop is triggered. Through this for loop, values inside the newly created data set are updated with the correct difference term by using the dictionary.
 
 \begin{verbatim}
 d <- hash()
@@ -1795,7 +1793,7 @@ X <- U[-toRemove,]
 
 \section*{Global Data}
 
-Previous data were mostly obtained through \textit{Eurostat}, which however provides information only for European countries. To build a more global data set, the \textit{World Bank} is used as a provider. R library to retrieve information is \textit{WDI}. Cities and regions are removed from the data, which includes only national information.
+Previous data were mostly obtained through \textit{Eurostat}, which however provides information only for European countries. To build a more global data set, the \textit{World Bank} works as the source. The R library to retrieve information is \textit{WDI}. Cities and regions are removed from the data set, which includes only national information.
 
 \begin{verbatim}
 W <- WDI(indicator = c("IC.ELC.PRI.KH.DB1619", "EG.IMP.CONS.ZS", "EN.ATM.CO2E.KD.GD",
@@ -1808,7 +1806,7 @@ W <- W[W$income != "Aggregates",]
 W <- W[!is.na(W$income),]
 \end{verbatim}
 
-The novelty with this type of data retriever is that it includes information regarding the region and the income level. This can be very useful when filling Not Availables. If NA is found substitute with latest value from same country or if that is not available with the average from countries of the region in consideration. The same process is carried out to fill NAs for \textit{OIL}, \textit{REN} and \textit{COA} columns.
+The novelty with this type of data retriever is that it includes information regarding the region and the income level. This can be very useful when filling Not Availables. If a NA is found it is substituted with the latest value from the same country or if that is not available with the average from countries of the region in consideration. The same process is carried out to fill NAs for \textit{OIL}, \textit{REN} and \textit{COA} columns.
 
 \begin{verbatim}
 for (row in 1:nrow(W)) {
@@ -1864,7 +1862,7 @@ W <- W[!is.na(W$GDP),]
 \chapter*{Models}
 \section*{Static}
 
-To create a simple linear model, the command \textit{lm} needs to be run in R. For instance, \textit{Model 3} was computed by running the following.
+To create a simple linear model, the command \textit{lm} needs to be run in R. For instance, \textit{EU Model} was computed by running the following.
 
 \begin{verbatim}
 LMeP <- lm(log(PRI) ~ log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL) + MAR + EU, DP)
@@ -1911,7 +1909,7 @@ train <- (DP$time < 2015)
 test <- (!train)
 \end{verbatim}
 
-Now the idea is to use the training set to build a model which can then be tested on the most recent validation data. To correctly determine the mean difference in US cents between the real information and the model prediction it is necessary to compute the exponential transformation on the model prediction, since in the model this variable is used in its logged form.
+Now the idea is to use the training set to build a model which can then be tested on the most recent validation data. To correctly determine the mean difference in Euro cents between the real information and the model prediction it is necessary to compute the exponential transformation on the model prediction, since in the model this variable is used in its logged form.
 
 \begin{verbatim}
 LMeP <- lm(log(PRI) ~ log(GAS) + DEP + log(CON) + REN + log(GDP) + log(OIL) + MAR + EU,
@@ -1934,7 +1932,7 @@ pred <- predict(LMgls, DP[test,])
 mean(abs(DP$PRI[test] - exp(pred)))
 \end{verbatim}
 
-In the previous two models all data set variables were used, but it may be that reducing the number of variables actually boosts the performance on the validation set. To evaluate the mean absolute error between the predictions and the actual data at disposal, a vector with the errors is created in order to store the performance information. For every step N in the cycle 1-10 the best subset of variables including N of them is determined and then mean absolute error is computed. In this example the weights are used in the runs but the code is very similar if OLS is preferred to WLS.
+In the previous two models all variables except \textit{EMI} were used, but it may be that reducing the number of variables actually boosts the performance on the validation set. To evaluate the mean absolute error between the predictions and the actual data at disposal, a vector with the errors is created in order to store the performance information. For every step N in the cycle 1-10 the best subset of variables including N of them is determined and then mean absolute error is computed. In this example the weights are used in the runs but the code is very similar if OLS is preferred to WLS.
 
 \begin{verbatim}
 W <- 1/sqrt(DP$varFunc[train])
@@ -1972,14 +1970,14 @@ ridge.pred <- predict(ridge, s=bestlam, newx=x[test,])
 mean(abs(exp(ridge.pred) - y[test]))
 \end{verbatim}
 
-For the visualization of \textit{Figure 2.6} the output of the following code is used:
+For the visualization of \textit{Figure ~\ref{fig:ridge}} the output of the following code is used:
 
 \begin{verbatim}
 mat <- as.matrix(ridge$glmnet.fit$beta)
 forplot <- data.frame(t(rbind(mat, ridge$glmnet.fit$lambda)))
 \end{verbatim}
 
-If L1 is to be used instead of L2 penalty the functions to be used do not really change: the only major difference is in the $\alpha$ value to be set inside the \textit{cv.glmnet} function. 
+If $L_1$ is preferred to $L_2$ penalty the functions to be used do not really change: the only major difference is in the $\alpha$ value to be set inside the \textit{cv.glmnet} function. 
 
 \begin{verbatim}
 lasso.mod <- glmnet(x[train,], log(y[train]), alpha=1)
@@ -2008,7 +2006,7 @@ for (i in 1:30){
 }
 \end{verbatim}
 
-Until now predictor variables have only entered the linear model linearly but it may actually be that using some kind of polynomials rather than the linear term does improve performance. To build models which include polynomial terms and then compare their performance through subset selection the function \textit{regsubsets} is again used.
+Until now predictor variables have only entered the model linearly but it may actually be that also including polynomials does improve performance. To do so and then compare their performance through subset selection the function \textit{regsubsets} is again used.
 
 \begin{verbatim}
 tLM <- regsubsets(log(PRI) ~ poly(log(GAS),2) + poly(DEP,2) + poly(log(CON),2)
@@ -2019,7 +2017,7 @@ test.mat <- model.matrix(log(PRI) ~ poly(log(GAS),2) + poly(DEP,2) + poly(log(CO
 val.errors <- rep(NA, 17)
 for (i in 1:17){
   coefi <- coef(tLM, id=i)
-  pred <- test.mat[,names(coefi)] \%*\% coefi
+  pred <- test.mat[,names(coefi)] %*% coefi
   val.errors[i] <- mean(abs(DP$PRI[test] - exp(pred)))
 }
 \end{verbatim}
@@ -2044,7 +2042,7 @@ valset <- C[val,]
 my.tree <- prune.tree(tre,newdata=valset)
 \end{verbatim}
 
-To choose the final tree model among the many, the deviance is used.
+To choose the final tree model among the many, deviance is used as a metric.
 
 \begin{verbatim}
 opt.trees <- which(my.tree$dev == min(my.tree$dev))
@@ -2077,7 +2075,7 @@ plot(ROC)
 
 \section*{Global}
 
-The most significant difference of the global models with respect to European ones is the use of cross-validation in order to find the best values of both the parameters $\alpha$ and $\lambda$. For this purpose, the library \textit{caret}, and in particular the function \textit{Train} are used.
+The most significant difference of the global models with respect to European ones is the use of cross-validation in order to find the best values of both the parameters $\alpha$ and $\lambda$. For this purpose, the library \textit{caret}, and in particular the function \textit{Train} is used.
 
 \begin{verbatim}
 Elastic <- train(
