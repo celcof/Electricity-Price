@@ -1604,6 +1604,14 @@ The focus then shifts to foreseeing the magnitude of price change from one term 
 
 Finally, to benchmark the findings, the last section is left to the discussion of a more general problem, the one of predicting the electricity price not only in Europe but in any world country. In this case, the natural gas price information is not available and this results in a decrease in the prediction precision. The best performing model is a multiple regression model including several interaction terms. Complexity wins over rigidity in this setting. The Mean Absolute Error is 4.5, while the outcome distribution has a mean of 17.4 and a standard deviation of 9.8 cents.
 
+\section{From Here}
+
+While \textit{Eurostat} has been disclosing electricity price data for about 50 years now, \textit{World Bank} has been doing the same for only 5 years. The hope is that in a decade or so it will be possible to have a much clearer picture of the effect of wealth, renewable investment, also on a global scale.
+
+One of the shortcomings of this study is the focus on the demand side, rather than the supply: especially for countries which are net importers the price paid by the consumer depends on decisions from the provider country. An idea for future work in this field would be to engage on this aspect as well.
+
+Humankind is at the moment experiencing uncertain times, and it may seem presumptuous to build a compass for the future. However, data from the recent past can help us understand where we are heading to. Processes that are taking action right now, as the slow breaking up of electricity monopolies and the investment on renewable sources for electricity generation, seem to have marginal reverberations on the final price paid by consumers. The slowing down of the global economy consequence of the health crisis will instead have a sizable effect on electricity bills. 
+
 \begin{appendices}
 \chapter*{Data Cleaning}
 The library \textit{Eurostat} is used to get the tables from the \textbf{R} interface, in particular the \textit{get\_eurostat} function. For instance, to obtain the price of electricity for years after 2007 the code is:
