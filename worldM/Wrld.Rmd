@@ -193,7 +193,6 @@ for (i in 1:30){
 which.min(val.errors)
 val.errors[which.min(val.errors)]
 coef(tLM, which.min(val.errors))
-
 ```
 
 When we also include interactions we end up with a much complicated linear model which however performs very well.
