@@ -1,6 +1,6 @@
 \documentclass[a4paper,12pt]{book}
 \usepackage[english]{babel}
-\usepackage[utf8]{inputenc}
+\usepackage[utf8x]{inputenc}
 \usepackage{float}
 \usepackage{xfrac}
 \usepackage{graphicx}
@@ -73,11 +73,11 @@ The uniqueness\todo{peculiarity? What sets electricity apart, compared to other 
 
 The reader may think that the key factor is in the supply: how much it costs to actually source energy, getting electricity and especially distribute it among households. In recent years many countries around the world have gone through liberalization of their electricity markets: national monopolies are broken down and the result is that consumers can choose among different suppliers, and may decide to modify the profile of their demand to reduce their costs.~\cite{867149}\todo{orfano} This means that the demand of electricity has become more elastic. Another trend in recent years has been the increasing investment in renewable sources of energy. To weigh the effect of such changes on the good price is the main purpose of this document. Previous works in this field have traditionally focused on measuring the impact of the specific variables, while the focal point here is not merely the interpretation but also the accuracy in the final prediction. The aim is to build models that not only allow to understand whether the choice of using a certain source of energy rather another is significantly related with a decrease in the final price, but also to use that information to call for a prediction that is as precise as possible. The goodness of algorithms is assessed by looking at error on the validation set, since some data is left for this purpose.
 
-Econometric studies on the\todo{non credo ci voglia l'articolo} electricity price fluctuations are traditionally not only limited in the number of factors that are\todo{being studied (senza that are)} being studied, but also in the number of countries \todo{considered}that are subject of the analysis. This is widely justifiable: the narrower the scope of the problem, the greater the confidence in the final result. This study starts from different assumptions, with the purpose shifting to building a global set of models. Those models are likely not to be optimal for single countries in particular\todo{toglierei in particular} or even for given geographical areas, but to understand\todo{to understand -> understanding} the exact nature of those local dependencies is not really the aim of the study.\todo{What is the aim, then? Make it clearer! Global sets of models meaning?}
+Econometric studies on the\todo{non credo ci voglia l'articolo} electricity price fluctuations are traditionally not only limited in the number of factors that are\todo{being studied (senza that are)} being studied, but also in the number of countries \todo{considered}that are subject of the analysis. This is widely justifiable: the narrower the scope of the problem, the greater the confidence in the final result. This study starts from different assumptions, with the purpose shifting to building a global set of models. Those models are likely not to be optimal for single countries in particular\todo{toglierei in particular} or even for given geographical areas, but to understand\todo{to understand \textrightarrow understanding} the exact nature of those local dependencies is not really the aim of the study.\todo{What is the aim, then? Make it clearer! Global sets of models meaning?}
 
 \textit{Figure~\ref{fig:world_cost}} provides a global picture of the amount spent by households around the world for their electricity bills. Countries are colored on the basis of its price, measured in US dollars per kWh.
 
-\begin{figure}[tb]
+\begin{figure}[hbt]
 \begin{center}
 \includegraphics[width=0.7\textwidth]{Images/world2020.png}
 \end{center}
@@ -88,13 +88,13 @@ Econometric studies on the\todo{non credo ci voglia l'articolo} electricity pric
 
 Some countries are not colored either because their price is too low, as the case is for Kuwait, with less than one cent per kWh, or because \todo{it is}too high, as for Solomon Islands and Venezuela. This latter country in recent years has been suffering from exceptional inflation: the political and macro-economical frameworks are extremely important for predicting the final price of this good.
 
-Apart from South America, also in Africa some results are quite interesting: looking at the pale color of countries like South Sudan or Somalia, which are among the poorest in the world, the reader may think that to wealthier country consistently should correspond higher electricity price, given that there is no sky-high inflation. If however, for instance, bordering countries as Algeria and Niger are considered, this simple hypothesis does not work: the former has an electricity price of 2.1 dollar cents per kWh and a \textit{GDP} per capita of 4,114.72 dollars. In the latter, instead, electricity price corresponds to 21.3 dollar cents per kWh (10 times with respect to Algeria) but the \textit{GDP} is merely 413.98 dollars (almost one tenth with respect to Algeria). Since inflation is not really a problem in Niger, this is a hint that the link between economic development and electricity price is not that elementary. The particular problem with Niger is its extremely low electrification rate: only one in seven Nigeriens have access to modern electricity services, and just four percent of rural residents have access through the national utility. The country's total energy consumption per capita is 44 kWh of electricity. It is the second lowest energy consumption per capita in West Africa, behind Guinea Bissau, and the ninth lowest in the world. 
+Apart from South America\todo{toglierei, visto che solo Ven è in SA, K e Solomon no}, also in Africa some results are quite interesting: looking at the pale color of countries like South Sudan or Somalia, which are among the poorest in the world, the reader may think that to wealthier country consistently should correspond higher electricity price\todo{scambia l'ordine: the reader might think that higher... should consistently correspond to wealthier}, given that there is no sky-high inflation. If however, for instance, bordering countries as Algeria and Niger are considered, this simple hypothesis does not work\todo{raddrizzare However, there are counterexamples. Consider for example Algeria and Niger, two bordering countries: the former...}: the former has an electricity price of 2.1 dollar cents per kWh and a \textit{GDP} per capita of 4,114.72 dollars.\todo{Rivedere: è brutto spezzare così il parallelo, meglio ripensare tutta la frase.} In the latter, instead, electricity price corresponds to 21.3 dollar cents per kWh (10 times with\todo{non è with respect to, ma 10 times higher than the corresponding value for Algeria} respect to Algeria) but the \textit{GDP} is merely 413.98 dollars (almost one tenth\todo{roughly e poi come prima} with respect to Algeria). Since inflation is not really a problem in Niger, this\todo{this discrepancy suggests that the link} is a hint that the link between economic development and electricity price is not \todo{straightforward}that elementary. \todo{In Niger, for example, the problem lies in its...}The particular problem with Niger is its extremely low electrification rate: only one in seven Nigeriens have\todo{has} access to modern electricity services, and just four percent of rural residents have access through the national utility\todo{company?}. The country's total energy\todo{eventualmente electrical energy} consumption per capita is 44 kWh\todo{togli of electricity} of electricity. It is the second lowest energy consumption per capita in West Africa, behind Guinea Bissau, and the ninth lowest in the world. 
 
 \section{Access to Electricity}
 
-While the whole share of Algeria inhabitants has access to the grid, this is not the case for Niger, where only part of the relatively wealthier urban population does. This explains why the price is not related with the gross domestic product per capita: since only the wealthy population can afford to have access to the grid, the prices can be kept higher. In this case a loop is entered, since prices are also high because network costs are shared among few people, and network costs are the most important component in the final electricity price paid by households. In \textit{Figure~\ref{fig:northsouth}} it is showed how electricity price (in dollar cents per kWh) is related to population share having grid access, for countries with no universal electricity service.
+While the whole share of Algeria inhabitants\todo{the whole share è bruttino: the whole population of Algeria/ All Algerians} has access to the grid, this is not the case for Niger, where only part of the relatively wealthier urban population does. This explains why the price is not related with the gross domestic product per capita: since only the wealthy population can afford to have access to the grid, the prices can be kept higher. In this case a loop is entered\todo{This causes and endless loop, as network costs -- one of the most relevant components in the final price -- are high because they are shared among few people.}, since prices are also high because network costs are shared among few people, and network costs are the most important component in the final electricity price paid by households. In \textit{Figure~\ref{fig:northsouth}} it is showed\todo{Active form is your friend: Figure... shows} how electricity price (in dollar cents per kWh) is related to\todo{the share of} population share having grid access, for\todo{in} countries with no universal electricity service.
 
-\begin{figure}[tb]
+\begin{figure}[htb]
 \begin{center}
 \captionsetup{justification=centering}
 \includegraphics[width=0.9\textwidth]{Images/accessNAMES.png}
@@ -103,9 +103,9 @@ While the whole share of Algeria inhabitants has access to the grid, this is not
 \end{center}
 \end{figure}
 
-Although countries providing little electricity access to their population also have low gross domestic product, prices are not that low with respect to wealthier and more electricity-intensive countries. In \textit{Figure ~\ref{fig:gridAcc}} it is represented how countries with little grid access are concentrated in Africa: in recent years, Asian countries (especially India) have made important steps forward in this sense.
+Although countries providing little electricity access to their population also have low gross domestic product, prices are not that\todo{colloquiale: proportionally lower when compared with} low with respect to wealthier and more electricity-intensive countries. In \textit{Figure \todo{spazio+ tilde va cambiato in solo tilde (find and replace)}~\ref{fig:gridAcc}} it is represented\todo{vedi sopra} how countries with little grid access are concentrated in Africa: in recent years, Asian countries (especially India) have made important steps forward in this sense.
 
-\begin{figure}[tb]
+\begin{figure}[hbt]
 \begin{center}
 \captionsetup{justification=centering}
 \includegraphics[width=0.7\textwidth]{Images/access.png}
@@ -116,11 +116,11 @@ Although countries providing little electricity access to their population also 
 
 \section{Production}
 
-Access to electricity is linked to production and consumption patterns inside a country. Electricity is not freely available in nature, so it must be ``produced" (that is, transforming other forms of energy to electricity). Apart from a slight decrease during the 2008 crisis years, electricity production has been increasing constantly in recent years, with China having overtaken United States as the main producer.
+Access to electricity is linked to production and consumption patterns inside a country. Electricity is not freely\todo{readily? o anche nulla} available in nature, so it must be ``produced" (that is, transforming other forms of energy to electricity). Apart from a slight decrease during the 2008 crisis\todo{financial crisis} years, electricity production has been increasing constantly in recent years\todo{since?}, with China having overtaken United States as the main producer\todo{questo inciso qui non c'entra molto, meglio metterlo sotto.}.
 
-\textit{Table~\ref{Tab:enerdata}} illustrates which are the main electricity generators, with most recent data available. It is interesting to notice the leap of China which was able to increase its generation by five times of the amount it was producing in 2000, with an average increase of 5 percent per year. The United States also increased their production, but not at the pace of China. India was only the $7_{th}$ biggest producer in 2000, and also was able to climb the rankings quite fast in order to allow for its economy to grow. Japan, instead, saw its production decrease in the same time period.
+\textit{Table~\ref{Tab:enerdata}} illustrates which are the main electricity generators\todo{rendi più esplicito che si tratta di paesi, non di generatori elettrici}, with \todo{the}most recent data available. It is interesting to notice\todo{how China's production leapt forward, increasing five times in 20 years, by an average of 5\% every year. This lead China to take the US place as the world's main produces: while the US increased... too, they could not keep the pace...} the leap of China which was able to increase its generation by five times of the amount it was producing in 2000, with an average increase of 5 percent per year. The United States also increased their production, but not at the pace of China. India was only the $7_{th}$ biggest producer in 2000, and also was able to climb the rankings\todo{non è che volessero salire i ranking: India was... but was able to ramp up/triple its production as part of the effort to grow its} quite fast in order to allow for its economy to grow. Japan, instead, saw its production decrease in the same time period\todo{tecnicamente è vero, ma è una contrazione abbastanza piccola, direi piuttosto ``stagnated'' se vuoi una connotazione negativa oppure decreased slightly}.
 
-\begin{table}[tb]
+\begin{table}[hbt]
 \begin{center}
 \begin{tabular}{|c|c|c|}
 \hline
@@ -139,7 +139,7 @@ Canada & 606 & 649\\
 \end{center}
 \end{table}
 
-If the focus shifts to European countries, Germany and France turn out being the two major producers in the continent, followed by the United Kingdom. European situation is illustrated in \textit{Figure~\ref{fig:capacity}}.
+If the focus shifts\todo{Shifting the focus on} to European countries,\todo{one finds G and F to be (o altra formulazione, ma cerca di tenere lo stesso soggetto)} Germany and France turn out being the two major producers in the continent, followed by the United Kingdom. European situation is illustrated in \textit{Figure~\ref{fig:capacity}}.
 
 \begin{figure}[tb]
 \begin{center}
@@ -152,9 +152,9 @@ If the focus shifts to European countries, Germany and France turn out being the
 
 \section{Distribution}
 
-Of course producing electricity shall be a problem for certain countries, which lack the necessary resources. But an even more significant issue is often the absence of the necessary infrastructure to distribute this good. For poor regions in particular, electricity distribution losses represent  a big concern that hinder their economic development. \textit{Table~\ref{fig:losses}} shows which are the countries that have the least efficient electricity distribution infrastructure.
+Of course producing electricity shall\todo{decisamente non shall: could, might?} be a problem for certain countries\todo{for those countries that lack}, which lack the necessary resources. But an even more significant issue is often the absence of the necessary infrastructure to distribute this good. For\todo{In} poor regions in particular, electricity distribution losses\todo{riordina: metti in chiaro che sono le perdite *di energia* nella distribuzione e non le perdite della distribuzione di energia, che sembrano le perdite economiche} represent  a big concern that hinder\todo{and hinder(a meno che tu non ti riferisca a concern, ma sembra di no)} their economic development. \textit{Table~\ref{fig:losses}} shows which are the countries that\todo{which countries have} have the least efficient electricity distribution infrastructure.
 
-\begin{table}[tb]
+\begin{table}[hbt]
 \begin{center}
 \begin{tabular}{|c|c|}
 \hline
@@ -173,13 +173,13 @@ Niger & 41.8\\
 \end{center}
 \end{table}
 
-Sadly, most of the distribution losses are associated with very poor countries, in which the access to electricity is limited. 
+Sadly, most of the distribution losses are associated with\todo{occur in} very poor countries, in which\todo{where} the access to electricity is limited. 
 
 \section{Consumption}
 
 Since the major costs associated with electricity are actually related to transportation, most of the electricity produced in one country actually remains inside that country until it is consumed. This explains why the major electricity producers are also the major electricity consumers. However, there are still marginal differences among these rankings. \textit{Table~\ref{Tab:producers}} shows which are the principal electricity consumers in the world.
 
-\begin{table}[tb]
+\begin{table}[hbt]
 \begin{center}
 \begin{tabular}{|c|c|c|}
 \hline
@@ -193,14 +193,14 @@ Japan & 986 & 918\\
 South Korea & 263 & 553\\
 \hline
 \end{tabular}
-\caption{Major Electricity Producers (in KwH), Enerdata.}
+\caption{Major Electricity Consumers (in KwH), Enerdata.}
 \label{Tab:producers}
 \end{center}
 \end{table}
 
-Also in this case, information regarding Asian countries turns out being the most compelling. China, India and South Korea have experienced a major boost in their electricity consumption while Japan decreased its value in the last 20 years. China is the country which consumes (and produces) the largest share of electricity because it is also the most populated. Data regarding consumption patterns per capita is reported in \textit{Table~\ref{Tab:cons}}.
+Also in this case, information regarding Asian countries turns out being the most compelling. China, India and South Korea have experienced a major boost in their electricity consumption while Japan decreased its value in the last 20 years. China is the country which consumes (and produces) the largest share of electricity because it is also the most populated. Data regarding consumption patterns\todo{Non vedo alcun pattern (implica qualche tipo di struttura eg W vs E, N vs S, developing vs developed, al variare del tempo)} per capita is reported in \textit{Table~\ref{Tab:cons}}.
 
-\begin{table}[tb]
+\begin{table}[hbt]
 \begin{center}
 \begin{tabular}{|c|c|}
 \hline
@@ -219,9 +219,9 @@ Finland & 15,520\\
 \end{center}
 \end{table}
 
-There are certain countries that are particularly ill-suited for the existence of individuals, and a large amount of energy has to be consumed in order to improve the well-being of those brave dwellers. It is the case of Bahrain or Kuwait where massive amounts of energy are needed to cool buildings. Or, conversely, it is the case of Iceland and Norway, where temperatures are very low and during winter months sunlight is available only for few hours. \textit{Figure~\ref{fig:conspc}} displays how European countries with highest consumption per capita are located in the North, where temperatures are lowest.
+There are certain countries that are particularly ill-suited for the existence\todo{troppo drammatica/drastica, rivedere} of individuals, and a large amount of energy has to be consumed in order to improve the well-being of those brave dwellers. It is the case of Bahrain or Kuwait where massive amounts of energy are needed to cool buildings. Or, conversely, it is the case of Iceland and Norway\todo{E la Finlandia, che mediamente è alle stesse latitudini?Anche il canada, ma sono molto sotto le altre citate: come mai? Forse non si possono mettere tutte assieme... Potrebbero esserci altri motivi, no?}, where temperatures are very low and during winter months sunlight is available only for \todo{a}few hours. \textit{Figure~\ref{fig:conspc}} displays how European countries with highest consumption per capita are located in the North, where temperatures are lowest.
 
-\begin{figure}[tb]
+\begin{figure}[hbt]
 \begin{center}
 \captionsetup{justification=centering}
 \includegraphics[width=0.75\textwidth]{Images/cons.png}
@@ -232,38 +232,41 @@ There are certain countries that are particularly ill-suited for the existence o
 
 \section{European Union Electricity Market}
 
-Electricity is not an easily tradable product, as it needs hundreds of  legal rules and technical standards to be agreed upon before it can become freely marketable. Electric power is, after all, nothing more than a flow of electrons inside metallic wires of a massive, interconnected network. That is the reason why, for decades, electricity was deemed to be an ``anti-market" product, best suited to non-competitive markets like natural monopolies~\cite{glachant2014eu} Furthermore, the particular characteristics of electricity, its non-storability and the necessary constant balance between demand and supply, supported the State intervention. This monopoly predisposition resulted in efficiencies, where State subsidies have been the rule to maintain a stable industry.~\cite{domanico2007concentration} Nevertheless, there is one region in the world that has tried to overcome these `` anti-market" barriers to create an extremely vast electricity market. That region is identifiable as the \textit{European Union}.
+Electricity is not an easily tradable product, as it needs hundreds of  legal rules\todo{hundreds of, anche no... legal regulations and ...} and technical standards to be agreed upon before it can become freely\todo{easily? comunque non freely} marketable. Electric power is, after all, nothing more than a flow of electrons inside metallic wires of a massive, interconnected network. That is the reason why\todo{for this reason}, for decades, electricity was deemed to be an ``anti-market" product, best suited to non-competitive markets like natural monopolies~\cite{glachant2014eu}. Furthermore, the particular characteristics of electricity, its non-storability and the necessary constant balance between demand and supply, supported the State\todo{'s} intervention. This monopoly predisposition resulted in efficiencies, where State subsidies have been the rule to maintain a stable industry.~\cite{domanico2007concentration} Nevertheless, there is one region in the world that has tried to overcome these `` anti-market" barriers to create an extremely vast electricity market.\todo{: the European Union. (e togli la frase dopo)} That region is identifiable as the \textit{European Union}.
 
-The European Union is a unique case of a large extended market in which member countries can exchange goods.  \textbf{Liberalization} of the economic markets and \textbf{convergence} are two of the main objectives in the Union. In particular, European electricity market liberalization represents the world's most large-scale cross-jurisdiction reform of the electricity sector involving integration of national markets. Reaching such an outcome employed several years of time, and there are specific reasons why this process took so long:
+The European Union is a unique case of a large extended market in which member countries can exchange goods.  \textbf{Liberalization}\todo{toglierei il grassetto} of the economic markets and \textbf{convergence} are two of the main objectives in the Union. In particular, European electricity market liberalization represents the world's most large-scale\todo{largest-scale} cross-jurisdiction reform of the electricity sector involving integration of national markets. Reaching such an outcome employed\todo{reaching such result required} several years of time\todo{togliere of time}, and there are specific reasons why this process took so long\todo{togliere and... sostituire con for the following reasons:}:
 
 \begin{itemize}
 
-\item The objective of this project is to open up national monopolies’ market spaces to foreigners, which of course is a radical
-project that inevitably leaves some parties unsatisfied.  One of the risks of market concentration is that big incumbents try to build
-barriers in order to maintain their position and to foreclose the entrance of more efficient market actors.~\cite{ringel2003liberalising}
+\item The objective of this project is to open up national monopolies’ market spaces to foreigners, which\todo{a radical change} of course is a radical
+project that inevitably leaves some parties unsatisfied.  One of the risks\todo{one risk} of market concentration is that big incumbents try to build
+barriers in order to maintain their position and to foreclose\todo{hinder? limit?} the entrance of more efficient market actors.~\cite{ringel2003liberalising}
 
-\item In the last 25 years there has been no wave of disruptive technological innovation to challenge the incumbent energy
-giants.
+\item In the last 25 years there has been no wave\todo{che c'entra l'onda? serve che sia disruptive? no technological innovation significant (o disruptive) enough to} of disruptive technological innovation to challenge the incumbent energy
+giants\todo{non bellissimo}.
 
 \item The national arrangements that had been developed between industry players and public authorities could not be easily merged at the EU level into a common scheme.
 \end{itemize}
 
-Creating a market that is actually free, however, is not an easy matter, and that's why there are still wide differences in the amounts households from different member countries pay for electricity. Although the pace of the liberalization is steady, the integrated European electricity market is yet to be achieved.
+Creating a market that is actually free, however, is not an easy matter\todo{task}, and that's why\todo{for this reason, this explains why} there are still wide differences in the amounts\todo{price households pay for electricity in different...} households from different member countries pay for electricity. Although the pace of the\todo{ongoing} liberalization is steady, the integrated European electricity market is yet to be achieved.
 
 \subsection{Taxation}
 
-Taxes account for a sizable share of the final prices consumers pay for energy around the EU and can have a strong impact on consumption patterns, the type of energy consumed and their use. There is disagreement among European countries for how much households should pay in their bills, and the consequence is wide differences in tax rates. Belgium, Ireland, Germany and Denmark are the member states where electricity is the most expensive. However, these four countries present different tax rates: Belgium and Ireland citizens pay a high price because electricity is actually expensive excluding taxes and levies while Germany and especially Denmark pay such a high price precisely because of taxes and levies. This behavior is well represented with ~\textit{Figure~\ref{fig:2019}}, where household electricity prices are plot both including and excluding taxes and levies. Prices are lowest in Bulgaria and Hungary, whose inhabitants pay one third of the amounts Danish citizens pay in their bills. 
+Taxes account for a sizable share of the final prices\todo{price} consumers pay for energy around the EU and can have a strong impact on consumption patterns, the type of energy consumed and their\todo{di chi?? its forse} use. There is disagreement among European countries for\todo{on?} how much households should pay in their bills, and\todo{, and diventa :} the consequence is wide differences in tax rates\todo{a wide range of tax rates}. Belgium, Ireland, Germany and Denmark are the member states where electricity is the most expensive. However\todo{Taxes, however, are not the only explanation for the higher price:}, these four countries present\todo{have} different tax rates:\todo{.} Belgium and Ireland\todo{In B and in I,} citizens pay a high price\todo{the price for electricity is high, even with taxes and levies excluded.} because electricity is actually expensive excluding taxes and levies while Germany and especially Denmark\todo{In G, and even more in D, on the other hand, taxes and levies have a huge impact on the final price.} pay such a high price precisely because of taxes and levies. This behavior is well represented with\todo{in}~\textit{Figure~\ref{fig:2019}}, where household electricity prices are plot both including and excluding taxes and levies. Prices\todo{quali? Visto che ne hai due devi dire che in entrambi i casi è così} are lowest in Bulgaria and Hungary, whose inhabitants pay\todo{energy} one third of the amounts Danish citizens pay in their bills\todo{pay... diventa do. Oltretutto, perchè confronti con Danemark e non Germany (top expense)}. 
 
-\begin{figure}[tb]
+\begin{figure}[hbt]
 \begin{center}
 \captionsetup{justification=centering}
-\includegraphics[width=0.7\textwidth]{Images/Taxes.png}
+\includegraphics[width=0.9\textwidth]{Images/Taxes.png}
 \caption{2019 (second semester) data, electricity prices. }
 \label{fig:2019}
 \end{center}
+\todo[inline]{So che è tardi per dirlo, ma proprio non mi è chiaro come mai questa immagine abbia una rappresentazione continua dei prezzi e non un banale barplot Inoltre non mi è troppo chiaro in che modo sono ordinati i paesi... Se puoi rifallo}
 \end{figure}
 
-The average final price paid by European households is 21.7 cents per KwH including taxes and 12.8 cents per KwH excluding taxes, which make up an average of around 6 cents of taxes per KwH. Over time, also taxes tend to change: in the second semester of 2007 the price paid by European households fell with respect to the first semester by 3 cents, while the electricity price itself decreased only by one cent. This means that most of the drop was due to a decrease in taxes. \textit{Figure~\ref{fig:TaxesTime}} shows how electricity prices for European citizens changed over time, on average.
+
+The average final price paid by European households is 21.7 cents per KwH including taxes and 12.8 cents per KwH excluding taxes, which make up an average of around 6\todo{21.7-12.8 fa 8.9... cosa mi sono perso?} cents of taxes per KwH. Over time, also taxes tend to change: in the second semester of 2007 the price paid by European households fell\todo{3 cent mi pare un po' poco per dire fell, magari decreased} with respect to the first semester by 3 cents, while the electricity price itself decreased only by one cent. This means that most of the drop was due to a decrease in taxes. \textit{Figure~\ref{fig:TaxesTime}} shows how electricity prices for European citizens changed over time, on average.
+\todo[inline]{magari visto che mi sembra sia il solo caso in cui le tasse sono diminuite, menziona anche un esempio in cui le tasse sono aumentate di più... Non solo, immagino che ci siano accise (costanti) e tasse (proporzionali al prezzo), quindi non leggerei troppo in questi numeri}
 
 \begin{figure}[tb]
 \begin{center}
