@@ -7,8 +7,8 @@
 \usepackage{subfig}
 \usepackage{hyperref}
 \usepackage{wrapfig}
+\usepackage[a-1b]{pdfx}
 \usepackage{listings}
-\usepackage[table]{xcolor}
 \usepackage{caption}
 \usepackage{cite}
 \usepackage[toc,page]{appendix}
@@ -27,8 +27,17 @@
 
 \setlength{\parskip}{\baselineskip}
 
+\usepackage{filecontents}
+\begin{filecontents*}{\jobname.xmpdata}
+\Keywords{Electricity\sep Price} 
+\Title{Electricity Bills} 
+\Author{Francesco Cabras} 
+\Org{Universita di Trento} 
+\end{filecontents*}
+
 \begin{document}
 
+\frontmatter
 \begin{titlepage}
     \begin{center}
         \vspace*{1cm}
@@ -50,7 +59,7 @@
             
         \vspace{1.5cm}
             
-        \includegraphics[width=0.4\textwidth]{Images/unitn}
+        \includegraphics[width=0.4\textwidth]{Images/uni}
          
         Department of Mathematics\\
         University of Trento\\
@@ -61,17 +70,18 @@
 
 \tableofcontents
 
+\mainmatter
 \chapter{Introduction}
 
-Electricity bills are among the most important expenses for families around the world, at least for the lucky households that have access to it. There are wide differences among amounts paid for this good around the world, and it is not only always easy to acknowledge which are the reasons behind these gaps. According to the \textit{Energy Information Administration}, ``Electricity prices generally reflect the cost to build, finance, maintain, and operate power plants and the electricity grid." Price forecasting is the technique by which future wholesale prices are being predicted with reasonable accuracy.~\cite{weron2014electricity}
+Electricity bills are among the most important expenses for families around the world, at least for the lucky households that have access to it. According to the \textit{Energy Information Administration}, ``Electricity prices generally reflect the cost to build, finance, maintain, and operate power plants and the electricity grid." The uniqueness of this good is in its non-storability, it has to be produced in the moment it is consumed. Short-term prices are impacted by the time of day, day or night, morning or afternoon, but also by climate conditions: demand due to heating in the winter and cooling in the summer are the main drivers for seasonal price spikes. This is even truer when not only the demand side but also the supply is influenced by the weather, as in the case of solar energy generation.
 
-The uniqueness of the good \textit{electricity} is in its non-storability, it has to be produced in the moment it is consumed. Short-term prices are impacted by the time of day, day or night, morning or afternoon, but also by climate conditions: demand due to heating in the winter and cooling in the summer are the main drivers for seasonal price spikes. This is even truer when not only the demand side but also the supply is influenced by the weather, as in the case of solar energy generation.
+Price forecasting is the technique by which future wholesale prices are being predicted with reasonable accuracy.~\cite{weron2014electricity} There are wide differences among amounts paid for this good around the globe, and it is not only always easy to acknowledge which are the reasons behind these gaps.
 
 \section{State of the Art}
 
-The reader may think that the key factor is in the supply: how much it costs to actually source energy, getting electricity and especially distribute it among households. In recent years many countries around the world have gone through liberalization of their electricity markets: national monopolies are broken down and the result is that consumers can choose among different suppliers, and may decide to modify the profile of their demand to reduce their costs.~\cite{867149} This means that the demand of electricity has become more elastic. Another trend in recent years has been the increasing investment in renewable sources of energy. To weigh the effect of such changes on the good price is the main purpose of this document. Previous works in this field have traditionally focused on measuring the impact of the specific variables, while the focal point here is not merely the interpretation but also the accuracy in the final prediction. The aim is to build models that not only allow to understand whether the choice of using a certain source of energy rather another is significantly related with a decrease in the final price, but also to use that information to call for a prediction that is as precise as possible. The goodness of algorithms is assessed by looking at error on the validation set, since some data is left for this purpose.
+The reader may think that the key factor is in the supply: how much it costs to actually generate electricity and especially distribute it among households. In recent years many countries around the world have gone through liberalization of their markets: national monopolies in the electricity sector are broken down and the result is that consumers can choose among different suppliers, and may decide to modify the profile of their demand to reduce their costs.~\cite{867149} This means that the demand of electricity has become more elastic. Another trend has been the increasing investment in renewable sources of energy. To weigh the effect of such changes on the good price is the main purpose of this document. Previous works in this field have traditionally focused on measuring the impact of the specific variables, while the focal point here is not merely in the interpretation of the effects but especially in the accuracy of the final prediction. The aim is to build models that not only allow to understand whether the choice of using a certain source of energy rather another is significantly related with a decrease in the final price, but also to use that information to call for a prediction that is as precise as possible. The goodness of the algorithms proposed is assessed by looking at error on the validation set, since some data is left for this purpose.
 
-Econometric studies on the electricity price fluctuations are traditionally not only limited in the number of factors that are being studied, but also in the number of countries that are subject of the analysis. This is widely justifiable: the narrower the scope of the problem, the greater the confidence in the final result. This study starts from different assumptions, with the purpose shifting to building a global set of models. Those models are likely not to be optimal for single countries in particular or even for given geographical areas, but to understand the exact nature of those local dependencies is not really the aim of the study.
+Econometric studies on the electricity price fluctuations are traditionally not only limited in the number of factors that are being studied, but also in the number of countries that are subject of the analysis. This is widely justifiable: the narrower the scope of the problem, the greater the confidence in the final result. This study starts from different assumptions, with the purpose shifting to building a global set of models. Those models are likely not to be optimal for single countries in particular or even for given geographical areas, yet to understand the exact nature of those local dependencies is not really the aim of the study.
 
 \textit{Figure~\ref{fig:world_cost}} provides a global picture of the amount spent by households around the world for their electricity bills. Countries are colored on the basis of its price, measured in US dollars per kWh.
 
@@ -80,43 +90,34 @@ Econometric studies on the electricity price fluctuations are traditionally not 
 \includegraphics[width=0.7\textwidth]{Images/world2020.png}
 \end{center}
 \captionsetup{justification=centering}
-\caption{The more expensive electricity is, the darker the color. }
+\caption{Price of Electricity around the Globe.}
 \label{fig:world_cost}
 \end{figure}
 
-Some countries are not colored either because their price is too low, as the case is for Kuwait, with less than one cent per kWh, or because too high, as for Solomon Islands and Venezuela. This latter country in recent years has been suffering from exceptional inflation: the political and macro-economical frameworks are extremely important for predicting the final price of this good.
+Some countries are not colored either because their price is too low, as the case is for Kuwait, with less than one cent per kWh, or because too high, as for Solomon Islands and Venezuela. This latter country in recent years has been suffering from exceptional inflation: the political and macro-economical frameworks are extremely important in this sense.
 
-Apart from South America, also in Africa some results are quite interesting: looking at the pale color of countries like South Sudan or Somalia, which are among the poorest in the world, the reader may think that to wealthier country consistently should correspond higher electricity price, given that there is no sky-high inflation. If however, for instance, bordering countries as Algeria and Niger are considered, this simple hypothesis does not work: the former has an electricity price of 2.1 dollar cents per kWh and a \textit{GDP} per capita of 4,114.72 dollars. In the latter, instead, electricity price corresponds to 21.3 dollar cents per kWh (10 times with respect to Algeria) but the \textit{GDP} is merely 413.98 dollars (almost one tenth with respect to Algeria). Since inflation is not really a problem in Niger, this is a hint that the link between economic development and electricity price is not that elementary. The particular problem with Niger is its extremely low electrification rate: only one in seven Nigeriens have access to modern electricity services, and just four percent of rural residents have access through the national utility. The country's total energy consumption per capita is 44 kWh of electricity. It is the second lowest energy consumption per capita in West Africa, behind Guinea Bissau, and the ninth lowest in the world. 
+Apart from South America, also in Africa some results are quite interesting: looking at the pale color of countries like South Sudan or Somalia, which are among the poorest in the world, the reader may think that low electricity prices are consistently experienced in low income countries, assuming no sky-rocketing inflation is encountered. If however, for instance, bordering countries as Algeria and Niger are considered, this simple hypothesis does not work: the former has an electricity price of 2.1 dollar cents per kWh and a \textit{GDP} per capita of 4,114.72 dollars. In the latter, instead, electricity price corresponds to 21.3 dollar cents per kWh (10 times with respect to Algeria) but the \textit{GDP} is merely 413.98 dollars (almost one tenth with respect to Algeria). Since inflation is not really a problem in Niger, this is a hint that the link between economic development and electricity price is not that elementary. The particular problem with Niger is its extremely low electrification rate: only one in seven Nigeriens have access to modern electricity services, and just four percent of rural residents have access through the national utility. The country's total energy consumption per capita is 44 kWh of electricity. It is the second lowest energy consumption per capita in West Africa, behind Guinea Bissau, and the ninth lowest in the world. 
 
 \section{Access to Electricity}
 
-While the whole share of Algeria inhabitants has access to the grid, this is not the case for Niger, where only part of the relatively wealthier urban population does. This explains why the price is not related with the gross domestic product per capita: since only the wealthy population can afford to have access to the grid, the prices can be kept higher. In this case a loop is entered, since prices are also high because network costs are shared among few people, and network costs are the most important component in the final electricity price paid by households. In \textit{Figure~\ref{fig:northsouth}} it is showed how electricity price (in dollar cents per kWh) is related to population share having grid access, for countries with no universal electricity service.
+While the whole share of Algeria inhabitants has access to the grid, this is not the case for Niger, where only part of the relatively wealthier urban population does. This explains why the price is not related with the gross domestic product per capita: since only the wealthy population can afford to have access to the grid, the prices can be kept higher. In this case a loop is entered, since prices are also high because network costs are shared among few people, and network costs are the most important component in the final electricity price paid by households. In \textit{Figure~\ref{fig:northsouth}} it is showed how electricity price (in dollar cents per kWh) is related to population share having grid access, for countries with no universal electricity service. The color is used to indicate the latitude of the country: the redder, the further south, the greener, the further north.
 
 \begin{figure}[tb]
 \begin{center}
 \captionsetup{justification=centering}
 \includegraphics[width=0.9\textwidth]{Images/accessNAMES.png}
-\caption{The more southern the country, the redder the color. }
+\caption{Low electrification rate does not always correspond to low consumer price.}
 \label{fig:northsouth}
 \end{center}
 \end{figure}
 
-Although countries providing little electricity access to their population also have low gross domestic product, prices are not that low with respect to wealthier and more electricity-intensive countries. In \textit{Figure ~\ref{fig:gridAcc}} it is represented how countries with little grid access are concentrated in Africa: in recent years, Asian countries (especially India) have made important steps forward in this sense.
-
-\begin{figure}[tb]
-\begin{center}
-\captionsetup{justification=centering}
-\includegraphics[width=0.7\textwidth]{Images/access.png}
-\caption{Share of population having grid access. }
-\label{fig:gridAcc}
-\end{center}
-\end{figure}
+Although countries providing little electricity access to their population also have low gross domestic product, prices are not that low with respect to wealthier and more electricity-intensive countries. Again from \textit{Figure ~\ref{fig:northsouth}} it is possible to evaluate how countries with little grid access are concentrated in Africa: in recent years, Asian countries (especially India) have made important steps forward in this sense.
 
 \section{Production}
 
-Access to electricity is linked to production and consumption patterns inside a country. Electricity is not freely available in nature, so it must be ``produced" (that is, transforming other forms of energy to electricity). Apart from a slight decrease during the 2008 crisis years, electricity production has been increasing constantly in recent years, with China having overtaken United States as the main producer.\\
+Access to electricity is linked to production and consumption patterns inside a country. Electricity is not freely available in nature, it must be generated using natural or artificial energy sources. Apart from a slight decrease during the 2008 financial crisis, electricity production has been increasing constantly in recent years, with China having overtaken United States as the main producer.\\
 
-\textit{Table~\ref{Tab:enerdata}} illustrates which are the main electricity generators, with most recent data available. It is interesting to notice the leap of China which was able to increase its generation by five times of the amount it was producing in 2000, with an average increase of 5 percent per year. The United States also increased their production, but not at the pace of China. India was only the $7_{th}$ biggest producer in 2000, and also was able to climb the rankings quite fast in order to allow for its economy to grow. Japan, instead, saw its production decrease in the same time period.
+\textit{Table~\ref{Tab:enerdata}} illustrates which are the main electricity generators, with most recent data available. It is interesting to notice the leap of China, able to scale up its generation by five times in 20 years, with an average increase of 5 percent per year. The United States increased their production as well, but not at the pace of China. India was only the $7_{th}$ biggest producer in 2000, and also was able to climb the rankings quite fast in order to allow for its economy to grow. Japan, instead, saw its production decrease in the same time period.
 
 \begin{table}[tb]
 \begin{center}
@@ -150,7 +151,7 @@ If the focus shifts to European countries, Germany and France turn out being the
 
 \section{Distribution}
 
-Of course producing electricity shall be a problem for certain countries, which lack the necessary resources. But an even more significant issue is often the absence of the necessary infrastructure to distribute this good. For poor regions in particular, electricity distribution losses represent  a big concern that hinder their economic development. \textit{Table~\ref{fig:losses}} shows which are the countries that have the least efficient electricity distribution infrastructure.
+Of course producing electricity shall be a problem for certain countries, which lack the necessary resources. But an even more significant issue is often the absence of the necessary infrastructure to distribute this good. For poor regions in particular, electricity distribution losses represent a big concern that hinders economic development. \textit{Table~\ref{fig:losses}} shows which are the countries that have the least efficient electricity distribution infrastructure.
 
 \begin{table}[tb]
 \begin{center}
@@ -237,7 +238,7 @@ The European Union is a unique case of a large extended market in which member c
 \begin{itemize}
 
 \item The objective of this project is to open up national monopolies’ market spaces to foreigners, which of course is a radical
-project that inevitably leaves some parties unsatisfied.  One of the risks of market concentration is that big incumbents try to build
+plan that inevitably leaves some parties unsatisfied.  One of the risks of market concentration is that big incumbents try to build
 barriers in order to maintain their position and to foreclose the entrance of more efficient market actors.~\cite{ringel2003liberalising}
 
 \item In the last 25 years there has been no wave of disruptive technological innovation to challenge the incumbent energy
@@ -250,7 +251,7 @@ Creating a market that is actually free, however, is not an easy matter, and tha
 
 \subsection{Taxation}
 
-Taxes account for a sizable share of the final prices consumers pay for energy around the EU and can have a strong impact on consumption patterns, the type of energy consumed and their use. There is disagreement among European countries for how much households should pay in their bills, and the consequence is wide differences in tax rates. Belgium, Ireland, Germany and Denmark are the member states where electricity is the most expensive. However, these four countries present different tax rates: Belgium and Ireland citizens pay a high price because electricity is actually expensive excluding taxes and levies while Germany and especially Denmark pay such a high price precisely because of taxes and levies. This behavior is well represented with ~\textit{Figure~\ref{fig:2019}}, where household electricity prices are plot both including and excluding taxes and levies. Prices are lowest in Bulgaria and Hungary, whose inhabitants pay one third of the amounts Danish citizens pay in their bills. 
+Taxes account for a sizable share of the final prices consumers pay for energy around the EU and can have a strong impact on consumption patterns, the type of energy consumed and their use. There is disagreement among European countries for how much households should contribute in their bills, and the consequence is wide differences in tax rates. Belgium, Ireland, Germany and Denmark are the member states where electricity is the most expensive. However, these four countries present different tax rates: Belgium and Ireland citizens pay a high price because electricity is actually expensive excluding taxes and levies while Germany and especially Denmark pay such a high price precisely because of taxes and levies. This behavior is well represented with ~\textit{Figure~\ref{fig:2019}}, where household electricity prices are plot both including and excluding taxes and levies. Prices are lowest in Bulgaria and Hungary, whose inhabitants pay one third of the amounts Danish citizens pay in their bills. 
 
 \begin{figure}[tb]
 \begin{center}
@@ -261,7 +262,7 @@ Taxes account for a sizable share of the final prices consumers pay for energy a
 \end{center}
 \end{figure}
 
-The average final price paid by European households is 21.7 cents per KwH including taxes and 12.8 cents per KwH excluding taxes, which make up an average of around 6 cents of taxes per KwH. Over time, also taxes tend to change: in the second semester of 2007 the price paid by European households fell with respect to the first semester by 3 cents, while the electricity price itself decreased only by one cent. This means that most of the drop was due to a decrease in taxes. \textit{Figure~\ref{fig:TaxesTime}} shows how electricity prices for European citizens changed over time, on average.
+The average final price paid by European households is 21.7 Euro cents per KwH including taxes and 12.8 cents per KwH excluding taxes, which make up an average of around 6 cents of taxes per KwH. Over time, also taxes tend to change: in the second semester of 2007 the price paid by European households fell with respect to the first semester by 3 cents, while the electricity price itself decreased only by one cent. This means that most of the drop was due to a decrease in taxes. \textit{Figure~\ref{fig:TaxesTime}} shows how electricity prices for European citizens changed over time, on average.
 
 \begin{figure}[tb]
 \begin{center}
@@ -274,15 +275,15 @@ The average final price paid by European households is 21.7 cents per KwH includ
 
 \subsection{Inflation}
 
-As all other commodities, the price of electricity tends to increase over time at a similar pace with respect to inflation. The average increase in prices in a given country is an obvious cause for electricity price surge. In the European Union the levels of inflation are over time converging, as it should be for such a tied market, and the pace of such convergence became even more steady after the global financial crisis. \cite{brovz2018dynamics} The body which is charge for controlling the inflation level in the Euro area is the \textit{European Central Bank} (ECB), and the primary objective of its monetary policy is to maintain price stability. The ECB aims at inflation rates of below, but close to, 2\% over the medium term. The ECB failed to keep inflation under this level for the first years of the 21th century, before the 2008 financial crisis, but after this the inflation level dropped and never got back to such high levels. Such inflation target was highly debated in recent times, especially after the Federal Reserve has relaxed the same 2\% target.
+As all other commodities, the price of electricity tends to increase over time at a similar pace with respect to inflation. The average increase in prices in a given country is an obvious cause for electricity price surge. In the European Union the levels of inflation are over time converging, as it should be for such a tied market, and the pace of such convergence became even more steady after the global financial crisis. \cite{brovz2018dynamics} The body which is charge for controlling the inflation level in the Euro area is the \textit{European Central Bank} (ECB), and the primary objective of its monetary policy is to maintain price stability. The ECB aims at inflation rates of below, but close to, 2\% over the medium term. The ECB failed to keep inflation under this level for the first years of the 21th century, before the 2008 financial crisis, but after this the inflation level dropped and never got back to such high levels. The 2\% inflation target was highly debated in recent times, especially after the Federal Reserve (the United States central bank) has relaxed it in recent times.
 
-As it is possible to discern from \textit{Figure ~\ref{fig:infl}}, the inflation level and the electricity price tend to show a similar trend. The average level of prices in 2015 is used as a benchmark and is denoted by a 100 in the plot. Interestingly, however, the electricity price has had its peak in 2012, while inflation continued being positive until now. 
+As it is possible to discern from \textit{Figure ~\ref{fig:infl}}, the consumer price index and the electricity price tend to show a similar trend. The average level of prices in 2015 is used as a benchmark and is denoted by a 100 in the plot. Interestingly, however, the electricity price has had its peak in 2012, while inflation continued being positive until now. 
 
 \begin{figure}[tb]
 \begin{center}
 \captionsetup{justification=centering}
 \includegraphics[width=0.8\textwidth]{Images/inf.png}
-\caption{Price of electricity and inflation level in the European Union.}
+\caption{Consumer Price Index and Electricity Price in the European Union.}
 \label{fig:infl}
 \end{center}
 \end{figure}
@@ -293,7 +294,7 @@ The behavior of inflation depends both on structural and on short-term factors. 
 
 The directive 2003/54/EC requires that all non-household customers can freely choose their electricity supplier by 1 July 2004, with following full market opening including all household customers within three years. Most of the European Union electricity market is now at least formally, open to competition; this was not the case a few decades ago. However, most national electricity markets are still controlled by relatively few companies and small consumers seem quite resistant to switching supplier.~\cite{jamasb2005electricity}
 
-The European Union is fighting monopolies in the electricity sector for the simple reason that the market price is supposed to be higher with respect to a situation of competition. In the 1990s the United Kingdom was the front-runner of electricity reforms, while France has often been regarded as a country averse to moving away from public monopoly.~\cite{fiorio2009reform} In \textit{Figure~\ref{fig:conc}} European countries are colored according to their level of market concentration. It is possible to notice how, most notably, the market concentration levels are quite heterogeneous among countries, with France, Estonia and Croatia experiencing very different levels with respect to United Kingdom, Poland and Spain. 
+The European Union is fighting monopolies in the electricity sector for the simple reason that the market price is supposed to be higher with respect to a situation of perfect competition. In the 1990s the United Kingdom was the front-runner of electricity reforms, while France has often been regarded as a country averse to moving away from public monopoly.~\cite{fiorio2009reform} In \textit{Figure~\ref{fig:conc}} European countries are colored according to their level of market concentration. It is possible to notice how, most notably, the market concentration levels are quite heterogeneous among countries, with France, Estonia and Croatia experiencing very different levels with respect to United Kingdom, Poland and Spain. 
 
 \begin{figure}[tb]
 \begin{center}
@@ -304,7 +305,7 @@ The European Union is fighting monopolies in the electricity sector for the simp
 \end{center}
 \end{figure}
 
-In any case, \textit{Figure ~\ref{fig:conc}} also demonstrates how, although the liberalization process has led to the disintegration of national monopolies, it did not lead to a disruptive fall in concentration within the sector. With an average value of the biggest  supplier market share of 50\% the European situation is quite far from the internal market and open competition. Different national and regional markets with the presence of incumbents as main actors still persist in each electricity market. Despite liberalization, the level of concentration is hence quite high.  In \textit{Figure ~\ref{fig:conc-mc}}, the focus shifts to the biggest European markets over the last 20 years: Germany, Spain, France and Italy. It is interesting to notice how they all experienced a slight decrease in market concentration, but with France starting from a concentration value that stands out with respect to the others, with the most important supplier having a market share of 90\%.
+In any case, \textit{Figure ~\ref{fig:conc}} also demonstrates how, although the liberalization process has led to the disintegration of national monopolies, it did not lead to a disruptive fall in concentration within the sector. With an average value of the biggest  supplier market share of 50\% the European situation is quite far from the internal market and open competition ideal. Different national and regional markets with the presence of incumbents as main actors still persist in each electricity market. Despite liberalization, the level of concentration is hence quite high.  In \textit{Figure ~\ref{fig:conc-mc}}, the focus shifts to the biggest European markets over the last 20 years: Germany, Spain, France and Italy. It is interesting to notice how they all experienced a slight decrease in market concentration, but with France starting from a concentration value that stands out with respect to the others, with the most important supplier having a market share of 90\%.
 
 \begin{figure}[tb]
 \begin{center}
@@ -315,11 +316,11 @@ In any case, \textit{Figure ~\ref{fig:conc}} also demonstrates how, although the
 \end{center}
 \end{figure}
 
-One final note of caution: in this section the market share of the biggest supplier in the market was used as a proxy for market concentration. The lower the share, the more the market is liberalized. However, looking at the largest supplier is a bit limiting and it is used because it is the only information Eurostat discloses about this matter. A market in which only two suppliers share the whole market is completely different from one in which the biggest supplier controls half of the market and the rest of it is controlled by very little providers. Yet, the largest supplier market share variable value would be the same.
+One final note of caution: in this section and later in the model discussion the market share of the biggest supplier in the market is used as a proxy for market concentration. The lower the share, the more the market is liberalized. However, looking at the largest supplier is a bit limiting and it is used because it is the only information Eurostat discloses about this matter. A market in which only two suppliers share the whole market is completely different from one in which the biggest supplier controls half of the market and the rest of it is controlled by very little providers. Yet, the largest supplier market share variable value would be the same.
 
 \subsection{Gross Domestic Product}
 
-The wealth and the productive capacity of a country are closely related to the consumption patterns of its citizens. Economic development stimulates greater demand for electricity in the long-run: the gross domestic product has an effect primarily on the quantity of electricity consumed.~\cite{jamil2010relationship} During times of economic hardship, many factories decide to cut back production due to a reduction of consumer demand and consequently reduce electrical demand.~\cite{g} Whether there is an effect not only on the quantity used but also on the price of the good is a more debated topic:~\cite{lean2010multivariate} employs annual data for Malaysia from 1970 to 2008 to examine this causal relationship but found that there is no causal relationship between prices and economic growth. \textit{Figure ~\ref{fig:GDP}} displays the differences in GDP per capita for European countries.~\cite{GDP}
+The wealth and the productive capacity of a country are closely related to the consumption patterns of its citizens. Economic development stimulates greater demand for electricity in the long-run: the gross domestic product has an effect primarily on the quantity of electricity consumed.~\cite{jamil2010relationship} During times of economic hardship, many factories decide to cut back production due to a reduction of consumer demand and consequently reduce electrical demand.~\cite{g} Whether there is an effect not only on the quantity used but also on the price of the good is a more debated topic:~\cite{lean2010multivariate} employs annual data for Malaysia from 1970 to 2008 but found that there is no causal relationship between prices and economic growth. \textit{Figure ~\ref{fig:GDP}} displays the differences in GDP per capita for European countries.~\cite{GDP}
 
 \begin{figure}[tb]
 \begin{center}
@@ -330,9 +331,9 @@ The wealth and the productive capacity of a country are closely related to the c
 \end{center}
 \end{figure}
 
-Belgium, Ireland, Germany and Denmark are the European member countries for which electricity is the most expensive, and these four areas also show high GDP value. In the last 20 years Gross Domestic Product tended to increase for European countries, even if the economic crisis incurred in the end of the first decade slowed down the growth process. Also the electricity price on average growed, although at different paces and more irregularly with respect to the Gross Domestic Product.
+Belgium, Ireland, Germany and Denmark are the European member countries for which electricity is the most expensive, and these four areas also show high GDP value. In the last 20 years Gross Domestic Product tended to increase for European countries, even if the economic crisis incurred in the end of the first decade slowed down the growth process. Also the electricity price on average grew, although at different paces and more irregularly with respect to the Gross Domestic Product.
 
-\textit{Figure~\ref{fig:pri-gdp}} shows the behavior of real GDP per capita and electricity price (taxes excluded) for France and Germany, the two major economies in the European Union.  In this case inflation has been taken into account and in fact the absolute GDP values are not comparable with \textit{Figure~\ref{fig:GDP}}. Electricity is cheaper in France with respect to Germany by quite a significant amount, and Gross Domestic Product is also lower. For both countries there has been an increase in the values of the two variables, although with considerable less regularity when it comes to electricity price.
+\textit{Figure~\ref{fig:pri-gdp}} shows the behavior of real GDP per capita and electricity price (taxes excluded) for France and Germany, the two major economies in the European Union.  In this case inflation has been taken into account and in fact the absolute GDP values are not comparable with \textit{Figure~\ref{fig:GDP}}. Electricity is cheaper in France with respect to Germany by quite a significant amount, and Gross Domestic Product is also lower. For both countries there has been an increase in the values of the two variables, although with considerably less regularity when it comes to electricity price.
 
 \begin{figure}[tb]
 \begin{center}
@@ -345,9 +346,9 @@ Belgium, Ireland, Germany and Denmark are the European member countries for whic
 
 \subsection*{Emission Intensity}
 
-Depending on how it is produced, electricity can be associated with environmental degradation. A debated question in recent times is whether cleaner energy results in higher prices or rather the opposite. The \textit{Emissions Intensity} indicator is calculated as the ratio between energy-related GHG emissions and gross inland consumption of energy. It expresses how many tonnes of CO2 equivalents of energy-related GHGs are being emitted in a certain economy per unit of energy that is being consumed.\\
+Depending on how it is produced, electricity can be associated with environmental degradation. A debated question in recent times is whether cleaner energy results in higher prices or rather the opposite. The \textit{Emissions Intensity} indicator is calculated as the ratio between energy-related GHG emissions and gross inland consumption of energy. It expresses how many tonnes of $CO_2$ equivalents of energy-related GHGs are being emitted in a certain economy per unit of energy that is being consumed.
 
-All European countries successfully managed to decrease their emission intensity in the last 20 years, but with wide differences. Eastern countries which base their economy on energy production and distribution such as Ukraine and Georgia saw their emission intensity levels drop by one tenth in one year. Such result is mostly due to the very low levels of efficiency these countries were experiencing in the beginning of the century. In \textit{Table~\ref{Tab:ems}} emission intensity for most virtuous countries is summarized: the relative level in the table is benchmarked over the emission intensity level the country experienced in 2000 (i.e. level in 2000 = 100).
+All European countries successfully managed to decrease their emission intensity in the last 20 years, but with wide differences. Eastern countries which base their economy on energy production and distribution such as Ukraine and Georgia saw their emission intensity levels drop by one tenth in one year. Such a result is mostly due to the very low levels of efficiency these countries were experiencing in the beginning of the century. In \textit{Table~\ref{Tab:ems}} emission intensity for most virtuous countries is summarized: the relative level in the table is benchmarked over the emission intensity level the country experienced in 2000 (i.e.\ level in 2000 = 100).
 
 \begin{table}[tb]
 \begin{center}
@@ -367,13 +368,13 @@ Moldova & 91.3\\
 \end{center}
 \end{table}
 
-With \textit{Table~\ref{Tab:emiss}}, instead, a summary of the countries which experienced the smallest drop in emission intensity in the last 20 years is provided. It may be not that easy to match economic development with climate action, and progress in one field can hinder progress in the other.
+With \textit{Table~\ref{Tab:emiss}}, instead, a summary of the countries which experienced the smallest drop in emission intensity in the last 20 years is provided. It may not be that easy to match economic development with climate action, and progress in one field can hinder progress in the other.
 
 \begin{table}[tb]
 \begin{center}
 \begin{tabular}{|c|c|}
 \hline
-\rowcolor{lightgray}Country & Emission Intensity \\
+Country & Emission Intensity \\
 \hline
 Bulgaria & 97\\
 Lithuania & 95.6\\
@@ -387,7 +388,7 @@ Estonia & 95\\
 \end{center}
 \end{table}
 
-Eurostat does not provide absolute values for the Emission Intensity indicator, but the World Bank provides data for $CO_{2}$ emissions per capita. \textit{Figure~\ref{fig:intensiti}} helps to visualize the countries which are the most and least $CO_{2}$ intensive. One interesting area of focus for further discussion is the Baltic. To demonstrate how political decisions can result in building two radically different economies also for countries which are neighboring and similar, it is interesting to notice how Lithuania is one of the least polluting country in Europe and Estonia is instead the one that is polluting the most.
+Eurostat does not provide absolute values for the Emission Intensity indicator, but the World Bank provides data for $CO_{2}$ emissions per capita. \textit{Figure~\ref{fig:intensiti}} helps to visualize the countries which are the most and least $CO_{2}$ intensive. One interesting area of focus for further discussion is the Baltic. To demonstrate how political decisions can result in building two radically different economies also for countries which are neighboring and similar, it is interesting to notice how Lithuania is one of the least polluting member states in Europe and Estonia is instead the one that is polluting the most.
 
 \begin{figure}[tb]
 \begin{center}
@@ -400,7 +401,7 @@ Eurostat does not provide absolute values for the Emission Intensity indicator, 
 
 \subsection*{Energy Mix}
 
-The importance of energy on greenhouse gases emissions is reflected by the fact that 65\% of emissions in the World are currently due to the use and production of energy. This percentage rises up to 80\% in the European Union.~\cite{marrero2010greenhouse} Energy production techniques and consequent polluting emissions vary greatly from one country or region to the other and can change significantly depending on the period. The term \textit{energy mix} refers to the combination of the various primary energy sources used to meet energy needs in a given geographic region. Variables at stake for the final choice of the energy mix include:
+The detrimental effect of energy generation on the environment is reflected by the fact that 65\% of emissions in the World are currently due to the use and production of energy. This percentage rises up to 80\% in the European Union.~\cite{marrero2010greenhouse} Energy production techniques and consequent polluting emissions vary greatly from one country or region to the other and can change significantly depending on the period. The term \textit{energy mix} refers to the combination of the various primary energy sources used to meet energy needs in a given geographic region. Variables at stake for the final choice of the energy mix include:
 
 \begin{itemize}
 
@@ -420,7 +421,7 @@ Although the EU electricity system has innovated and become greener, it has also
 \begin{center}
 \begin{tabular}{|c|c|c|}
 \hline
-\rowcolor{lightgray} \multicolumn{3}{|c|}{Electricity Prod. from Coal (\% of total)}\\
+\multicolumn{3}{|c|}{Electricity Prod. from Coal (\% of total)}\\
 \hline
 Country & 2015 & 2000 \\
 \hline
@@ -436,7 +437,7 @@ North Macedonia & 58.4 & 76.5\\
 \end{center}
 \end{table}
 
-The trend in reducing the impact of coal in the energy mix has been set in all corners of Europe, and now the focus is on the timing. Even Germany, a country which is very careful on environmental matters, in 2015 still relied on coal for 44\% of its energy production. The share of fossil fuel in the EU electricity generation mix stands at 25 percent, having declined by only 5 percentage points between 2000 and 2015. This is a problem, since as \cite{tagliapietra2017beyond} points out, to generate the same amount of electricity, a coal-fired power plant emits 40 percent more CO2 than a gas-fired power plant and 20 percent more than an oil-fired power plant. \textit{Figure ~\ref{fig:coal}} displays where major EU countries are in the path towards decarbonization.
+The trend in reducing the impact of coal in the energy mix has been set in all corners of Europe, and now the focus is on the timing. Even Germany, a country which is very careful on environmental matters, in 2015 still relied on coal for 44\% of its energy production. The share of fossil fuel in the EU electricity generation mix stands at 25 percent, having declined by only 5 percentage points between 2000 and 2015. This is a problem, since as \cite{tagliapietra2017beyond} points out, to generate the same amount of electricity, a coal-fired power plant emits 40 percent more $CO_2$ than a gas-fired power plant and 20 percent more than an oil-fired power plant. \textit{Figure ~\ref{fig:coal}} displays where major EU countries are in the path towards decarbonization.
 
 \begin{figure}[tb]
 \begin{center}
@@ -449,7 +450,7 @@ The trend in reducing the impact of coal in the energy mix has been set in all c
 
 \subsubsection*{Oil}
 
-One traditional way of producing electricity is by fuel combustion: the raw material, oil, sits in deep underground reservoirs. Since the ultimate amount of oil is finite - and cannot be replenished once it is extracted and burned - it is not a renewable resource. Burning oil to generate electricity produces significant air pollutants, and this may also explain why this energy source is going out of fashion: in the 70s oil combustion was one of the main techniques for electricity generation, accounting for about one fifth of the total. In following years, however, this share started to shrink constantly: in 2015 only less than 4\% of electricity is generated by fuel combustion. \textit{Figure ~\ref{fig:oil}} shows the trend in electricity generation from fuel combustion.
+One traditional way of producing electricity is by fuel combustion: the raw material, oil, sits in deep underground reservoirs. Since the ultimate amount of oil is finite - and cannot be replenished once it is extracted and burnt - it is not a renewable resource. Burning oil to generate electricity produces significant air pollutants, and this may also explain why this energy source is going out of fashion: in the 70s oil combustion was one of the main techniques for electricity generation, accounting for about one fifth of the total. In following years, however, this share started to shrink constantly: in 2015 only less than 4\% of electricity is generated by fuel combustion. \textit{Figure ~\ref{fig:oil}} shows the trend in electricity generation from fuel combustion.
 
 \begin{figure}[tb]
 \begin{center}
@@ -479,7 +480,7 @@ Electricity can also be produced by a process which makes use of nuclear reactio
 \begin{center}
 \begin{tabular}{|c|c|c|}
 \hline
-\rowcolor{lightgray} \multicolumn{3}{|c|}{Nuclear Energy (\% of total)}\\
+\multicolumn{3}{|c|}{Nuclear Energy (\% of total)}\\
 \hline
 Country & 2015 & 2000 \\
 \hline
@@ -509,7 +510,7 @@ The use of renewable energy for producing electricity has several potential bene
 \end{center}
 \end{figure}
 
-Northern countries have invested significantly in renewable energy sources and the result is that their achievements in the path towards sustainability are particularly strong. Iceland is particularly strong in geothermal energy while Sweden and Norway make use of their considerable supply of moving water and biomass. In fact, ``renewable energy sources" is a broad categorization including:
+Northern countries have invested significantly in renewable energy sources and the result is that their achievements in the path towards sustainability are particularly robust. Iceland is particularly strong in geothermal energy while Sweden and Norway make use of their considerable supply of moving water and biomass. In fact, ``renewable energy sources" is a broad categorization including:
 
 \begin{description}
 \item[Hydro Power,] which is the most relevant renewable energy source. Since water is so dense, even a slow flowing stream can result in a sizable amount of energy.
@@ -519,17 +520,17 @@ Northern countries have invested significantly in renewable energy sources and t
 \item [Solar Power,] which is having a rapid increase in importance. Italy has the largest proportion of solar electricity in the world (7.7\% in 2015).
 \end{description}
 
-The cost of the different renewable energy generation techniques is unequal, so these variables should in principle be considered independently. However, the data sources on which this study this is counting do not disclose information with this much level of detail, using instead the aggregate ``renewable" identifier. In any case, the fact that in recent times the energy mix has changed so much, moving to cleaner options, has an important effect for the electricity market too. Whether such an effect is going to influence also the price of the good is going is one of the points of focus of the next chapter.
+The cost of the different renewable energy generation techniques is unequal, so these variables should in principle be considered independently. However, the data sources on which this study this is counting do not disclose information with this much level of detail, using instead the aggregate ``renewable" identifier. In any case, the fact that in recent times the energy mix has changed so much, moving to cleaner options, has an important effect for the electricity market too.
 
-\subsection{Dependence}
+\subsection{Dependency from Imports}
 
-European Union member states import a lot of energy from other countries, such as Norway and Russia. In total, the dependence rate was equal to 58\% in 2018, which means that more than half of the EU’s energy needs were met by net imports. The result is that Europe relies heavily on them for its supply and to a certain extent has to conform to others' prices. In \textit{Table ~\ref{Tab:dep}} dependence on imports for European countries is summarized. Malta, which lacks the necessary resources for producing electricity and is not really interested in investing in renewable energy, represents the example of a country which entirely depends on abroad sources for electricity capacity. At the moment none on the European Union countries is self-sufficient, although Denmark in the beginning of the century was, thanks to the North Sea production of oil and gas.
+European Union member states import a lot of energy from other countries, such as Norway and Russia. In total, the dependence rate was equal to 58\% in 2018, which means that more than half of the EU’s energy needs were met by net imports. The result is that Europe relies heavily on them for its supply and to a certain extent has to conform to others' prices. In \textit{Table ~\ref{Tab:dep}} dependency from imports for European countries is summarized. Malta, which lacks the necessary resources for producing electricity and is not really interested in investing in renewable energy, represents the example of a country which entirely depends on abroad sources for its electricity capacity. At the moment none on the European Union countries is self-sufficient, although Denmark in the beginning of the century was, thanks to the North Sea production of oil and gas.
 
 \begin{table}[tb]
 \begin{center}
 \begin{tabular}{|c|c|c|}
 \hline
-\rowcolor{lightgray} \multicolumn{3}{|c|}{Electricity Dependence (\%) }\\
+\multicolumn{3}{|c|}{Electricity Dependence (\%) }\\
 \hline
 Country & 2010 & 2018 \\
 \hline
@@ -635,7 +636,7 @@ Statistical models always describe variation in observed variables in terms of s
 \begin{center}
 \begin{tabular}{|c|c|c|c|c|}
 \hline
-\rowcolor{lightgray} \multicolumn{5}{|c|}{Coefficients}\\
+\multicolumn{5}{|c|}{Coefficients}\\
 \hline
 &Estimate&Std Error&T-Value&5\% Sign\\
 \hline
@@ -653,7 +654,7 @@ MAR&-1E-3&2E-4&-5&*\\
 \begin{center}
 \begin{tabular}{|c|c|c|c|}
 \hline
-\rowcolor{maroon} \multicolumn{4}{|c|}{Global Performance}\\
+\multicolumn{4}{|c|}{Global Performance}\\
 \hline
 R-Squared&0.597&Adj R-Squared&0.595\\
 \hline
@@ -674,7 +675,7 @@ The Random Effects model, as discussed before, does not consider geographic info
 \begin{center}
 \begin{tabular}{|c|c|c|c|c|c|c|}
 \hline
-\rowcolor{lightgray} \multicolumn{7}{|c|}{Analysis of Variance Table}\\
+\multicolumn{7}{|c|}{Analysis of Variance Table}\\
 \hline
 &Res. DF&RSS&Df&Sum of Sq&F&Pr($>F$)\\
 \hline
@@ -693,7 +694,7 @@ The Random Effects model, as discussed before, does not consider geographic info
 \begin{center}
 \begin{tabular}{|c|c|c|c|}
 \hline
-\rowcolor{lightgray} \multicolumn{4}{|c|}{Coefficients}\\
+\multicolumn{4}{|c|}{Coefficients}\\
 \hline
 &Estimate&sError&p\\
 \hline
@@ -714,7 +715,7 @@ MAR&-0.00&0.00&* \\
 \begin{center}
 \begin{tabular}{|c|c|c|c|}
 \hline
-\rowcolor{maroon} \multicolumn{4}{|c|}{Global Performance}\\
+\multicolumn{4}{|c|}{Global Performance}\\
 \hline
 R-Squared&0.8458&Adj R-Squared&0.8399\\
 \hline
@@ -736,7 +737,7 @@ An alternative solution, rather than relying on so many geographical identifiers
 \begin{center}
 \begin{tabular}{|c|c|c|c|}
 \hline
-\rowcolor{lightgray} \multicolumn{4}{|c|}{Coefficients}\\
+\multicolumn{4}{|c|}{Coefficients}\\
 \hline
 &Estimate&Std. Error&p\\
 \hline
@@ -760,7 +761,7 @@ EU&0.20&0.02&***\\
 \begin{center}
 \begin{tabular}{|c|c|c|c|}
 \hline
-\rowcolor{maroon} \multicolumn{4}{|c|}{Global Performance}\\
+\multicolumn{4}{|c|}{Global Performance}\\
 \hline
 R-Squared&0.6272&Adj R-Squared&0.6242\\
 \hline
@@ -804,7 +805,7 @@ Another problem that can pop up in regression models is the collinearity or the 
 \begin{center}
 \begin{tabular}{|c|c|c|c|}
 \hline
-\rowcolor{lightgray} \multicolumn{4}{|c|}{Variance Inflation Factor}\\
+\multicolumn{4}{|c|}{Variance Inflation Factor}\\
 \hline
 &GVIF&Df&$GVIF^{\frac{1}{2Df}}$\\
 \hline
@@ -842,7 +843,7 @@ Equally spread points and consequent horizontal line of fit is a good indication
 \begin{center}
 \begin{tabular}{|c|c|c|}
 \hline
-\rowcolor{lightgray} \multicolumn{3}{|c|}{BP Test}\\
+\multicolumn{3}{|c|}{BP Test}\\
 \hline
 BP&df&p-value\\
 179&10&$<$2E-16\\
@@ -859,7 +860,7 @@ The test detects heteroscedasticity. This means that the least squares estimator
 \begin{center}
 \begin{tabular}{|c|c|c|}
 \hline
-\rowcolor{lightgray} \multicolumn{3}{|c|}{BP Test}\\
+\multicolumn{3}{|c|}{BP Test}\\
 \hline
 BP&df&p-value\\
 114&10&$<$2E-16\\
@@ -878,7 +879,7 @@ Another option to better deal with non-constant variance is to deviate from ordi
 \begin{center}
 \begin{tabular}{|c|c|c|}
 \hline
-\rowcolor{maroon} \multicolumn{3}{|c|}{Coefficients Comparison}\\
+\multicolumn{3}{|c|}{Coefficients Comparison}\\
 \hline
 coef&OLS&WLS\\
 \hline
@@ -912,7 +913,7 @@ The take-home message is that having a very large model including variables whic
 \begin{center}
 \begin{tabular}{|c|c|c|c|c|}
 \hline
-\rowcolor{lightgray} \multicolumn{5}{|c|}{Subset Selection}\\
+\multicolumn{5}{|c|}{Subset Selection}\\
 \hline
 Excl Var&N of Vars&Adj $R^2$&BIC&Cp\\
 \hline
@@ -943,7 +944,7 @@ At this point, simple and weighted linear regressions are recomputed on the smal
 \begin{center}
 \begin{tabular}{|c|c|c|c|}
 \hline
-\rowcolor{maroon} \multicolumn{4}{|c|}{Mean Absolute Error}\\
+\multicolumn{4}{|c|}{Mean Absolute Error}\\
 \hline
 OLS&1.81&WLS&1.89\\
 \hline
@@ -959,7 +960,7 @@ Ordinary Least Squares seems to outperform Weighted Least Squares when testing t
 \begin{center}
 \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
 \hline
-\rowcolor{lightgray} \multicolumn{10}{|c|}{Mean Absolute Error, OLS}\\
+\multicolumn{10}{|c|}{Mean Absolute Error, OLS}\\
 \hline
 log(GAS)&REN&log(GDP)&log(OIL)&MAR&EA&EF&EU&NVars&MAE\\
 \hline
@@ -983,7 +984,7 @@ As expected, the best performing model is the one built including all the variab
 \begin{center}
 \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
 \hline
-\rowcolor{maroon} \multicolumn{10}{|c|}{Mean Absolute Error, WLS}\\
+\multicolumn{10}{|c|}{Mean Absolute Error, WLS}\\
 \hline
 log(GAS)&REN&log(GDP)&log(OIL)&MAR&EA&EF&EU&NVars&MAE\\
 \hline
@@ -1041,7 +1042,7 @@ Until now one assumption was made: that the predictor variables have a linear in
 \begin{center}
 \begin{tabular}{|c|c|c|c|c|c|c|}
 \hline
-\rowcolor{lightgray} \multicolumn{7}{|c|}{Models with Interactions}\\
+\multicolumn{7}{|c|}{Models with Interactions}\\
 \hline
 GDP&GAS:OIL&CON:REN&GAS:REN&GAS:GDP&NVars&MAE\\
 \hline
@@ -1063,7 +1064,7 @@ Looking at interaction terms is one option, but another assumption that it could
 \begin{center}
 \begin{tabular}{|c|c|c|c|c|c|c|c|}
 \hline
-\rowcolor{maroon} \multicolumn{8}{|c|}{Models with Polynomials}\\
+\multicolumn{8}{|c|}{Models with Polynomials}\\
 \hline
 GDP&OIL&REN&DEP$^2$&GAS&MAR&NVars&MAE\\
 \hline
@@ -1131,7 +1132,7 @@ Most of the residuals fall very close to zero: 708 observations out of 800 resul
 \begin{center}
 \begin{tabular}{|c|c|c|c|}
 \hline
-\rowcolor{maroon} \multicolumn{4}{|c|}{Variance Inflation Factor}\\
+\multicolumn{4}{|c|}{Variance Inflation Factor}\\
 \hline
 &GVIF&Df&$GVIF^{\frac{1}{2*Df}}$\\
 \hline
@@ -1169,7 +1170,7 @@ When the change in price is significant, both in the positive and in the negativ
 \begin{center}
 \begin{tabular}{|c|c|c|}
 \hline
-\rowcolor{lightgray} \multicolumn{3}{|c|}{Dynamic Linear Model}\\
+\multicolumn{3}{|c|}{Dynamic Linear Model}\\
 \hline
 &Coef Sign&Significance\\
 \hline
@@ -1196,7 +1197,7 @@ Differently to the static case, only two variables are significant in the dynami
 \begin{center}
 \begin{tabular}{|c|c|c|c|}
 \hline
-\rowcolor{maroon} \multicolumn{4}{|c|}{Mean Absolute Error, in Euro Cents}\\
+\multicolumn{4}{|c|}{Mean Absolute Error, in Euro Cents}\\
 \hline
 Linear Model&0.4867&With SubSel&0.5123\\
 \hline
@@ -1253,7 +1254,7 @@ It is now clear which the best performing tree is, but no indication yet regardi
 \begin{center}
 \begin{tabular}{|c|c|c|c|}
 \hline
-\rowcolor{maroon} \multicolumn{4}{|c|}{Mean Absolute Error, in Euro Cents}\\
+\multicolumn{4}{|c|}{Mean Absolute Error, in Euro Cents}\\
 \hline
 Tree&0.564&Pruned Tree&0.511\\
 \hline
@@ -1308,7 +1309,7 @@ The handling of information and creation of the data set is left to the appendix
 \begin{center}
 \begin{tabular}{|c|c|c|c|c|c|}
 \hline
-\rowcolor{maroon} \multicolumn{6}{|c|}{Data from Solomon Islands}\\
+\multicolumn{6}{|c|}{Data from Solomon Islands}\\
 \hline
 Year&PRI&DEP&GDP&Region&Income\\
 \hline
@@ -1334,7 +1335,7 @@ The aim is to build a model for the prediction of the electricity price that is 
 \begin{center}
 \begin{tabular}{|c|c|c|c|}
 \hline
-\rowcolor{lightgray} \multicolumn{4}{|c|}{Coefficients}\\
+\multicolumn{4}{|c|}{Coefficients}\\
 \hline
 &Estimate&Std. Error&p\\
 \hline
@@ -1356,7 +1357,7 @@ OILs&0.11&0.02&***\\
 \begin{center}
 \begin{tabular}{|c|c|c|c|}
 \hline
-\rowcolor{maroon} \multicolumn{4}{|c|}{Global Performance}\\
+\multicolumn{4}{|c|}{Global Performance}\\
 \hline
 R-Squared&0.2431&Adj R-Squared&0.2362\\
 \hline
@@ -1390,7 +1391,7 @@ All region dummy variables' coefficients are negative, meaning that the base cas
 \begin{center}
 \begin{tabular}{|c|c|c|c|}
 \hline
-\rowcolor{lightgray} \multicolumn{4}{|c|}{Coefficients}\\
+\multicolumn{4}{|c|}{Coefficients}\\
 \hline
 &Estimate&Std. Error&p\\
 \hline
@@ -1418,7 +1419,7 @@ SSA&-6.5&1.07&***\\
 \begin{center}
 \begin{tabular}{|c|c|c|c|}
 \hline
-\rowcolor{maroon} \multicolumn{4}{|c|}{Global Performance}\\
+\multicolumn{4}{|c|}{Global Performance}\\
 \hline
 MAE&4.959&Adj R-Squared&0.3286\\
 \hline
@@ -1465,18 +1466,18 @@ Finally, to benchmark the findings, the last section is left to the discussion o
 \hline
 Model&Mean Absolute Error\\
 \hline
-\rowcolor{lightgray} \multicolumn{2}{|c|}{Static Models}\\
+\multicolumn{2}{|c|}{Static Models}\\
 \hline
 Linear&1.8\\
 Regularized&1.8\\
 Interactions&1.7\\
 \hline
-\rowcolor{lightgray} \multicolumn{2}{|c|}{Dynamic Models}\\
+\multicolumn{2}{|c|}{Dynamic Models}\\
 \hline
 Linear&0.48\\
 Tree&0.51\\
 \hline
-\rowcolor{lightgray} \multicolumn{2}{|c|}{Global Models}\\
+\multicolumn{2}{|c|}{Global Models}\\
 \hline
 Linear&5\\
 Regularized&5\\
