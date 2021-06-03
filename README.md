@@ -5,7 +5,6 @@ Is the membership to EU a factor? Do countries with a less liberalized electrici
 # Data
 Information was taken from [Eurostat](https://ec.europa.eu/eurostat/data/database) and [World Bank](https://data.worldbank.org/).
 Features of this analysis:
-[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity)
 
 
 - *dependent variable* 
